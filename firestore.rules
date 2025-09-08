@@ -1,0 +1,14 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // TEMP for dev: tillat reads+writes til test TestCollection
+    match /TestCollection/{doc=**} {
+      allow read: if true;
+      allow write: if true; // TEMP for local testing
+    }
+      match /{doc=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
