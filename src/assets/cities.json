@@ -1,0 +1,82 @@
+{
+  "Danmark": [
+    "København"
+  ],
+  "Frankrike": [
+    "Nice",
+    "Paris"
+  ],
+  "Hellas": [
+    "Athen",
+    "Kreta",
+    "Santorini",
+    "Ios",
+    "Kos",
+    "Rhodos"
+  ],
+  "Italia": [
+    "Milano",
+    "Napoli",
+    "Venezia",
+    "Roma",
+    "Sicilia"
+  ],
+  "Kroatia": [
+    "Split",
+    "Zagreb",
+    "Dubrovnik"
+  ],
+  "Nederland": [
+    "Amsterdam"
+  ],
+  "Norge": [
+    "Oslo",
+    "Bergen",
+    "Trondheim",
+    "Tromsø",
+    "Stavanger"
+  ],
+  "Polen": [
+    "Gdańsk",
+    "Warszawa",
+    "Krakow"
+  ],
+  "Spania": [
+    "Alicante",
+    "Barcelona",
+    "Gran Canaria",
+    "Málaga",
+    "Marbella",
+    "Mallorca",
+    "Madrid"
+  ],
+  "Storbritannia": [
+    "London",
+    "Manchester",
+    "Liverpool"
+  ],
+  "Sveits": [
+    "Zürich"
+  ],
+  "Sverige": [
+    "Stockholm",
+    "Gøteborg"
+  ],
+  "Tyskland": [
+    "Berlin",
+    "München"
+  ],
+  "Tyrkia": [
+    "Antalya",
+    "Istanbul"
+  ],
+  "Ungarn": [
+    "Budapest"
+  ],
+  "Irland": [
+    "Dublin"
+  ],
+  "Skottland": [
+    "Edinbourgh"
+  ]
+}
