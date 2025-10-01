@@ -4,8 +4,8 @@ import {Button} from "@/components/ui/button";
 
 export const Header = () => {
     return (
-        <header className="fixed top-0 left-0 w-full h-20 px-38 py-5 flex items-center justify-between bg-white shadow z-50">
-            <a href="" className="flex items-center justify-center bg-primary h-10 aspect-square text-white font-bold rounded-md">
+        <header className="fixed top-0 left-0 w-full h-20 px-38 py-5 flex items-center justify-between bg-popover backdrop-blur-md shadow z-50">
+            <a href="" className="flex items-center justify-center bg-primary h-10 aspect-square text-primary-foreground font-bold rounded-md">
                 V
             </a>
 
