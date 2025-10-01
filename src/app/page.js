@@ -4,7 +4,7 @@ import {Footer} from "@/components/layout/Footer"
 
 export default function Home() {
   return (
-    <main className="font-sans min-h-screen flex items-start justify-center bg-background">
+    <main className="flex flex-col items-center justify-baseline font-sans min-h-screen h-fit bg-background pt-20">
         <Header />
         <LandingPage />
         <Footer />
