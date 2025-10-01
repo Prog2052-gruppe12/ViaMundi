@@ -1,10 +1,13 @@
-import { Button } from "@/components/ui/button";
+import {LandingPage} from "@/pages/LandingPage"
+import {Header} from "@/components/layout/Header"
+import {Footer} from "@/components/layout/Footer"
 
 export default function Home() {
   return (
-    <main className="font-sans min-h-screen flex items-center justify-center p-8">
-      <h1 className="text-2xl">Viamundi</h1>
-      <Button>Click me</Button>
+    <main className="font-sans min-h-screen flex items-center justify-center p-8 bg-background">
+        <Header />
+        <LandingPage />
+        <Footer />
     </main>
   );
 }
