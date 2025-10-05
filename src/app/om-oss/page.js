@@ -1,10 +1,10 @@
 "use client";
 
 import { Footer } from "@/components/layout/Footer";
-import { OmOssHeader } from "@/components/about/OssHeader";
-import { OmOssHero } from "@/components/about/OmOssHero";
-import { GruppeMedlemmer } from "@/components/about/GruppeMedlemmer";
-import { ProjektRepo } from "@/components/about/ProjektRepo";
+import { OmOssHeader } from "@/components/features/about/OssHeader";
+import { OmOssHero } from "@/components/features/about/OmOssHero";
+import { GruppeMedlemmer } from "@/components/features/about/GruppeMedlemmer";
+import { ProjektRepo } from "@/components/features/about/ProjektRepo";
 
 
 export default function AboutPage() {
