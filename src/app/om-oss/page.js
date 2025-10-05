@@ -1,6 +1,7 @@
 "use client";
 
 import { Nav } from "@/components/layout/Nav";
+import NextLink from "next/link";  // Renamed to avoid confusion
 import { FiGithub, FiMail } from "react-icons/fi";
 
 const teamMembers = [
@@ -37,9 +38,9 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen bg-white">
       <header className="fixed top-0 left-0 w-full h-20 px-8 py-5 flex items-center justify-between bg-white shadow-sm z-50">
-        <a href="/" className="flex items-center justify-center bg-black h-10 aspect-square text-white font-bold rounded-md">
+        <NextLink href="/" className="flex items-center justify-center bg-black h-10 aspect-square text-white font-bold rounded-md">
           V
-        </a>
+        </NextLink>
 
         <div className="absolute left-1/2 -translate-x-1/2">
           <Nav />
