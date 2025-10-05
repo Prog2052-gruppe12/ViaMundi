@@ -4,19 +4,6 @@ Semesterprosjekt 2025 - Gruppe 12
 
 En reiseplanleggingsapplikasjon bygget med Next.js, Firebase og moderne webteknologier.
 
-## 🚀 Kom i gang
-
-```bash
-# Installer avhengigheter
-npm install
-
-# Kjør utviklingsserver
-npm run dev
-
-# Bygg for produksjon
-npm run build
-```
-
 ## 📁 Prosjektstruktur
 
 ```
@@ -40,26 +27,6 @@ src/
 └── assets/                      # Statiske ressurser
     └── cities.json              # Byer data
 ```
-
-## 🛠️ Teknologistack
-
-- **Framework**: Next.js 15 (App Router)
-- **Styling**: Tailwind CSS
-- **UI Komponenter**: shadcn/ui + Radix UI
-- **Database**: Firebase Firestore
-- **Deployment**: Vercel
-- **Språk**: JavaScript
-
-## 📝 Utvikling
-
-- **Komponenter**: Organisert etter funksjoner for bedre vedlikehold
-- **API Ruter**: Versjonert under `/api/v1/`
-- **Styling**: Utility-first med Tailwind CSS
-- **State Management**: React hooks og context
-
-## 🌐 API Endepunkter
-
-- `GET /api/v1/status` - Applikasjonsstatus sjekk
 
 ## 👥 Team
 
