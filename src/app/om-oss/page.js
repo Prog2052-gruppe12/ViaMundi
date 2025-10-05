@@ -1,7 +1,7 @@
 "use client";
 
 import { Nav } from "@/components/layout/Nav";
-import { Github, Mail } from "lucide-react";
+import { FiGithub, FiMail } from "react-icons/fi";
 
 const teamMembers = [
   {
@@ -36,23 +36,23 @@ const teamMembers = [
 const AboutPage = () => {
   return (
     <div className="min-h-screen bg-white">
-      <header className="fixed top-0 left-0 w-full h-20 px-8 py-5 flex items-center justify-between bg-white/80 backdrop-blur-md shadow-sm z-50">
-        <a href="/" className="flex items-center justify-center bg-primary h-10 aspect-square text-primary-foreground font-bold rounded-md">
+      <header className="fixed top-0 left-0 w-full h-20 px-8 py-5 flex items-center justify-between bg-white shadow-sm z-50">
+        <a href="/" className="flex items-center justify-center bg-black h-10 aspect-square text-white font-bold rounded-md">
           V
         </a>
 
-        <div className="absolute left-1/2 transform -translate-x-1/2">
+        <div className="absolute left-1/2 -translate-x-1/2">
           <Nav />
         </div>
       </header>
 
-      <div className="pt-32 pb-24 sm:pt-40 sm:pb-32">
+      <div className="pt-32 pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center animate-fade-in">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold text-black">
               ViaMundi
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
+            <p className="mt-6 text-lg text-gray-600">
               Vi bygger en AI-basert reiseassistent som gjør
               reiseplanlegging enklere: brukeren legger inn preferanser
               (budsjett, tidsrom, interesser) og får en personlig plan som kan
@@ -60,24 +60,23 @@ const AboutPage = () => {
             </p>
           </div>
 
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-            {teamMembers.map((member, index) => (
+          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3">
+            {teamMembers.map((member) => (
               <div
                 key={member.name}
-                className="bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:scale-105 hover:shadow-xl animate-fade-in"
-                style={{ animationDelay: `${index * 200}ms` }}
+                className="bg-white shadow p-8"
               >
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-6 flex items-center justify-center">
+                  <div className="w-24 h-24 bg-black rounded-full mb-6 flex items-center justify-center">
                     <span className="text-3xl text-white">
                       {member.name.split(" ")[0].charAt(0)}
                     </span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900">
+                  <h3 className="text-xl font-semibold text-black">
                     {member.name}
                   </h3>
-                  <p className="text-sm text-blue-600 mt-1">{member.role}</p>
-                  <p className="mt-4 text-gray-600 leading-6">
+                  <p className="text-sm text-gray-600 mt-1">{member.role}</p>
+                  <p className="mt-4 text-gray-600">
                     {member.description}
                   </p>
                   <div className="mt-6 flex gap-6">
@@ -85,16 +84,16 @@ const AboutPage = () => {
                       href={member.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2"
+                      className="text-gray-600 hover:text-black flex items-center gap-2"
                     >
-                      <Github2 className="w-5 h-5" />
+                      <FiGithub className="w-5 h-5" />
                       <span className="text-sm">GitHub</span>
                     </a>
                     <a
                       href={`mailto:${member.kontakt}`}
-                      className="text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2"
+                      className="text-gray-600 hover:text-black flex items-center gap-2"
                     >
-                      <Mail className="w-5 h-5" />
+                      <FiMail className="w-5 h-5" />
                       <span className="text-sm">E-post</span>
                     </a>
                   </div>
@@ -103,10 +102,8 @@ const AboutPage = () => {
             ))}
           </div>
 
-          <div
-            className="mx-auto mt-16 max-w-2xl text-center animate-fade-in"
-          >
-            <h3 className="text-2xl font-bold tracking-tight text-gray-900">
+          <div className="mx-auto mt-16 max-w-2xl text-center">
+            <h3 className="text-2xl font-bold text-black">
               Prosjekt
             </h3>
             <div className="mt-4 flex justify-center">
@@ -114,9 +111,9 @@ const AboutPage = () => {
                 href="https://github.com/Prog2052-gruppe12/PROG2053-Semester-project"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 transition-colors font-medium flex items-center gap-2"
+                className="text-gray-600 hover:text-black font-medium flex items-center gap-2"
               >
-                <Github2 className="w-5 h-5" />
+                <FiGithub className="w-5 h-5" />
                 <span>Se kildekoden på GitHub</span>
               </a>
             </div>
