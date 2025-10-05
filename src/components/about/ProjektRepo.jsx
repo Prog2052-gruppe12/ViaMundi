@@ -36,7 +36,7 @@ export function ProjektRepo() {
             <span>Designsystem: shadcn/ui</span>
             <span>Deploy: Vercel</span>
             <span>Database: Firestore</span>
-            <span>Språk: TypeScript</span>
+            <span>Språk: JavaScript</span>
           </div>
         </CardContent>
       </Card>
