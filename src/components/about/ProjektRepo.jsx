@@ -33,10 +33,10 @@ export function ProjektRepo() {
 
           <Separator className="mt-8 bg-white/10" />
           <div className="pt-6 text-xs text-white/70 flex flex-wrap gap-x-6 gap-y-2">
-            <span>Designsystem: shadcn/ui</span>
+            <span>Designsystem: React tailwindcss og shadcn/ui</span>
             <span>Deploy: Vercel</span>
             <span>Database: Firestore</span>
-            <span>Språk: JavaScript</span>
+            <span>Språk: Javascript</span>
           </div>
         </CardContent>
       </Card>
