@@ -17,7 +17,7 @@ import {
     Form,
     FormControl,
     FormField,
-    FormItem,
+    FormItem, FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import {
@@ -140,14 +140,15 @@ export const SearchForm = () => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex xl:flex-row flex-col w-full h-full py-5 px-5 rounded-xl border border-white/25 text-popover-foreground gap-3"
+                className="flex xl:flex-row flex-col w-full h-full py-5 px-5 rounded-xl bg-card/10 text-popover-foreground gap-x-2 gap-y-4"
             >
                 {/* Destination */}
                 <FormField
                     control={form.control}
                     name="destination"
                     render={({ field }) => (
-                        <FormItem className="w-full xl:w-2/3">
+                        <FormItem className="flex flex-col justify-start w-full xl:w-2/3 gap-y-1">
+                            <FormLabel className="font-bold text-sm text-card">Hvor går reisen?</FormLabel>
                             <Popover open={open} onOpenChange={setOpen}>
                                 <PopoverTrigger asChild className="w-full">
                                     <FormControl>
@@ -155,14 +156,14 @@ export const SearchForm = () => {
                                             variant="fake"
                                             role="combobox"
                                             className={cn(
-                                                "w-full justify-between rounded-md py-5 text-md",
+                                                "bg-card w-full justify-between rounded-md py-5 text-md",
                                                 !field.value && "text-muted-foreground",
-                                                form.formState.errors.destination && "ring-[2px] ring-red-600"
+                                                form.formState.errors.destination && "ring-[3px] ring-destructive/30"
                                             )}
                                         >
                                             <div className="flex flex-row items-center gap-3">
-                                                <MapPin />
-                                                {selection ? selection : "Reisemål"}
+                                                <MapPin strokeWidth={2.5} />
+                                                {selection ? selection : "Reisemål..."}
                                             </div>
 
                                             {open ? <ChevronUp /> : <ChevronDown />}
@@ -171,7 +172,7 @@ export const SearchForm = () => {
                                 </PopoverTrigger>
                                 <PopoverContent
                                     align="center"
-                                    className="w-(--radix-popover-trigger-width) p-1 bg-popover text-popover-foreground"
+                                    className="w-(--radix-popover-trigger-width) p-0 bg-popover/50 backdrop-blur-md text-popover-foreground"
                                 >
                                     <Command>
                                         <CommandInput
@@ -209,41 +210,41 @@ export const SearchForm = () => {
                                     </Command>
                                 </PopoverContent>
                             </Popover>
-                            <FormMessage className="font-medium text-destructive" />
                         </FormItem>
                     )}
                 />
 
-                <div className="flex flex-col md:flex-row w-full items-center md:items-start gap-3">
+                <div className="flex flex-col md:flex-row w-full items-center md:items-end gap-x-2 gap-y-4">
                     {/* Date From */}
                     <FormField
                         control={form.control}
                         name="dateFrom"
                         render={({ field }) => (
-                            <FormItem className="flex flex-col w-full">
+                            <FormItem className="flex flex-col justify-start w-full gap-y-1">
+                                <FormLabel className="font-bold text-sm text-card">Dato fra</FormLabel>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <FormControl>
                                             <Button
                                                 variant="fake"
                                                 className={cn(
-                                                    "w-full justify-start gap-3 font-normal rounded-md text-md font-medium",
+                                                    "bg-card w-full justify-start gap-3 font-normal rounded-md text-md font-medium",
                                                     !field.value && "text-muted-foreground",
-                                                    form.formState.errors.dateFrom && "ring-[2px] ring-red-600"
+                                                    form.formState.errors.dateFrom && "ring-[3px] ring-destructive/30"
                                                 )}
                                             >
-                                                <CalendarIcon />
+                                                <CalendarIcon strokeWidth={2.5}  />
                                                 {field.value ? (
                                                     format(field.value, "d. MMM yyyy", { locale: nb })
                                                 ) : (
-                                                    <span>Dato fra</span>
+                                                    <span>Velg...</span>
                                                 )}
 
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="flex w-fit p-0 justify-center bg-popover text-popover-foreground"
+                                        className="flex w-fit p-0 justify-center bg-popover/50 backdrop-blur-md text-popover-foreground"
                                         align="center"
                                     >
                                         <Calendar
@@ -260,7 +261,6 @@ export const SearchForm = () => {
                                         />
                                     </PopoverContent>
                                 </Popover>
-                                <FormMessage className="font-medium text-destructive" />
                             </FormItem>
                         )}
                     />
@@ -270,29 +270,30 @@ export const SearchForm = () => {
                         control={form.control}
                         name="dateTo"
                         render={({ field }) => (
-                            <FormItem className="flex flex-col w-full">
+                            <FormItem className="flex flex-col justify-start w-full gap-y-1">
+                                <FormLabel className="font-bold text-sm text-card">Dato til</FormLabel>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <FormControl>
                                             <Button
                                                 variant="fake"
                                                 className={cn(
-                                                    "w-full justify-start gap-3 font-normal rounded-md text-md font-medium",
+                                                    "bg-card w-full justify-start gap-3 font-normal rounded-md text-md font-medium",
                                                     !field.value && "text-muted-foreground",
-                                                    form.formState.errors.dateTo && "ring-[2px] ring-red-600"
+                                                    form.formState.errors.dateTo && "ring-[3px] ring-destructive/30"
                                                 )}
                                             >
-                                                <CalendarIcon />
+                                                <CalendarIcon strokeWidth={2.5}  />
                                                 {field.value ? (
                                                     format(field.value, "d. MMM yyyy", { locale: nb })
                                                 ) : (
-                                                    <span>Dato til</span>
+                                                    <span>Velg...</span>
                                                 )}
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="flex w-fit p-0 justify-center bg-popover text-popover-foreground"
+                                        className="flex w-fit p-0 justify-center bg-popover/50 backdrop-blur-md text-popover-foreground"
                                         align="center"
                                     >
                                         <Calendar
@@ -310,7 +311,6 @@ export const SearchForm = () => {
                                         />
                                     </PopoverContent>
                                 </Popover>
-                                <FormMessage className="font-medium text-destructive" />
                             </FormItem>
                         )}
                     />
@@ -320,20 +320,20 @@ export const SearchForm = () => {
                         control={form.control}
                         name="travelers"
                         render={({ field }) => (
-                            <FormItem className="relative w-full items-center">
-                                <User className="absolute left-2.25 top-3 h-4" color={field.value ? "var(--foreground)" : "var(--muted-foreground)"} />
+                            <FormItem className="relative flex flex-col justify-start w-full gap-y-1">
+                                <FormLabel className="font-bold text-sm text-card">Antall reisende</FormLabel>
+                                <User strokeWidth={2.5}  className="absolute left-2.25 top-9 h-4" color={field.value ? "var(--foreground)" : "var(--muted-foreground)"} />
                                 <Input
                                     type="number"
-                                    placeholder="Antall"
+                                    placeholder="Antall..."
                                     min={0}
                                     max={20}
                                     className={cn(
-                                        "w-full bg-white text-foreground text-md font-medium pl-10.25 rounded-md",
-                                        form.formState.errors.travelers && "ring-[2px] ring-destructive"
+                                        "w-full bg-card text-foreground text-md font-medium pl-10.25 rounded-md",
+                                        form.formState.errors.travelers && "ring-[3px] ring-destructive/40"
                                     )}
                                     {...field}
                                 />
-                                <FormMessage className="font-medium text-destructive" />
                             </FormItem>
                         )}
                     />
@@ -341,7 +341,7 @@ export const SearchForm = () => {
                     {/* Submit */}
                     <Button
                         type="submit"
-                        className="w-fit bg-primary text-primary-foreground"
+                        className="w-full md:w-fit bg-primary text-primary-foreground"
                         disabled={loading}
                     >
                         {loading ? "Laster..." : "Søk"}
