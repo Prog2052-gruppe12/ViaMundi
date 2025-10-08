@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
+import React, {useEffect, useState} from "react";
+import {CalendarIcon, Check, ChevronDown, ChevronUp, MapPin, User} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -30,6 +30,8 @@ import { useForm } from "react-hook-form";
 import { format, addYears } from "date-fns";
 import { nb } from "date-fns/locale";
 import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod"
 
 const tripTypes = [
     { label: "Syden", value: "syden" },
@@ -41,15 +43,12 @@ const tripTypes = [
 export const SearchForm = () => {
     const [open, setOpen] = useState(false);
     const [selection, setSelection] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const form = useForm({
-        defaultValues: {
-            destination: "",
-            dateFrom: "",
-            dateTo: "",
-            travelers: "",
-        },
-    });
+    const dateToday = new Date();
+    dateToday.setHours(0,0,0,0);
+    const dateMax = addYears(dateToday, 5);
+    dateMax.setHours(0,0,0,0);
 
     const allOptions = [
         {
@@ -74,46 +73,110 @@ export const SearchForm = () => {
         },
     ];
 
-    function onSubmit(form) {
-        console.log(form);
-    }
+    const formSchema = z
+        .object({
+            destination: z.string().min(1, "Velg et reisemål"),
+            dateFrom: z.date({
+                error: issue => issue.input === undefined ? "Velg startdato" : "Ugyldig dato"
+            }),
+            dateTo: z.date({
+                error: issue => issue.input === undefined ? "Velg sluttdato" : "Ugyldig dato"
+            }),
+            travelers: z.coerce
+                .number({
+                    error: "Velg antall"
+                })
+                .int("Antall reisende må være et helt tall")
+                .min(1, "Minimum 1 reisende")
+                .max(10, "Maks 10 reisende"),
+        })
+        .refine(
+            (data) => !data.dateTo || !data.dateFrom || data.dateTo >= data.dateFrom,
+            {
+                message: "Sluttdato må være etter startdato",
+                path: ["dateTo"],
+            }
+        );
+
+    const form = useForm({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            destination: "",
+            dateFrom: undefined,
+            dateTo: undefined,
+            travelers: "",
+        },
+        shouldFocusError: false,
+    });
+
+    const dateFromValue = form.watch("dateFrom");
+
+    useEffect(() => {
+        const dateTo = form.getValues("dateTo");
+        if (dateFromValue && dateTo && new Date(dateTo) < new Date(dateFromValue)) {
+            form.setValue("dateTo", undefined);
+        }
+    }, [dateFromValue]);
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const onSubmit = async (data) => {
+        setLoading(true);
+        await sleep(1000);
+        try {
+            // Validate schema manually
+            formSchema.parse(data);
+
+            // If valid
+            console.log(data)
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col items-center w-full h-full py-5 px-5 rounded-xl shadow bg-popover text-popover-foreground gap-y-3"
+                className="flex xl:flex-row flex-col w-full h-full py-5 px-5 rounded-xl border border-white/25 text-popover-foreground gap-3"
             >
                 {/* Destination */}
                 <FormField
                     control={form.control}
                     name="destination"
                     render={({ field }) => (
-                        <FormItem className="w-full">
+                        <FormItem className="w-full xl:w-2/3">
                             <Popover open={open} onOpenChange={setOpen}>
                                 <PopoverTrigger asChild className="w-full">
                                     <FormControl>
                                         <Button
-                                            variant="outline"
+                                            variant="fake"
                                             role="combobox"
                                             className={cn(
-                                                "w-full justify-between rounded-md py-5 px-5",
-                                                !field.value && "text-muted-foreground"
+                                                "w-full justify-between rounded-md py-5 text-md",
+                                                !field.value && "text-muted-foreground",
+                                                form.formState.errors.destination && "ring-[2px] ring-red-600"
                                             )}
                                         >
-                                            {selection ? selection : "Reisemål"}
-                                            <ChevronsUpDown className="opacity-50" />
+                                            <div className="flex flex-row items-center gap-3">
+                                                <MapPin />
+                                                {selection ? selection : "Reisemål"}
+                                            </div>
+
+                                            {open ? <ChevronUp /> : <ChevronDown />}
                                         </Button>
                                     </FormControl>
                                 </PopoverTrigger>
                                 <PopoverContent
-                                    align="start"
-                                    className="w-(--radix-popover-trigger-width) p-0 bg-popover text-popover-foreground"
+                                    align="center"
+                                    className="w-(--radix-popover-trigger-width) p-1 bg-popover text-popover-foreground"
                                 >
                                     <Command>
                                         <CommandInput
                                             placeholder="Søk..."
-                                            className="h-9 placeholder:text-muted-foreground"
+                                            className="placeholder:text-muted-foreground text-md"
                                         />
                                         <CommandList>
                                             <CommandEmpty>Ingen treff.</CommandEmpty>
@@ -125,6 +188,7 @@ export const SearchForm = () => {
                                                             value={opt.label}
                                                             onSelect={() => {
                                                                 setSelection(opt.label);
+                                                                field.onChange(opt.label);
                                                                 setOpen(false);
                                                             }}
                                                         >
@@ -145,12 +209,12 @@ export const SearchForm = () => {
                                     </Command>
                                 </PopoverContent>
                             </Popover>
-                            <FormMessage />
+                            <FormMessage className="font-medium text-destructive" />
                         </FormItem>
                     )}
                 />
 
-                <div className="flex w-full items-center gap-x-3">
+                <div className="flex flex-col md:flex-row w-full items-center md:items-start gap-3">
                     {/* Date From */}
                     <FormField
                         control={form.control}
@@ -161,39 +225,42 @@ export const SearchForm = () => {
                                     <PopoverTrigger asChild>
                                         <FormControl>
                                             <Button
-                                                variant="outline"
+                                                variant="fake"
                                                 className={cn(
-                                                    "w-full pl-3 text-left font-normal rounded-md font-medium",
-                                                    !field.value && "text-muted-foreground"
+                                                    "w-full justify-start gap-3 font-normal rounded-md text-md font-medium",
+                                                    !field.value && "text-muted-foreground",
+                                                    form.formState.errors.dateFrom && "ring-[2px] ring-red-600"
                                                 )}
                                             >
+                                                <CalendarIcon />
                                                 {field.value ? (
-                                                    format(field.value, "d. MMMM yyyy", { locale: nb })
+                                                    format(field.value, "d. MMM yyyy", { locale: nb })
                                                 ) : (
                                                     <span>Dato fra</span>
                                                 )}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="flex w-(--radix-popover-trigger-width) p-0 justify-center bg-popover text-popover-foreground"
-                                        align="start"
+                                        className="flex w-fit p-0 justify-center bg-popover text-popover-foreground"
+                                        align="center"
                                     >
                                         <Calendar
                                             mode="single"
+                                            today={field.value}
                                             selected={field.value}
                                             onSelect={field.onChange}
                                             disabled={(date) =>
-                                                date < new Date() || date > addYears(new Date(), 5)
+                                                date < dateToday || date > dateMax
                                             }
                                             captionLayout="dropdown"
-                                            startMonth={new Date()}
-                                            endMonth={addYears(new Date(), 5)}
+                                            startMonth={dateToday}
+                                            endMonth={dateMax}
                                         />
                                     </PopoverContent>
                                 </Popover>
-                                <FormMessage />
+                                <FormMessage className="font-medium text-destructive" />
                             </FormItem>
                         )}
                     />
@@ -208,39 +275,42 @@ export const SearchForm = () => {
                                     <PopoverTrigger asChild>
                                         <FormControl>
                                             <Button
-                                                variant="outline"
+                                                variant="fake"
                                                 className={cn(
-                                                    "w-full pl-3 text-left font-normal rounded-md font-medium",
-                                                    !field.value && "text-muted-foreground"
+                                                    "w-full justify-start gap-3 font-normal rounded-md text-md font-medium",
+                                                    !field.value && "text-muted-foreground",
+                                                    form.formState.errors.dateTo && "ring-[2px] ring-red-600"
                                                 )}
                                             >
+                                                <CalendarIcon />
                                                 {field.value ? (
-                                                    format(field.value, "d. MMMM yyyy", { locale: nb })
+                                                    format(field.value, "d. MMM yyyy", { locale: nb })
                                                 ) : (
                                                     <span>Dato til</span>
                                                 )}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="flex w-(--radix-popover-trigger-width) p-0 justify-center bg-popover text-popover-foreground"
-                                        align="start"
+                                        className="flex w-fit p-0 justify-center bg-popover text-popover-foreground"
+                                        align="center"
                                     >
                                         <Calendar
                                             mode="single"
+                                            today={dateFromValue}
                                             selected={field.value}
                                             onSelect={field.onChange}
-                                            disabled={(date) =>
-                                                date < new Date() || date > addYears(new Date(), 5)
-                                            }
+                                            disabled={(date) => {
+                                                const min = dateFromValue ? new Date(dateFromValue) : dateToday;
+                                                return date <= min || date > dateMax
+                                            }}
                                             captionLayout="dropdown"
-                                            startMonth={new Date()}
-                                            endMonth={addYears(new Date(), 5)}
+                                            startMonth={dateFromValue ? dateFromValue : dateToday}
+                                            endMonth={dateMax}
                                         />
                                     </PopoverContent>
                                 </Popover>
-                                <FormMessage />
+                                <FormMessage className="font-medium text-destructive" />
                             </FormItem>
                         )}
                     />
@@ -250,22 +320,31 @@ export const SearchForm = () => {
                         control={form.control}
                         name="travelers"
                         render={({ field }) => (
-                            <FormItem className="flex flex-col w-full">
+                            <FormItem className="relative w-full items-center">
+                                <User className="absolute left-2.25 top-3 h-4" color={field.value ? "var(--foreground)" : "var(--muted-foreground)"} />
                                 <Input
                                     type="number"
-                                    placeholder="Hvor mange?"
+                                    placeholder="Antall"
                                     min={0}
                                     max={20}
-                                    className="bg-background text-foreground"
+                                    className={cn(
+                                        "w-full bg-white text-foreground text-md font-medium pl-10.25 rounded-md",
+                                        form.formState.errors.travelers && "ring-[2px] ring-destructive"
+                                    )}
+                                    {...field}
                                 />
-                                <FormMessage />
+                                <FormMessage className="font-medium text-destructive" />
                             </FormItem>
                         )}
                     />
 
                     {/* Submit */}
-                    <Button type="submit" className="w-fit bg-primary text-primary-foreground">
-                        Søk
+                    <Button
+                        type="submit"
+                        className="w-fit bg-primary text-primary-foreground"
+                        disabled={loading}
+                    >
+                        {loading ? "Laster..." : "Søk"}
                     </Button>
                 </div>
             </form>
