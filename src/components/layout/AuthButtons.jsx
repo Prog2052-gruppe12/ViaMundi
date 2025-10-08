@@ -41,7 +41,7 @@ export function AuthButtons() {
   return (
     <div className="flex gap-3">
       <Button variant="outline">
-        <Link href="/signup">Registrer deg</Link>
+        <Link href="/signup">Registrer</Link>
       </Button>
       <Button>
         <Link href="/login">Logg inn</Link>

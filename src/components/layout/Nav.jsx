@@ -1,24 +1,45 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import {
+    NavigationMenu,
+    NavigationMenuItem,
+    NavigationMenuLink,
+} from "@/components/ui/navigation-menu"
+
+import { House } from "lucide-react";
+
+import { Separator } from "@/components/ui/separator";
 
 export const Nav = () => {
     return (
-        <nav className="flex items-center justify-center space-x-8 bg-white/80 backdrop-blur-sm px-8 py-4 rounded-full shadow-sm">
-            <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Hjem
-            </Link>
-            <Link href="/finn-reise" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Finn reise
-            </Link>
-            <Link href="/sporsmal" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Spørsmål
-            </Link>
-            <Link href="/teknologi" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Teknologi
-            </Link>
-            <Link href="/om-oss" className="text-gray-600 hover:text-gray-900 transition-colors font-medium">
-                Om oss
-            </Link>
-        </nav>
+        <NavigationMenu className="p-0 h-10 max-w-fit list-none gap-2">
+            <NavigationMenuItem className="!h-full">
+                <NavigationMenuLink href={"/"} asChild>
+                    <Link href="/">Hjem</Link>
+                </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+                <NavigationMenuLink href="/finn-reise" asChild>
+                    <Link href="/finn-reise">Finn reise</Link>
+                </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+                <NavigationMenuLink href="/sporsmal" asChild>
+                    <Link href="/sporsmal">Spørsmål</Link>
+                </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+                <NavigationMenuLink href="/teknologi" asChild>
+                    <Link href="/teknologi">Teknologi</Link>
+                </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+                <NavigationMenuLink href="/om-oss" asChild>
+                    <Link href="/om-oss">Om oss</Link>
+                </NavigationMenuLink>
+            </NavigationMenuItem>
+        </NavigationMenu>
     )
 }

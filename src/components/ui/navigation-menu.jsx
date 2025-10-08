@@ -4,6 +4,7 @@ import { cva } from "class-variance-authority"
 import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import {usePathname} from "next/navigation";
 
 function NavigationMenu({
   className,
@@ -16,7 +17,7 @@ function NavigationMenu({
       data-slot="navigation-menu"
       data-viewport={viewport}
       className={cn(
-        "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center",
+        "group/navigation-menu relative flex w-fit flex-1 items-center justify-center",
         className
       )}
       {...props}>
@@ -45,7 +46,7 @@ function NavigationMenuItem({
   return (
     <NavigationMenuPrimitive.Item
       data-slot="navigation-menu-item"
-      className={cn("relative", className)}
+      className={cn("relative w-fit h-full", className)}
       {...props} />
   );
 }
@@ -107,14 +108,18 @@ function NavigationMenuViewport({
 }
 
 function NavigationMenuLink({
-  className,
-  ...props
+    href,
+    className,
+    ...props
 }) {
+  const pathname = usePathname();
+  const isActive = href === pathname;
   return (
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
+      data-active={isActive}
       className={cn(
-        "data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+        "h-full data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent data-[active=true]:text-card hover:bg-accent hover:text-card focus:bg-accent focus:text-card focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col justify-center gap-1 rounded-md py-2 px-4 text-sm font-medium transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props} />

@@ -9,7 +9,7 @@ import { ProjektRepo } from "@/components/features/about/ProjektRepo";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <OmOssHeader />
       
       <main className="pt-28 md:pt-32 pb-24">

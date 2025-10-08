@@ -6,7 +6,7 @@ import {Separator} from "@/components/ui/separator";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
         <Header />
         <main className="flex flex-col items-center w-full h-fit min-h-screen mt-20 gap-y-12">
             <Section>

@@ -11,7 +11,7 @@ export const Section = (props) => {
     }
     return (
         <section className="w-full px-4 md:px-16 lg:px-32 pt-10">
-            <Card className={`px-4 lg:px-12 2xl:px-32 pt-10 overflow-hidden rounded-2xl shadow-sm border-none ${bgColor}`}>
+            <Card className={`px-4 lg:px-12 2xl:px-32 pt-10 overflow-hidden rounded-2xl shadow-md border-none ${bgColor}`}>
                 <CardContent className="flex flex-col px-6 md:px-10 py-10 md:py-14 gap-y-8">
                     {props.children}
                 </CardContent>
