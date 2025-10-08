@@ -52,7 +52,6 @@ export function getUserInfo({ userId, existingEmail, existingName }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId,
           ...formData,
           profileCompleted: true,
         }),

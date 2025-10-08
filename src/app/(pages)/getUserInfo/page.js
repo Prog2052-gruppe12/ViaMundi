@@ -3,7 +3,7 @@ import { adminAuth } from "@/lib/firebase/admin";
 import { redirect } from "next/navigation";
 import { getUserInfo } from "@/components/features/auth/getUserInfo";
 
-async function getUser() {
+async function getUserInfo() {
   try {
     const jar = await cookies();
     const sessionCookie = jar.get("firebase_session")?.value;

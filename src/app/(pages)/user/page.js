@@ -1,44 +1,44 @@
-import { cookies } from "next/headers";
-import { adminAuth, adminDb } from "@/lib/firebase/admin";
-import { redirect } from "next/navigation";
+'use client';
 import { LogoutButton } from "@/components/features/auth/LogoutButton";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export const metadata = {
-  title: "Min konto – ViaMundi",
-  description: "Se og administrer din ViaMundi-konto",
-};
 
-async function getUser() {
-  try {
-    const jar = await cookies();
-    const sessionCookie = jar.get("firebase_session")?.value;
+/**
+ * Brukerprofilside
+ * @returns {JSX.Element} 
+ */
+export default function UserPage() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  
+  // Hent brukerdata fra backend profil
+  useEffect(() => { 
+    fetch("/api/bruker/profil") 
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok && data.userData) {
+          setUser(data.userData);
+        } else {
+          router.push("/login?returnTo=/user");
+        }
+      })
+      .catch(err => {
+        console.error("Feil ved henting av bruker:", err);
+        router.push("/login?returnTo=/user");
+      })
+      .finally(() => setLoading(false));
+  }, [router]);
 
-    if (!sessionCookie) {
-      return null;
-    }
 
-    const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
-    
-    // Hent brukerdata fra Firestore
-    const userDoc = await adminDb.collection("users").doc(decodedClaims.uid).get();
-    const userData = userDoc.exists ? userDoc.data() : {};
-    
-    return {
-      ...decodedClaims,
-      ...userData,
-    };
-  } catch (error) {
-    console.error("Feil ved henting av bruker:", error);
-    return null;
+  if (loading) {
+    return <div>Laster...</div>;
   }
-}
-
-export default async function UserPage() {
-  const user = await getUser();
 
   if (!user) {
-    redirect("/login?returnTo=/user");
+    return null;
   }
 
   return (
@@ -90,12 +90,6 @@ export default async function UserPage() {
                 )}
               </div>
             )}
-
-            <div className="pt-4 border-t">
-              <label className="block text-sm font-medium text-gray-700">Bruker ID</label>
-              <p className="mt-1 text-sm text-gray-600 font-mono">{user.uid}</p>
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700">Konto opprettet</label>
               <p className="mt-1 text-sm text-gray-600">

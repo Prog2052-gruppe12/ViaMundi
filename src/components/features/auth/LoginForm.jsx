@@ -39,7 +39,7 @@ export function LoginForm() {
 
     try {
       await signInWithGoogle();
-      const response = await fetch("/api/bruker/sjekk-profil");
+      const response = await fetch("/api/bruker/profil");
       const data = await response.json();
       
       router.push(data.profileCompleted ? "/user" : "/onboarding");
