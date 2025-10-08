@@ -21,7 +21,7 @@ export async function GET(req) {
     key: apiKey,
     searchQuery: searchQuery,
     category: 'attractions',
-    language: 'en',
+    language: 'no',
 
   });
 
