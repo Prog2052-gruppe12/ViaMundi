@@ -146,15 +146,7 @@ export async function DELETE() {
     await adminAuth.revokeRefreshTokens(decoded.uid);
 
     // Slett session cookie
-    const isProd = process.env.NODE_ENV === "production";
-    jar.set(COOKIE_NAME, "", {
-      path: "/",
-      httpOnly: true,
-      secure: isProd,
-      sameSite: SAME_SITE,
-      maxAge: 0,
-      ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
-    });
+    jar.delete(COOKIE_NAME);
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
