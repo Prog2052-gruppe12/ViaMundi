@@ -18,7 +18,7 @@ const SAME_SITE = "lax";
  * @param {string} params.idToken - Firebase ID token
  * @returns {Promise<NextResponse>} Response med suksess eller feil
  */
-export async function setSessionCookie({ idToken }) {
+async function setSessionCookie({ idToken }) {
   if (!idToken) {
     throw new Error("Mangler idToken");
   }
@@ -50,7 +50,7 @@ export async function setSessionCookie({ idToken }) {
  * @param {string} uid - Bruker ID
  * @param {Object} info - Brukerinformasjon (email, name, picture)
  */
-export async function ensureUserDoc(uid, info = {}) {
+async function ensureUserDoc(uid, info = {}) {
   const now = Timestamp.now();
   const ref = adminDb.collection("users").doc(uid);
 
