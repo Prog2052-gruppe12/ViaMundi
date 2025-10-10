@@ -45,7 +45,9 @@ export function LoginForm() {
       router.push(data.profileCompleted ? "/user" : "/onboarding");
     } catch (err) {
       console.error("Google innloggingsfeil:", err);
-      setError("Google innlogging feilet.");
+      if (err.message !== 'POPUP_CLOSED') {
+        setError("Google innlogging feilet.");
+      }
     } finally {
       setLoading(false);
     }
