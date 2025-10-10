@@ -49,9 +49,17 @@ export async function signInWithEmail({ email, password }) {
 }
 
 export async function signInWithGoogle() {
-  const userCredential = await signInWithPopup(auth, googleProvider);
-  await establishSessionCookie();
-  return userCredential.user;
+  try {
+    const userCredential = await signInWithPopup(auth, googleProvider);
+    await establishSessionCookie();
+    return userCredential.user;
+  } catch (error) {
+ 
+    if (error.code === 'auth/popup-closed-by-user') {
+      throw new Error('POPUP_CLOSED');
+    }
+    throw error;
+  }
 }
 
 export async function signOutEverywhere() {

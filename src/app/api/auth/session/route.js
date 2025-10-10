@@ -28,7 +28,7 @@ async function setSessionCookie({ idToken }) {
     expiresIn: COOKIE_TTL_MS,
   });
 
-  const jar = cookies();
+  const jar = await cookies();
   const isProduction = process.env.NODE_ENV === "production";
 
   jar.set(COOKIE_NAME, sessionCookie, {

@@ -52,10 +52,12 @@ export function SignUpForm() {
       const response = await fetch("/api/bruker/sjekk-profil");
       const data = await response.json();
       
-      router.push(data.profileCompleted ? "/user" : "/onboarding");
+      router.push(data.profileCompleted ? "/user" : "/");
     } catch (err) {
       console.error("Google registreringsfeil:", err);
-      setError("Google registrering feilet.");
+      if (err.message !== 'POPUP_CLOSED') {
+        setError("Google registrering feilet.");
+      }
     } finally {
       setLoading(false);
     }
