@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import React, {useEffect, useState} from "react";
 import {CalendarIcon, Check, ChevronDown, ChevronUp, MapPin, User} from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -113,22 +115,31 @@ export const SearchForm = () => {
 
     useEffect(() => {
         const dateTo = form.getValues("dateTo");
-        if (dateFromValue && dateTo && new Date(dateTo) < new Date(dateFromValue)) {
+        if (dateFromValue && dateTo && new Date(dateTo) <= new Date(dateFromValue)) {
             form.setValue("dateTo", undefined);
         }
     }, [dateFromValue]);
 
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+    const router = useRouter();
+
     const onSubmit = async (data) => {
         setLoading(true);
-        await sleep(1000);
+        await sleep(500);
         try {
             // Validate schema manually
             formSchema.parse(data);
 
+            const params = new URLSearchParams({
+                destination: data.destination,
+                dateFrom: data.dateFrom.toISOString(),
+                dateTo: data.dateTo.toISOString(),
+                travelers: data.travelers.toString(),
+            });
+
             // If valid
-            console.log(data)
+            router.push(`/interest?${params.toString()}`);
         } catch (err) {
             alert(err.message);
         } finally {
@@ -140,7 +151,7 @@ export const SearchForm = () => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex xl:flex-row flex-col w-full h-full py-5 px-5 rounded-xl bg-card/10 text-popover-foreground gap-x-2 gap-y-4"
+                className="flex xl:flex-row flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 text-popover-foreground gap-x-2 gap-y-4"
             >
                 {/* Destination */}
                 <FormField
@@ -172,7 +183,7 @@ export const SearchForm = () => {
                                 </PopoverTrigger>
                                 <PopoverContent
                                     align="center"
-                                    className="w-(--radix-popover-trigger-width) p-0 bg-popover/50 backdrop-blur-md text-popover-foreground"
+                                    className="w-(--radix-popover-trigger-width) p-0 bg-popover/75 backdrop-blur-md text-popover-foreground"
                                 >
                                     <Command>
                                         <CommandInput
@@ -244,7 +255,7 @@ export const SearchForm = () => {
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="flex w-fit p-0 justify-center bg-popover/50 backdrop-blur-md text-popover-foreground"
+                                        className="flex w-fit p-0 justify-center bg-popover/75 backdrop-blur-md text-popover-foreground"
                                         align="center"
                                     >
                                         <Calendar
@@ -293,7 +304,7 @@ export const SearchForm = () => {
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent
-                                        className="flex w-fit p-0 justify-center bg-popover/50 backdrop-blur-md text-popover-foreground"
+                                        className="flex w-fit p-0 justify-center bg-popover/75 backdrop-blur-md text-popover-foreground"
                                         align="center"
                                     >
                                         <Calendar
@@ -340,11 +351,12 @@ export const SearchForm = () => {
 
                     {/* Submit */}
                     <Button
+                        variant="secondary"
                         type="submit"
-                        className="w-full md:w-fit bg-primary text-primary-foreground"
+                        className="w-full md:w-fit"
                         disabled={loading}
                     >
-                        {loading ? "Laster..." : "Søk"}
+                        {loading ? "Laster..." : "Videre"}
                     </Button>
                 </div>
             </form>

@@ -8,14 +8,10 @@ import {
     NavigationMenuLink,
 } from "@/components/ui/navigation-menu"
 
-import { House } from "lucide-react";
-
-import { Separator } from "@/components/ui/separator";
-
 export const Nav = () => {
     return (
-        <NavigationMenu className="p-0 h-10 max-w-fit list-none gap-2">
-            <NavigationMenuItem className="!h-full">
+        <NavigationMenu className="flex items-center px-3 h-11 list-none gap-2 bg-gradient-primary">
+            <NavigationMenuItem>
                 <NavigationMenuLink href={"/"} asChild>
                     <Link href="/">Hjem</Link>
                 </NavigationMenuLink>

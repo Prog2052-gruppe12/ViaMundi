@@ -1,18 +1,29 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import {Geist, Geist_Mono, Oleo_Script, Oleo_Script_Swash_Caps} from "next/font/google";
 import "./globals.css";
+import {Header} from "@/components/layout/Header";
+import {Footer} from "@/components/layout/Footer";
+import {SidebarProvider} from "@/components/ui/sidebar";
+import SidebarNav from "@/components/layout/SidebarNav";
+import {DynamicBreadcrumb} from "@/components/common/DynamicBreadcrumb";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
+const fontLogo = Oleo_Script_Swash_Caps({
+    variable: "--font-logo",
+    weight: "400",
+    subsets: ["latin"],
+})
+
 export const metadata = {
-  title: "VIAMUNDI",
+  title: "ViaMundi",
   description: "Semester Project 2025 - gruppe 12",
 };
 
@@ -20,9 +31,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fontLogo.variable} antialiased flex flex-col min-h-screen\``}
       >
-        {children}
+        <SidebarProvider defaultOpen={false}>
+            <SidebarNav />
+            <main className="w-full h-min-full">
+                <Header />
+                <DynamicBreadcrumb />
+                {children}
+            </main>
+        </SidebarProvider>
+      <Footer />
       </body>
     </html>
   );
