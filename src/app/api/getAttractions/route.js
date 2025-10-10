@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { decodeCityToCord } from '@/utils/decodeCityToCord';
 
-export async function GET(req) {
-  const { searchParams } = new URL(req.url);
-  const searchQuery = searchParams.get('searchQuery');
-  const city = searchParams.get('city');
+export async function getAttractions(req) {
+  const searchParams = req;
+  const searchQuery = searchParams.get('interests');
+  const city = searchParams.get('destination');
   const radiusUnit = searchParams.get('radiusUnit');
   const { latitude: lat, longitude: lon } = await decodeCityToCord(city);
   const latLong = lat && lon ? `${lat},${lon}` : null;
