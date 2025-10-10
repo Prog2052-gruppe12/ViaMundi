@@ -1,5 +1,17 @@
 import { NextResponse } from 'next/server';
 
+/**
+ * Handles GET requests to fetch restaurant location IDs from the TripAdvisor API based on search parameters.
+ *
+ * @param {Request} req - The incoming request object containing URL and search parameters.
+ * @returns {Promise<Response>} A JSON response containing either the list of restaurant location IDs or an error message.
+ *
+ * @throws {Error} Returns a 400 error if 'searchQuery' is missing, a 500 error for internal server errors, or a TripAdvisor API error status if the fetch fails.
+ *
+ * @example
+ * // Example request URL:
+ * // /api/getRestaurants?searchQuery=Oslo&latLong=59.9139,10.7522&radius=10&radiusUnit=km
+ */
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const searchQuery = searchParams.get('searchQuery');

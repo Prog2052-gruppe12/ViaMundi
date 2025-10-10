@@ -1,3 +1,11 @@
+/**
+ * Handles GET requests to fetch location details from the TripAdvisor API.
+ *
+ * @param {Request} request - The incoming HTTP request object.
+ * @returns {Promise<Response>} A JSON response containing location details or an error message.
+ *
+ * @throws {Error} If required parameters are missing, the API key is not configured, or the TripAdvisor API request fails.
+ */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);

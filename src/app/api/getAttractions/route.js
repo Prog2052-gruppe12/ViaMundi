@@ -1,6 +1,19 @@
 import { NextResponse } from 'next/server';
 import { decodeCityToCord } from '@/utils/decodeCityToCord';
 
+/**
+ * Handles GET requests to fetch attraction location IDs from the TripAdvisor API based on user interests and destination.
+ *
+ * @param {Request} req - The incoming request object containing URL search parameters:
+ *   - interests: The user's interests to search for attractions (required).
+ *   - destination: The city name to decode into latitude and longitude (optional).
+ *   - radius: The search radius around the destination (optional).
+ *   - radiusUnit: The unit for the search radius (optional).
+ *
+ * @returns {Promise<Response>} A JSON response containing either:
+ *   - { location_ids: string[] } - An array of TripAdvisor location IDs matching the search.
+ *   - { error: string } - An error message if the request fails or is invalid.
+ */
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   console.log(searchParams);
