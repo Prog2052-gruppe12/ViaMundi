@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/form";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 
-// 👉 Move your existing Interest logic into a separate component:
 function InterestInner() {
     const [loading, setLoading] = useState(false);
     const searchParams = useSearchParams();
@@ -251,7 +250,6 @@ function InterestInner() {
     );
 }
 
-// ✅ Wrap InterestInner in Suspense
 export default function Interest() {
     return (
         <Suspense fallback={<div>Laster interesser...</div>}>
