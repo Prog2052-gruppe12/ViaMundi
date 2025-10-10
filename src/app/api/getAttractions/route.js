@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { decodeCityToCord } from '@/utils/decodeCityToCord';
 
-export async function getAttractions(req) {
-  const searchParams = req;
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  console.log(searchParams);
   const searchQuery = searchParams.get('interests');
   const city = searchParams.get('destination');
   const radiusUnit = searchParams.get('radiusUnit');
@@ -30,6 +31,7 @@ export async function getAttractions(req) {
   if (radiusUnit) params.append('radiusUnit', radiusUnit);
 
   const url = `${baseUrl}?${params.toString()}`;
+  console.log(url);
 
   try {
     const response = await fetch(url, {
