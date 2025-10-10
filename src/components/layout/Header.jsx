@@ -1,20 +1,32 @@
 import React from "react";
 import {Nav} from "@/components/layout/Nav"
 import {AuthButtons} from "@/components/layout/AuthButtons"
+import {Button} from "@/components/ui/button"
+import {Logo} from "@/components/common/Logo";
+import {SidebarNav} from "@/components/layout/SidebarNav";
+import {Menu} from "lucide-react";
+import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 
 export const Header = () => {
     return (
-        <header className="fixed top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 flex items-center justify-between bg-popover shadow z-50">
-            <div className="flex flex-row gap-14 items-center">
-                <a href="/"
-                   className="flex items-center justify-center bg-primary h-10 aspect-square text-primary-foreground font-bold rounded-md bg-gradient-to-br from-[#F38C7F] to-[#F37456]">
-                    V
-                </a>
-
-                <Nav />
+        <header
+            className=" top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 flex items-center justify-between bg-card/50 backdrop-blur-md shadow">
+            {/* Left: Logo */}
+            <div className="flex items-center gap-5">
+                <SidebarTrigger className="xl:hidden w-10 h-10 rounded-md" />
+                <Logo/>
             </div>
 
-            <AuthButtons/>
+            {/* Center: Nav */}
+            <div className="absolute left-1/2 -translate-x-1/2 hidden xl:block">
+                <Nav/>
+            </div>
+
+            {/* Right: Auth buttons */}
+            <div className="flex items-center">
+                <AuthButtons/>
+            </div>
         </header>
+
     )
 }

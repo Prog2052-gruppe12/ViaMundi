@@ -1,0 +1,27 @@
+[
+  {
+    "title": "Hjem",
+    "url": "/",
+    "icon": "House"
+  },
+  {
+    "title": "Finn reise",
+    "url": "/finn-reise",
+    "icon": "TicketsPlane"
+  },
+  {
+    "title": "Spørsmål",
+    "url": "/sporsmal",
+    "icon": "CircleQuestionMark"
+  },
+  {
+    "title": "Teknologi",
+    "url": "/teknologi",
+    "icon": "Cpu"
+  },
+  {
+    "title": "Om oss",
+    "url": "/om-oss",
+    "icon": "Info"
+  }
+]
