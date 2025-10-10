@@ -122,7 +122,7 @@ export default function Interest() {
                 dateFrom,
                 dateTo,
                 travelers,
-                interests: selectedLabels.join(","),
+                interests: selectedLabels,
                 other: data.other || ""
             });
 
