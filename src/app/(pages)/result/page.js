@@ -1,11 +1,11 @@
 "use client";
 
-import { Section } from "@/components/common/Section";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { Section } from "@/components/common/Section";
 import { SearchParameters } from "@/components/features/searchParameters/SearchParameters";
-import React, { useEffect, useState } from "react";
 
-export default function Result() {
+function ResultInner() {
     const searchParams = useSearchParams();
     const destination = searchParams.get("destination");
     const dateFrom = searchParams.get("dateFrom");
@@ -100,5 +100,13 @@ export default function Result() {
                 )}
             </Section>
         </div>
+    );
+}
+
+export default function Result() {
+    return (
+        <Suspense fallback={<div>Laster resultat...</div>}>
+            <ResultInner />
+        </Suspense>
     );
 }
