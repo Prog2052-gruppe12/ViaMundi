@@ -1,3 +1,12 @@
+/**
+ * Handles GET requests to fetch the large image URL for a given location from the TripAdvisor API.
+ *
+ * @param {Request} request - The incoming HTTP request object.
+ * @returns {Promise<Response>} - A JSON response containing the large image URL, or an error message with appropriate status code.
+ *
+ * @throws {Error} Returns a 400 error if locationId is missing, a 500 error if the API key is not configured,
+ *                 a 404 error if no photos are found, or a 500 error if the TripAdvisor API request fails.
+ */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
