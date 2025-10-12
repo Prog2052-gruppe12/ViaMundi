@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import { Section } from "@/components/common/Section";
+import { useSearchParams } from "next/navigation";
 import { SearchParameters } from "@/components/features/searchParameters/SearchParameters";
+import React, { useEffect, useState, Suspense } from "react";
 
-function ResultInner() {
+function ResultContent() {
     const searchParams = useSearchParams();
     const destination = searchParams.get("destination");
     const dateFrom = searchParams.get("dateFrom");
@@ -28,7 +28,7 @@ function ResultInner() {
                     interests: interests || "",
                 });
 
-                const res = await fetch(`/api/getAttractions?${params.toString()}`);
+                const res = await fetch(`/api/attractions?${params.toString()}`);
                 const data = await res.json();
 
                 if (!res.ok) throw new Error(data.error || "Failed to fetch attractions");
@@ -50,7 +50,7 @@ function ResultInner() {
         async function fetchInfoLocation(locationId) {
             try {
                 const params = new URLSearchParams({ locationId });
-                const res = await fetch(`/api/getInfoLocation?${params.toString()}`);
+                const res = await fetch(`/api/location/details?${params.toString()}`);
                 const data = await res.json();
 
                 if (!res.ok) throw new Error(data.error || "Failed to fetch location info");
@@ -105,8 +105,8 @@ function ResultInner() {
 
 export default function Result() {
     return (
-        <Suspense fallback={<div>Laster resultat...</div>}>
-            <ResultInner />
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Laster...</div>}>
+            <ResultContent />
         </Suspense>
     );
 }

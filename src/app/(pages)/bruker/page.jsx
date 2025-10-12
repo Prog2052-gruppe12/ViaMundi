@@ -16,18 +16,18 @@ export default function UserPage() {
   
   // Hent brukerdata fra backend profil
   useEffect(() => { 
-    fetch("/api/bruker/profil") 
+    fetch("/api/user/profile") 
       .then(res => res.json())
       .then(data => {
         if (data.ok && data.userData) {
           setUser(data.userData);
         } else {
-          router.push("/login?returnTo=/user");
+          router.push("/login?returnTo=/bruker");
         }
       })
       .catch(err => {
         console.error("Feil ved henting av bruker:", err);
-        router.push("/login?returnTo=/user");
+        router.push("/login?returnTo=/bruker");
       })
       .finally(() => setLoading(false));
   }, [router]);

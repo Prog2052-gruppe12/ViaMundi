@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { adminAuth } from "@/lib/firebase/admin";
 import { redirect } from "next/navigation";
-import { getUserInfo as GetUserInfoForm } from "@/components/features/auth/getUserInfo";
+import { GetUserInfo as GetUserInfoForm } from "@/components/features/auth/GetUserInfo";
 
 export const dynamic = "force-dynamic";
 
