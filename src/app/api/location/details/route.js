@@ -1,10 +1,9 @@
+import { NextResponse } from 'next/server';
+
 /**
- * Handles GET requests to fetch location details from the TripAdvisor API.
- *
- * @param {Request} request - The incoming HTTP request object.
- * @returns {Promise<Response>} A JSON response containing location details or an error message.
- *
- * @throws {Error} If required parameters are missing, the API key is not configured, or the TripAdvisor API request fails.
+ * Henter informasjon om en attraksjon fra TripAdvisor
+ * @param {Request} request 
+ * @returns {Promise<NextResponse>} {data: object}
  */
 export async function GET(request) {
   try {
@@ -13,7 +12,7 @@ export async function GET(request) {
 
     // Validate required parameters
     if (!locationId) {
-      return Response.json(
+      return NextResponse.json(
         { error: 'locationId parameter is required' },
         { status: 400 }
       );
@@ -22,7 +21,7 @@ export async function GET(request) {
     // Get API key from environment variables
     const apiKey = process.env.TRIP_ADVISOR_API_KEY;
     if (!apiKey) {
-      return Response.json(
+      return NextResponse.json(
         { error: 'TripAdvisor API key not configured' },
         { status: 500 }
       );
@@ -49,13 +48,15 @@ export async function GET(request) {
 
     const data = await response.json();
 
-    return Response.json(data, { status: 200 });
+    return NextResponse.json(data, { status: 200 });
 
   } catch (error) {
     console.error('Error fetching attraction details:', error);
-    return Response.json(
+    return NextResponse.json(
       { error: 'Failed to fetch attraction details' },
       { status: 500 }
     );
   }
 }
+
+

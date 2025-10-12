@@ -6,35 +6,35 @@ import { NextResponse } from "next/server";
 import { Timestamp } from "firebase-admin/firestore";
 
 /**
- * Lagre brukerdata i Firestore
- * @param {Request} req - Next.js request objekt
- * @returns {Promise<NextResponse>} Response med suksess eller feil
+ * Save user data to Firestore
+ * @param {Request} req - Next.js request object
+ * @returns {Promise<NextResponse>} Response with success or error
  */
 export async function POST(req) {
   try {
-    // Hent session cookie fra cookies
+    // Get session cookie from cookies
     const jar = await cookies();
     const sessionCookie = jar.get("firebase_session")?.value;
 
-    // Hvis session cookie ikke finnes, returner 401
+    // If session cookie doesn't exist, return 401
     if (!sessionCookie) {
       return NextResponse.json(
-        { ok: false, error: "Ikke autentisert" },
+        { ok: false, error: "Not authenticated" },
         { status: 401 }
       );
     }
 
-    // decode session cookie og hent bruker ID
+    // Decode session cookie and get user ID
     const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
     const userId = decodedClaims.uid;
 
     const data = await req.json();
-    // ignore user id og oppdater resten av data. 
+    // Ignore user id and update the rest of the data
     const {userId: _, ...profileData } = data;
 
-    // hent referanse til brukerdokumentet
+    // Get reference to user document
     const userRef = adminDb.collection("users").doc(userId);
-    // oppdater brukerdokumentet
+    // Update user document
     await userRef.set(
       {
         ...profileData,
@@ -45,7 +45,7 @@ export async function POST(req) {
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
-    console.error("Feil ved lagring av profil:", error);
+    console.error("Error saving profile:", error);
     return NextResponse.json(
       { ok: false, error: error.message },
       { status: 500 }
@@ -55,16 +55,16 @@ export async function POST(req) {
 
 
 /**
- * Hent brukerdata fra Firestore
- * @returns {Promise<NextResponse>} Response med suksess eller feil
+ * Get user data from Firestore
+ * @returns {Promise<NextResponse>} Response with success or error
  */
 export async function GET() {
   try {
-    // Hent session cookie fra cookies og
+    // Get session cookie from cookies
     const jar = await cookies();
     const sessionCookie = jar.get("firebase_session")?.value;
 
-    // Hvis session cookie ikke finnes, returner 401
+    // If session cookie doesn't exist, return 401
     if (!sessionCookie) {
       return NextResponse.json(
         { ok: false, profileCompleted: false },
@@ -72,14 +72,14 @@ export async function GET() {
       );
     }
 
-    // Verifiser session cookie og hent bruker ID
+    // Verify session cookie and get user ID
     const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
     const userId = decodedClaims.uid;
 
-    // Hent brukerdata fra Firestore
+    // Get user data from Firestore
     const userDoc = await adminDb.collection("users").doc(userId).get();
 
-    // Hvis brukerdata ikke finnes, returner 404 med feilmelding
+    // If user data doesn't exist, return 404 with error message
     if (!userDoc.exists) {
       return NextResponse.json({
         ok: true,
@@ -97,7 +97,7 @@ export async function GET() {
       profileCompleted: userData.profileCompleted,
     });
   } catch (error) {
-    console.error("Feil ved sjekk av profil:", error);
+    console.error("Error checking profile:", error);
     return NextResponse.json(
       { ok: false, error: error.message},
       { status: 500 }

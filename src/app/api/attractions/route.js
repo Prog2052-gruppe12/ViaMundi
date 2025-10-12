@@ -1,26 +1,17 @@
 import { NextResponse } from 'next/server';
-import { decodeCityToCord } from '@/utils/decodeCityToCord';
+import { decodeCityToCoord } from '@/utils/decodeCityToCoord';
 
 /**
- * Handles GET requests to fetch attraction location IDs from the TripAdvisor API based on user interests and destination.
- *
- * @param {Request} req - The incoming request object containing URL search parameters:
- *   - interests: The user's interests to search for attractions (required).
- *   - destination: The city name to decode into latitude and longitude (optional).
- *   - radius: The search radius around the destination (optional).
- *   - radiusUnit: The unit for the search radius (optional).
- *
- * @returns {Promise<Response>} A JSON response containing either:
- *   - { location_ids: string[] } - An array of TripAdvisor location IDs matching the search.
- *   - { error: string } - An error message if the request fails or is invalid.
+ * Henter attraksjoner fra TripAdvisor
+ * @param {Request} req 
+ * @returns {Promise<NextResponse>} {location_ids: string[]}
  */
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  console.log(searchParams);
-  const searchQuery = searchParams.get('interests');
-  const city = searchParams.get('destination');
+  const searchQuery = searchParams.get('searchQuery');
+  const city = searchParams.get('city');
   const radiusUnit = searchParams.get('radiusUnit');
-  const { latitude: lat, longitude: lon } = await decodeCityToCord(city);
+  const { latitude: lat, longitude: lon } = await decodeCityToCoord(city);
   const latLong = lat && lon ? `${lat},${lon}` : null;
   const radius = searchParams.get('radius');
 
@@ -44,7 +35,6 @@ export async function GET(req) {
   if (radiusUnit) params.append('radiusUnit', radiusUnit);
 
   const url = `${baseUrl}?${params.toString()}`;
-  console.log(url);
 
   try {
     const response = await fetch(url, {
@@ -66,10 +56,9 @@ export async function GET(req) {
 
     return NextResponse.json({ location_ids: locationIds });
 
-    //return NextResponse.json(responseData) All data
-
   } catch (error) {
     console.error('Internal server error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
