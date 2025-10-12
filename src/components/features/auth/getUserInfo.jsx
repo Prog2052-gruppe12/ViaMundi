@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function getUserInfo({ userId, existingEmail, existingName }) {
+export function GetUserInfo({ userId, existingEmail, existingName }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -46,7 +46,7 @@ export function getUserInfo({ userId, existingEmail, existingName }) {
     }
 
     try {
-      const response = await fetch("/api/bruker/profil", {
+      const response = await fetch("/api/user/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export function getUserInfo({ userId, existingEmail, existingName }) {
         throw new Error("Kunne ikke lagre profil");
       }
 
-      router.push("/user");
+      router.push("/bruker");
     } catch (err) {
       console.error("Feil ved lagring av profil:", err);
       setError("Kunne ikke lagre profilen. Prøv igjen.");
@@ -185,4 +185,3 @@ export function getUserInfo({ userId, existingEmail, existingName }) {
     </form>
   );
 }
-

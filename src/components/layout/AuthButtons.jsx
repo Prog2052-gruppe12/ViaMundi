@@ -29,7 +29,7 @@ export function AuthButtons() {
   if (user) {
     // Bruker er innlogget - vis bruker-ikon
     return (
-      <Link href="/user">
+      <Link href="/bruker">
         <div className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <VscAccount className="w-8 h-8 text-gray-700" />
         </div>
