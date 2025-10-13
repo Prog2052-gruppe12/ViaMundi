@@ -136,116 +136,118 @@ function InterestContent() {
     };
 
     return (
-        <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col items-center w-full h-fit gap-y-12"
-            >
-                <SearchParameters
-                    destination={destination}
-                    dateFrom={dateFrom}
-                    dateTo={dateTo}
-                    travelers={travelers}
-                />
-                <Section>
-                    <h1 className="font-bold text-4xl text-center text-primary-foreground">
-                        Hva er dine interesser?
-                    </h1>
-                    <div className="flex md:flex-row md:items-end flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 text-popover-foreground gap-x-2 gap-y-4">
-                        {/* Interesser dropdown */}
-                        <FormField
-                            control={form.control}
-                            name="interests"
-                            render={() => (
-                                <FormItem className="w-full">
-                                    <div className="flex flex-col w-full gap-2">
-                                        <FormLabel className="text-card font-bold">Interesser</FormLabel>
-                                        <DropdownMenu open={open} onOpenChange={setOpen}>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="fake"
-                                                    type="button"
-                                                    className={`bg-card w-full justify-between rounded-md py-5 text-md px-3 ${textColorClass} ${
-                                                        form.formState.errors.interests ? "ring-[3px] ring-destructive/30" : ""
-                                                    }`}
-                                                >
-                                                    <span className="truncate text-left">{displayText}</span>
-                                                    {open ? <ChevronUp /> : <ChevronDown />}
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
-                                                <DropdownMenuLabel>Interesser</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                {options.map(option => (
-                                                    <DropdownMenuCheckboxItem
-                                                        key={option.id}
-                                                        checked={selectedOptions[option.id]}
-                                                        onCheckedChange={value =>
-                                                            handleCheckedChange(option.id, value)
-                                                        }
-                                                        className="hover:bg-accent/20"
+        <div>
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex flex-col items-center w-full h-fit gap-y-12"
+                >
+                    <Section>
+                        <SearchParameters
+                            destination={destination}
+                            dateFrom={dateFrom}
+                            dateTo={dateTo}
+                            travelers={travelers}
+                        />
+                        <h1 className="font-bold text-4xl text-center text-primary-foreground">
+                            Hva er dine interesser?
+                        </h1>
+                        <div className="flex md:flex-row md:items-end flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 text-popover-foreground gap-x-2 gap-y-4">
+                            {/* Interesser dropdown */}
+                            <FormField
+                                control={form.control}
+                                name="interests"
+                                render={() => (
+                                    <FormItem className="w-full">
+                                        <div className="flex flex-col w-full gap-2">
+                                            <FormLabel className="text-card font-bold">Interesser</FormLabel>
+                                            <DropdownMenu open={open} onOpenChange={setOpen}>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="fake"
+                                                        type="button"
+                                                        className={`bg-card w-full justify-between rounded-md py-5 text-md px-3 ${textColorClass} ${
+                                                            form.formState.errors.interests ? "ring-[3px] ring-destructive/30" : ""
+                                                        }`}
                                                     >
-                                                        {option.label}
-                                                    </DropdownMenuCheckboxItem>
-                                                ))}
-                                                {selectedLabels.length > 0 && (
-                                                    <>
-                                                        <DropdownMenuSeparator />
-                                                        <div className="flex justify-center py-1">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                type="button"
-                                                                className="rounded-full border border-destructive/80 hover:border-accent text-destructive hover:text-card"
-                                                                onClick={clearSelections}
-                                                            >
-                                                                <X className="w-4 h-4 mr-1" />
-                                                                Fjern valg
-                                                            </Button>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
+                                                        <span className="truncate text-left">{displayText}</span>
+                                                        {open ? <ChevronUp /> : <ChevronDown />}
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
+                                                    <DropdownMenuLabel>Interesser</DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    {options.map(option => (
+                                                        <DropdownMenuCheckboxItem
+                                                            key={option.id}
+                                                            checked={selectedOptions[option.id]}
+                                                            onCheckedChange={value =>
+                                                                handleCheckedChange(option.id, value)
+                                                            }
+                                                            className="hover:bg-accent/20"
+                                                        >
+                                                            {option.label}
+                                                        </DropdownMenuCheckboxItem>
+                                                    ))}
+                                                    {selectedLabels.length > 0 && (
+                                                        <>
+                                                            <DropdownMenuSeparator />
+                                                            <div className="flex justify-center py-1">
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    type="button"
+                                                                    className="rounded-full border border-destructive/80 hover:border-accent text-destructive hover:text-card"
+                                                                    onClick={clearSelections}
+                                                                >
+                                                                    <X className="w-4 h-4 mr-1" />
+                                                                    Fjern valg
+                                                                </Button>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
 
-                        {/* Annet input */}
-                        <FormField
-                            control={form.control}
-                            name="other"
-                            render={({ field }) => (
-                                <FormItem className="w-full">
-                                    <div className="flex flex-col w-full gap-2">
-                                        <FormLabel className="text-card font-bold">Annet</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                type="text"
-                                                className="bg-card text-md font-medium w-full"
-                                                placeholder="Interesser..."
-                                            />
-                                        </FormControl>
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
+                            {/* Annet input */}
+                            <FormField
+                                control={form.control}
+                                name="other"
+                                render={({ field }) => (
+                                    <FormItem className="w-full">
+                                        <div className="flex flex-col w-full gap-2">
+                                            <FormLabel className="text-card font-bold">Annet</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    type="text"
+                                                    className="bg-card text-md font-medium w-full"
+                                                    placeholder="Interesser..."
+                                                />
+                                            </FormControl>
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
 
-                        {/* Submit button */}
-                        <Button
-                            variant="secondary"
-                            type="submit"
-                            className="w-full md:w-fit"
-                            disabled={loading}
-                        >
-                            {loading ? "Laster..." : "Lag reiseplan"}
-                        </Button>
-                    </div>
-                </Section>
-            </form>
-        </Form>
+                            {/* Submit button */}
+                            <Button
+                                variant="secondary"
+                                type="submit"
+                                className="w-full md:w-fit"
+                                disabled={loading}
+                            >
+                                {loading ? "Laster..." : "Lag reiseplan"}
+                            </Button>
+                        </div>
+                    </Section>
+                </form>
+            </Form>
+        </div>
     );
 }
 

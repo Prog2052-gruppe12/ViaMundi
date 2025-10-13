@@ -68,15 +68,16 @@ function ResultContent() {
 
     return (
         <div className="flex flex-col items-center w-full h-fit gap-y-12">
-            <SearchParameters
-                destination={destination}
-                dateFrom={dateFrom}
-                dateTo={dateTo}
-                travelers={travelers}
-                interests={interests}
-            />
 
             <Section>
+                <SearchParameters
+                    destination={destination}
+                    dateFrom={dateFrom}
+                    dateTo={dateTo}
+                    travelers={travelers}
+                    interests={interests}
+                />
+
                 <h1 className="font-bold text-4xl text-center text-primary-foreground">
                     Reiseplan
                 </h1>

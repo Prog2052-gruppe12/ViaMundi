@@ -1,21 +1,20 @@
 import { LoginForm } from "@/components/features/auth/LoginForm";
 import Link from "next/link";
+import { Section } from "@/components/common/Section"
+import Image from 'next/image'
+
+import loginPicture from "@/assets/beach.jpg"
+import { ArrowUpRight } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="text-center text-3xl font-bold">Logg inn</h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Eller{" "}
-            <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-              opprett en ny konto
-            </Link>
-          </p>
+    <Section type="transparent">
+        <div className="flex flex-row overflow-hidden w-full max-w-[1000px] rounded-2xl">
+            <LoginForm />
+            <div className="relative w-4/5 hidden md:block">
+                <Image fill src={loginPicture} quality={75} alt="Login image" className="object-cover object-center filter saturate-[65%]"/>
+            </div>
         </div>
-        <LoginForm />
-      </div>
-    </div>
+    </Section>
   );
 }

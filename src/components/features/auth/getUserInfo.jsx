@@ -71,117 +71,118 @@ export function GetUserInfo({ userId, existingEmail, existingName }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
-          {error}
-        </div>
-      )}
+      <form onSubmit={handleSubmit} className="space-y-4 mt-8">
+        {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
+              {error}
+            </div>
+        )}
 
-      <div>
-        <Label htmlFor="name">
-          Fullt navn <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="name"
-          name="name"
-          type="text"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          disabled={loading}
-          className="mt-1"
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="phone">
-          Telefonnummer <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="phone"
-          name="phone"
-          type="tel"
-          placeholder="+47 123 45 678"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          disabled={loading}
-          className="mt-1"
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="age">
-          Alder <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="age"
-          name="age"
-          type="number"
-          min="18"
-          max="120"
-          value={formData.age}
-          onChange={handleChange}
-          required
-          disabled={loading}
-          className="mt-1"
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="address">Adresse (valgfritt)</Label>
-        <Input
-          id="address"
-          name="address"
-          type="text"
-          placeholder="Gateadresse"
-          value={formData.address}
-          onChange={handleChange}
-          disabled={loading}
-          className="mt-1"
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="postalCode">Postnummer (valgfritt)</Label>
+          <Label htmlFor="name">
+            Fullt navn <span className="text-red-500">*</span>
+          </Label>
           <Input
-            id="postalCode"
-            name="postalCode"
-            type="text"
-            placeholder="0000"
-            value={formData.postalCode}
-            onChange={handleChange}
-            disabled={loading}
-            className="mt-1"
+              id="name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              className="mt-2 border"
           />
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="age">
+              Alder <span className="text-red-500">*</span>
+            </Label>
+            <Input
+                id="age"
+                name="age"
+                type="number"
+                min="18"
+                max="120"
+                value={formData.age}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                className="mt-2 border"
+            />
+          </div>
+          <div>
+            <Label htmlFor="phone">
+              Telefonnummer <span className="text-red-500">*</span>
+            </Label>
+            <Input
+                id="phone"
+                name="phone"
+                type="tel"
+                placeholder="+47 123 45 678"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                className="mt-2 border"
+            />
+          </div>
+        </div>
+
         <div>
-          <Label htmlFor="city">By (valgfritt)</Label>
+          <Label htmlFor="address">Adresse (valgfritt)</Label>
           <Input
-            id="city"
-            name="city"
-            type="text"
-            placeholder="Oslo"
-            value={formData.city}
-            onChange={handleChange}
-            disabled={loading}
-            className="mt-1"
+              id="address"
+              name="address"
+              type="text"
+              placeholder="Gateadresse"
+              value={formData.address}
+              onChange={handleChange}
+              disabled={loading}
+              className="mt-2 border"
           />
         </div>
-      </div>
 
-      <div className="pt-4">
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full"
-        >
-          {loading ? "Lagrer..." : "Fullfør registrering"}
-        </Button>
-      </div>
-    </form>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="postalCode">Postnummer (valgfritt)</Label>
+            <Input
+                id="postalCode"
+                name="postalCode"
+                type="text"
+                placeholder="0000"
+                value={formData.postalCode}
+                onChange={handleChange}
+                disabled={loading}
+                className="mt-2 border"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="city">By (valgfritt)</Label>
+            <Input
+                id="city"
+                name="city"
+                type="text"
+                placeholder="Oslo"
+                value={formData.city}
+                onChange={handleChange}
+                disabled={loading}
+                className="mt-2 border"
+            />
+          </div>
+        </div>
+
+        <div className="pt-4">
+          <Button
+              type="submit"
+              disabled={loading}
+              className="w-full"
+          >
+            {loading ? "Lagrer..." : "Fullfør registrering"}
+          </Button>
+        </div>
+      </form>
   );
 }

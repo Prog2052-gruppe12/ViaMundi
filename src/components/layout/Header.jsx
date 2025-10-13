@@ -10,16 +10,22 @@ import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 export const Header = () => {
     return (
         <header
-            className=" top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 flex items-center justify-between bg-card/50 backdrop-blur-md shadow">
+            className="sticky top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 mb-12 flex items-center justify-between bg-card/50 backdrop-blur-md shadow z-50">
             {/* Left: Logo */}
             <div className="flex items-center gap-5">
-                <SidebarTrigger className="xl:hidden w-10 h-10 rounded-md" />
-                <Logo/>
+                <SidebarTrigger className="xl:hidden w-10 h-10 rounded-md"/>
+                <div className="hidden xl:block">
+                    <Logo/>
+                </div>
             </div>
 
             {/* Center: Nav */}
             <div className="absolute left-1/2 -translate-x-1/2 hidden xl:block">
                 <Nav/>
+            </div>
+
+            <div className="absolute left-1/2 -translate-x-1/2 xl:hidden text-4xl font-bold text-accent">
+                <span>viamundi</span>
             </div>
 
             {/* Right: Auth buttons */}

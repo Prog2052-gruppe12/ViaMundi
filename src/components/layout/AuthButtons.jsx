@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { auth } from "@/lib/firebase/client";
 import { onAuthStateChanged } from "firebase/auth";
-import { VscAccount } from "react-icons/vsc";
+import { User } from "lucide-react"
 
 export function AuthButtons() {
   const [user, setUser] = useState(null);
@@ -29,11 +29,11 @@ export function AuthButtons() {
   if (user) {
     // Bruker er innlogget - vis bruker-ikon
     return (
-      <Link href="/bruker">
-        <div className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <VscAccount className="w-8 h-8 text-gray-700" />
-        </div>
-      </Link>
+        <Button className="p-0 w-10">
+            <Link href="/bruker">
+                <User className="scale-125" />
+            </Link>
+        </Button>
     );
   }
 

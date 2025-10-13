@@ -3,6 +3,8 @@ import { adminAuth } from "@/lib/firebase/admin";
 import { redirect } from "next/navigation";
 import { GetUserInfo } from "@/components/features/auth/getUserInfo";
 
+import { Section } from "@/components/common/Section"
+
 export const dynamic = "force-dynamic";
 
 async function getUser() {
@@ -30,11 +32,11 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white shadow rounded-lg p-8">
-          <h1 className="text-3xl font-bold mb-2">Fullfør registreringen</h1>
-          <p className="text-gray-600 mb-6">
+    <Section type="transparent">
+      <div className="overflow-hidden w-full max-w-[1000px] rounded-2xl">
+        <div className="bg-white px-8 lg:px-24 py-16 w-full">
+          <h1 className="text-4xl font-bold">Fullfør registreringen</h1>
+          <p className="text-primary/75 mt-2 font-medium">
             Vi trenger litt mer informasjon for å gi deg den beste opplevelsen.
           </p>
           
@@ -45,7 +47,7 @@ export default async function OnboardingPage() {
           />
         </div>
       </div>
-    </div>
+    </Section>
   );
 }
 

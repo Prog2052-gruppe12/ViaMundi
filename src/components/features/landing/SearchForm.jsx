@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import React, {useEffect, useState} from "react";
-import {CalendarIcon, Check, ChevronDown, ChevronUp, MapPin, User} from "lucide-react";
+import {CalendarIcon, Check, ChevronDown, ChevronRight, ChevronUp, MapPin, User} from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -165,6 +165,7 @@ export const SearchForm = () => {
                                     <FormControl>
                                         <Button
                                             variant="fake"
+                                            size="fake"
                                             role="combobox"
                                             className={cn(
                                                 "bg-card w-full justify-between rounded-md py-5 text-md",
@@ -238,6 +239,7 @@ export const SearchForm = () => {
                                         <FormControl>
                                             <Button
                                                 variant="fake"
+                                                size="fake"
                                                 className={cn(
                                                     "bg-card w-full justify-start gap-3 font-normal rounded-md text-md font-medium",
                                                     !field.value && "text-muted-foreground",
@@ -288,6 +290,7 @@ export const SearchForm = () => {
                                         <FormControl>
                                             <Button
                                                 variant="fake"
+                                                size="fake"
                                                 className={cn(
                                                     "bg-card w-full justify-start gap-3 font-normal rounded-md text-md font-medium",
                                                     !field.value && "text-muted-foreground",
@@ -357,6 +360,7 @@ export const SearchForm = () => {
                         disabled={loading}
                     >
                         {loading ? "Laster..." : "Videre"}
+                        <ChevronRight/>
                     </Button>
                 </div>
             </form>

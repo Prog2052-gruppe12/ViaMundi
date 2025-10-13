@@ -160,7 +160,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-transparent shadow-none text-sidebar-foreground w-(--sidebar-width) py-5 px-0 [&>button]:hidden border-none"
+          className="bg-transparent shadow-none text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden border-none"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE
@@ -171,7 +171,7 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="bg-gradient-primary rounded-r-xl border-none flex h-full w-full flex-col">{children}</div>
+          <div className="bg-gradient-primary rounded-br-xl border-none flex h-full w-full flex-col">{children}</div>
         </SheetContent>
       </Sheet>
     );
@@ -233,14 +233,13 @@ function SidebarTrigger({
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="menu"
-      size="24"
-      className={cn("p-0", className)}
+      className={cn("p-0 !h-10 !w-10 bg-gradient-primary !rounded-full", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
       }}
       {...props}>
-      <Menu className="!size-6" />
+      <Menu className="!size-5 text-primary-foreground" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

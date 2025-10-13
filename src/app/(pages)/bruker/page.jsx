@@ -3,6 +3,8 @@ import { LogoutButton } from "@/components/features/auth/LogoutButton";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Section } from "@/components/common/Section"
+import {Label} from "@/components/ui/label";
 
 
 /**
@@ -42,68 +44,79 @@ export default function UserPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
+    <Section type="transparent">
+      <div className="flex flex-col overflow-hidden w-full max-w-[1000px]">
         <Link 
           href="/" 
-          className="inline-block mb-4 text-sm text-gray-600 hover:text-gray-900"
+          className="inline-block mb-4 w-fit text-sm text-gray-600 hover:text-gray-900"
         >
           ← Tilbake til forsiden
         </Link>
         
-        <div className="bg-white shadow rounded-lg p-8">
-          <h1 className="text-3xl font-bold mb-6">Min konto</h1>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Navn</label>
-              <p className="mt-1 text-lg">{user.name || "Ikke oppgitt"}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">E-post</label>
-              <p className="mt-1 text-lg">{user.email}</p>
-            </div>
-
-            {user.phone && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Telefonnummer</label>
-                <p className="mt-1 text-lg">{user.phone}</p>
-              </div>
-            )}
-
-            {user.age && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Alder</label>
-                <p className="mt-1 text-lg">{user.age} år</p>
-              </div>
-            )}
-
-            {user.address && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Adresse</label>
-                <p className="mt-1 text-lg">{user.address}</p>
-                {(user.postalCode || user.city) && (
-                  <p className="text-gray-600">
-                    {user.postalCode} {user.city}
-                  </p>
-                )}
-              </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Konto opprettet</label>
-              <p className="mt-1 text-sm text-gray-600">
-                {new Date(user.auth_time * 1000).toLocaleDateString("nb-NO")}
-              </p>
-            </div>
+        <div className="bg-white px-8 lg:px-24 py-16 w-full rounded-2xl">
+          <div className="flex flex-row justify-between">
+            <h1 className="text-4xl font-bold">Min side</h1>
+            <LogoutButton />
           </div>
 
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <LogoutButton />
+
+          <div className="space-y-4 mt-8">
+            <div>
+              <Label>Navn</Label>
+              <div className="py-2 px-4 rounded-md border mt-2 text-md">{user.name || "Ikke oppgitt"}</div>
+            </div>
+
+            <div>
+              <Label>E-post</Label>
+              <div className="py-2 px-4 rounded-md border mt-2 text-md">{user.email}</div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {user.age && (
+                  <div>
+                    <Label>Alder</Label>
+                    <div className="py-2 px-4 rounded-md border mt-2 text-md">{user.age} år</div>
+                  </div>
+              )}
+
+              {user.phone && (
+                  <div>
+                    <Label>Telefonnummer</Label>
+                    <div className="py-2 px-4 rounded-md border mt-2 text-md">{user.phone}</div>
+                  </div>
+              )}
+            </div>
+
+            {user.address && (
+                <div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Adresse</Label>
+                      <div className="py-2 px-4 rounded-md border mt-2 text-md">
+                        {user.address}
+                      </div>
+                    </div>
+                    {(user.postalCode || user.city) && (
+                        <div>
+                          <Label>Sted</Label>
+                          <div className="py-2 px-4 rounded-md border mt-2 text-md">
+                            {user.postalCode} {user.city}
+                          </div>
+                        </div>
+                    )}
+                </div>
+                </div>
+            )}
+            <div>
+              <Label>Konto opprettet</Label>
+              <div className="py-2 px-4 rounded-md border mt-2 text-md">
+                {new Date(user.auth_time * 1000).toLocaleDateString("nb-NO")}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Section>
   );
 }
 

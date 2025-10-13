@@ -27,7 +27,7 @@ export function LogoutButton() {
       onClick={handleLogout}
       disabled={loading}
       variant="outline"
-      className="w-full sm:w-auto"
+      className="w-fit"
     >
       {loading ? "Logger ut..." : "Logg ut"}
     </Button>

@@ -5,7 +5,7 @@ import { FiGithub, FiMail } from "react-icons/fi";
 
 export function GruppeCard({ medlem }) {
   return (
-    <Card className="rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+    <Card className="rounded-2xl shadow-none h-full hover:scale-101 transition-all">
       <CardHeader className="items-center text-center">
         <Avatar className="h-24 w-24 ring-4 ring-white shadow mx-auto">
           <AvatarImage src={medlem.bilde} alt={medlem.navn} />

@@ -4,10 +4,7 @@ import { Separator } from "@/components/ui/separator";
 
 export function OmOssHero() {
   return (
-    <section className="mx-auto max-w-7xl px-4 md:px-8">
-      <Card className="overflow-hidden rounded-2xl shadow-sm border-none bg-gradient-to-b from-[#F38C7F] to-[#F37456]">
-        <CardContent className="p-0">
-          <div className="px-6 md:px-10 py-10 md:py-14 bg-gradient-to-b">
+          <div className="w-full px-4">
             <Badge className="bg-white/20 text-white hover:bg-white/25 backdrop-blur">
               Om oss
             </Badge>
@@ -28,8 +25,5 @@ export function OmOssHero() {
               <span>Open meto</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </section>
   );
 }
