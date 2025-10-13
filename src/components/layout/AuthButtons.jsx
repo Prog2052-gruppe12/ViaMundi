@@ -40,9 +40,11 @@ export function AuthButtons() {
   // Bruker er ikke innlogget - vis registrerings- og innloggingsknapper
   return (
     <div className="flex gap-3">
-      <Button variant="outline">
-        <Link href="/signup">Registrer</Link>
-      </Button>
+        <div className="hidden lg:block">
+            <Button variant="outline">
+                <Link href="/signup">Registrer</Link>
+            </Button>
+        </div>
       <Button>
         <Link href="/login">Logg inn</Link>
       </Button>

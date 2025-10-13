@@ -24,7 +24,7 @@ export const SidebarNav = () => {
             <Sidebar variant="floating" isMobile={true}>
                 <SidebarContent className="px-2 py-6 h-fit">
                     <SidebarGroup>
-                        <SidebarGroupLabel className="text-card text-3xl rounded-none px-1 py-3 pb-7 font-bold">ViaMundi</SidebarGroupLabel>
+                        <SidebarGroupLabel className="text-card text-3xl rounded-none px-1 py-3 pb-7 font-bold">viamundi</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu className="mt-2 gap-2">
                                 {navData.map((item) => {

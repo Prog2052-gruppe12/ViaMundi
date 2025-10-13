@@ -233,13 +233,13 @@ function SidebarTrigger({
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="menu"
-      className={cn("p-0 !h-10 !w-10 bg-gradient-primary !rounded-full", className)}
+      className={cn("p-0 !h-10 !w-10 text-accent", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
       }}
       {...props}>
-      <Menu className="!size-5 text-primary-foreground" />
+      <Menu className="!size-6" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
