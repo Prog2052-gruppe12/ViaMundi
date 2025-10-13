@@ -4,7 +4,7 @@ import { getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { setPersistence, browserLocalPersistence } from "firebase/auth";
 
-// client side firebase config. IKKE DELE MED SERVER SIDE!
+// client side firebase config. skal kun brukes på client side!
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,

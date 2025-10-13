@@ -21,10 +21,10 @@ export function LoginForm() {
 
     try {
       await signInWithEmail({ email, password });
-      const response = await fetch("/api/bruker/sjekk-profil");
+      const response = await fetch("/api/user/profile");
       const data = await response.json();
       
-      router.push(data.profileCompleted ? "/user" : "/onboarding");
+      router.push(data.profileCompleted ? "/bruker" : "/onboarding");
     } catch (err) {
       console.error("Innloggingsfeil:", err);
       setError("Innlogging feilet. Sjekk e-post og passord.");
@@ -39,10 +39,10 @@ export function LoginForm() {
 
     try {
       await signInWithGoogle();
-      const response = await fetch("/api/bruker/profil");
+      const response = await fetch("/api/user/profile");
       const data = await response.json();
       
-      router.push(data.profileCompleted ? "/user" : "/onboarding");
+      router.push(data.profileCompleted ? "/bruker" : "/onboarding");
     } catch (err) {
       console.error("Google innloggingsfeil:", err);
       if (err.message !== 'POPUP_CLOSED') {

@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 
 const SESSION_URL = "/api/auth/session";
-export const DEFAULT_AFTER_LOGIN = "/user";
+export const DEFAULT_AFTER_LOGIN = "/bruker";
 export const DEFAULT_AFTER_LOGOUT = "/login";
 
 export async function establishSessionCookie() {

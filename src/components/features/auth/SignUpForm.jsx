@@ -49,10 +49,10 @@ export function SignUpForm() {
 
     try {
       await signInWithGoogle();
-      const response = await fetch("/api/bruker/sjekk-profil");
+      const response = await fetch("/api/user/profile");
       const data = await response.json();
       
-      router.push(data.profileCompleted ? "/user" : "/");
+      router.push(data.profileCompleted ? "/bruker" : "/");
     } catch (err) {
       console.error("Google registreringsfeil:", err);
       if (err.message !== 'POPUP_CLOSED') {

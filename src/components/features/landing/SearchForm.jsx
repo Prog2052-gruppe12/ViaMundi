@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import React, {useEffect, useState} from "react";
 import {CalendarIcon, Check, ChevronDown, ChevronUp, MapPin, User} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -139,7 +139,7 @@ export const SearchForm = () => {
             });
 
             // If valid
-            router.push(`/interest?${params.toString()}`);
+            router.push(`/interesse?${params.toString()}`);
         } catch (err) {
             alert(err.message);
         } finally {

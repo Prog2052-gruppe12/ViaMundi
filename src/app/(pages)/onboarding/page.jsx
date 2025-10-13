@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { adminAuth } from "@/lib/firebase/admin";
 import { redirect } from "next/navigation";
-import { getUserInfo as GetUserInfoForm } from "@/components/features/auth/getUserInfo";
+import { GetUserInfo } from "@/components/features/auth/getUserInfo";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +38,7 @@ export default async function OnboardingPage() {
             Vi trenger litt mer informasjon for å gi deg den beste opplevelsen.
           </p>
           
-          <GetUserInfoForm 
+          <GetUserInfo 
             userId={user.uid}
             existingEmail={user.email}
             existingName={user.name}
