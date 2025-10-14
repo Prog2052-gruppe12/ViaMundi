@@ -8,8 +8,8 @@ import { decodeCityToCoord } from '@/utils/decodeCityToCoord';
  */
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const searchQuery = searchParams.get('searchQuery');
-  const city = searchParams.get('city');
+  const searchQuery = searchParams.get('interests');
+  const city = searchParams.get('destination');
   const radiusUnit = searchParams.get('radiusUnit');
   const { latitude: lat, longitude: lon } = await decodeCityToCoord(city);
   const latLong = lat && lon ? `${lat},${lon}` : null;
