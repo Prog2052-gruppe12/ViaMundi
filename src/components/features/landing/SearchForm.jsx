@@ -58,17 +58,10 @@ export const SearchForm = () => {
             items: tripTypes,
         },
         {
-            group: "Land",
-            items: Object.keys(citiesData).map((land) => ({
-                label: land,
-                value: land,
-            })),
-        },
-        {
             group: "Sted",
             items: Object.entries(citiesData).flatMap(([land, byer]) =>
                 byer.map((by) => ({
-                    label: `${by}`,
+                    label: `${land}, ${by}`,
                     value: by,
                 }))
             ),

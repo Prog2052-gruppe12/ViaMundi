@@ -45,7 +45,7 @@ export function AuthButtons() {
                 <Link href="/signup">Registrer</Link>
             </Button>
         </div>
-      <Button>
+      <Button className="h-9 md:h-10">
         <Link href="/login">Logg inn</Link>
       </Button>
     </div>

@@ -6,6 +6,7 @@ import {Logo} from "@/components/common/Logo";
 import {SidebarNav} from "@/components/layout/SidebarNav";
 import {Menu} from "lucide-react";
 import {SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export const Header = () => {
     return (
@@ -17,9 +18,9 @@ export const Header = () => {
                 <div className="hidden xl:block">
                     <Logo/>
                 </div>
-                <div className="text-2xl font-bold text-accent relative top-[-1px]">
+                <Link href="/" className="text-2xl font-bold text-accent relative top-[-1px]">
                     <span>viamundi.no</span>
-                </div>
+                </Link>
             </div>
 
             {/* Center: Nav */}
