@@ -1,5 +1,5 @@
 // System message with rules and validation logic
-export const SYSTEM_PROMPT = `
+export const SYSTEM_PROMPT_SUMMARIZE_USER_INTERESTS = `
 You are a TripAdvisor search query generator. Your ONLY job is to return valid JSON.
 
 🚨 CRITICAL VALIDATION RULES (check these FIRST):
@@ -38,7 +38,7 @@ ONLY return JSON. NO explanations, comments, or markdown.
 `;
 
 // User message with just the data
-export const SUMMARIZE_USER_INTERESTS_PROMPT = (userData) => `
+export const PROMPT_SUMMARIZE_USER_INTERESTS = (userData) => `
 Generate TripAdvisor search queries for this travel data:
 
 {
@@ -50,3 +50,4 @@ Generate TripAdvisor search queries for this travel data:
   "other": "${userData.other}"
 }
 `;
+

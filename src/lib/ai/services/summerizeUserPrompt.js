@@ -16,12 +16,12 @@ import { SUMMARIZE_USER_INTERESTS_PROMPT, SYSTEM_PROMPT } from "../prompts";
 
 export async function summerizeUserPrompt(userData) {
     try {
-        const prompt = SUMMARIZE_USER_INTERESTS_PROMPT(userData);
+        const prompt = PROMPT_SUMMARIZE_USER_INTERESTS(userData);
         
         const response = await groq.chat.completions.create({
             model: "openai/gpt-oss-20b", 
             messages: [
-                { role: "system", content: SYSTEM_PROMPT },
+                { role: "system", content: SYSTEM_PROMPT_SUMMARIZE_USER_INTERESTS },
                 { role: "user", content: prompt }
             ],
             temperature: 0.3,
