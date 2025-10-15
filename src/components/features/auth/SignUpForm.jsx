@@ -53,7 +53,7 @@ export function SignUpForm() {
       await signInWithGoogle();
       const response = await fetch("/api/user/profile");
       const data = await response.json();
-      
+
       router.push(data.profileCompleted ? "/bruker" : "/");
     } catch (err) {
       console.error("Google registreringsfeil:", err);
