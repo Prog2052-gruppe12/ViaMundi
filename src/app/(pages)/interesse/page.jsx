@@ -25,7 +25,8 @@ import {
     FormItem,
     FormLabel
 } from "@/components/ui/form";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import {ChevronDown, ChevronUp, CircleX, Trash, X, Volleyball} from "lucide-react";
+import {cn} from "@/utils/cn";
 
 function InterestContent() {
     const [loading, setLoading] = useState(false);
@@ -52,8 +53,6 @@ function InterestContent() {
         food: false,
         culture: false
     });
-
-    const [open, setOpen] = useState(false);
 
     const handleCheckedChange = (id, value) => {
         const updated = {
@@ -142,75 +141,93 @@ function InterestContent() {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="flex flex-col items-center w-full h-fit gap-y-12"
                 >
+
                     <Section>
-                        <SearchParameters
-                            destination={destination}
-                            dateFrom={dateFrom}
-                            dateTo={dateTo}
-                            travelers={travelers}
-                        />
-                        <h1 className="font-bold text-4xl text-center text-primary-foreground">
+                        <h1 className="font-bold text-4xl md:text-5xl text-center text-primary-foreground">
                             Hva er dine interesser?
                         </h1>
-                        <div className="flex md:flex-row md:items-end flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 text-popover-foreground gap-x-2 gap-y-4">
+                        <div
+                            className="flex md:flex-row md:items-end flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 text-popover-foreground gap-2">
                             {/* Interesser dropdown */}
                             <FormField
                                 control={form.control}
                                 name="interests"
-                                render={() => (
-                                    <FormItem className="w-full">
-                                        <div className="flex flex-col w-full gap-2">
-                                            <FormLabel className="text-card font-bold">Interesser</FormLabel>
+                                render={() => {
+                                    const [open, setOpen] = useState(false);
+
+                                    return (
+                                        <FormItem className="w-full">
+                                        <div className="flex flex-col w-full gap-1">
+                                            <FormLabel className="text-card font-bold text-sm">Interesser</FormLabel>
                                             <DropdownMenu open={open} onOpenChange={setOpen}>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button
                                                         variant="fake"
                                                         type="button"
-                                                        className={`bg-card w-full justify-between rounded-md py-5 text-md px-3 ${textColorClass} ${
-                                                            form.formState.errors.interests ? "ring-[3px] ring-destructive/30" : ""
-                                                        }`}
+                                                        className={cn(
+                                                            `bg-card w-full justify-between rounded-md py-5 !px-3 text-md ${textColorClass} ${
+                                                                form.formState.errors.interests ? "ring-[3px] ring-destructive/30" : ""
+                                                            }`
+                                                        )
+                                                        }
                                                     >
-                                                        <span className="truncate text-left">{displayText}</span>
-                                                        {open ? <ChevronUp /> : <ChevronDown />}
+                                                        <div className="flex flex-row items-center gap-3">
+                                                            <Volleyball strokeWidth={2}/>
+                                                            {displayText}
+                                                        </div>
+                                                        {open ? <ChevronUp/> : <ChevronDown/>}
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
-                                                    <DropdownMenuLabel>Interesser</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    {options.map(option => (
-                                                        <DropdownMenuCheckboxItem
-                                                            key={option.id}
-                                                            checked={selectedOptions[option.id]}
-                                                            onCheckedChange={value =>
-                                                                handleCheckedChange(option.id, value)
-                                                            }
-                                                            className="hover:bg-accent/20"
+                                                <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) border-none !p-0">
+                                                    <div className="pt-3 pb-2 px-3 text-xs text-muted-foreground font-bold">
+                                                        Interesser
+                                                    </div>
+                                                    <div className="px-1 pb-2">
+                                                        {options.map(option => (
+                                                            <DropdownMenuCheckboxItem
+                                                                key={option.id}
+                                                                checked={selectedOptions[option.id]}
+                                                                onSelect={(e) => e.preventDefault()}
+                                                                onCheckedChange={value =>
+                                                                    handleCheckedChange(option.id, value)
+                                                                }
+                                                            >
+                                                                {option.label}
+                                                            </DropdownMenuCheckboxItem>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Clear and close buttons */}
+                                                    <div className="bg-popover border-t w-full p-2 flex justify-between gap-2">
+                                                        <Button
+                                                            type="button"
+                                                            variant="default"
+                                                            className="rounded-md"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setOpen(false);
+                                                            }}
                                                         >
-                                                            {option.label}
-                                                        </DropdownMenuCheckboxItem>
-                                                    ))}
-                                                    {selectedLabels.length > 0 && (
-                                                        <>
-                                                            <DropdownMenuSeparator />
-                                                            <div className="flex justify-center py-1">
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                    type="button"
-                                                                    className="rounded-full border border-destructive/80 hover:border-accent text-destructive hover:text-card"
-                                                                    onClick={clearSelections}
-                                                                >
-                                                                    <X className="w-4 h-4 mr-1" />
-                                                                    Fjern valg
-                                                                </Button>
-                                                            </div>
-                                                        </>
-                                                    )}
+                                                            <CircleX /> Lukk
+                                                        </Button>
+                                                        {selectedLabels.length > 0 && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                className="rounded-md"
+                                                                size="sm"
+                                                                onClick={clearSelections}
+                                                            >
+                                                                <Trash /> Tøm
+                                                            </Button>
+                                                        )}
+                                                    </div>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
                                     </FormItem>
-                                )}
+                                    )
+                                }}
                             />
 
                             {/* Annet input */}
@@ -219,14 +236,14 @@ function InterestContent() {
                                 name="other"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <div className="flex flex-col w-full gap-2">
-                                            <FormLabel className="text-card font-bold">Annet</FormLabel>
+                                        <div className="flex flex-col w-full gap-1">
+                                            <FormLabel className="text-card font-bold text-sm">Annet</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     {...field}
                                                     type="text"
                                                     className="bg-card text-md font-medium w-full"
-                                                    placeholder="Interesser..."
+                                                    placeholder="Annet..."
                                                 />
                                             </FormControl>
                                         </div>
@@ -238,10 +255,10 @@ function InterestContent() {
                             <Button
                                 variant="secondary"
                                 type="submit"
-                                className="w-full md:w-fit"
+                                className="w-full md:w-fit mt-2"
                                 disabled={loading}
                             >
-                                {loading ? "Laster..." : "Lag reiseplan"}
+                                Søk
                             </Button>
                         </div>
                     </Section>

@@ -31,13 +31,7 @@ export default function RootLayout({children}) {
     return (
         <html lang="en">
         <body
-            className={`${geistSans.variable} ${geistMono.variable} ${fontLogo.variable} antialiased flex flex-col min-h-screen\``}
-            style={{
-                backgroundImage: `
-        radial-gradient(circle at 20% 80%, rgba(255, 182, 153, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 244, 214, 0.5) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(255, 182, 153, 0.1) 0%, transparent 50%)`,
-            }}
+            className={`${geistSans.variable} ${geistMono.variable} ${fontLogo.variable} antialiased !transition-none flex flex-col min-h-screen\``}
         >
         <SidebarProvider defaultOpen={false}>
             <SidebarNav/>

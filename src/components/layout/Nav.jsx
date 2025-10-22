@@ -10,7 +10,7 @@ import {
 
 export const Nav = () => {
     return (
-        <NavigationMenu className="flex items-center px-3 h-11 list-none gap-2 bg-gradient-primary">
+        <NavigationMenu className="flex items-center list-none gap-2">
             <NavigationMenuItem>
                 <NavigationMenuLink href={"/"} asChild>
                     <Link href="/">Hjem</Link>

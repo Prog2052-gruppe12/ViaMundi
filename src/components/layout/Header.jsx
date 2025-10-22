@@ -11,7 +11,7 @@ import Link from "next/link";
 export const Header = () => {
     return (
         <header
-            className="sticky top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 mb-12 flex items-center justify-between bg-card/50 backdrop-blur-md shadow z-50">
+            className="sticky top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 lg:mb-12 mb-6 flex items-center justify-between bg-card shadow z-50">
             {/* Left: Logo */}
             <div className="flex items-center gap-4">
                 <SidebarTrigger className="xl:hidden w-10 h-10 rounded-md border border-transparent"/>

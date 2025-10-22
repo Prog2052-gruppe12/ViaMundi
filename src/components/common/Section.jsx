@@ -1,5 +1,6 @@
 import React from "react";
 import {Card, CardContent} from "@/components/ui/card";
+import {cn} from "@/utils/cn";
 
 export const Section = (props) => {
     const type = props.type;
@@ -14,8 +15,13 @@ export const Section = (props) => {
         py = "py-0";
     }
     return (
-        <section className="w-full px-4 md:px-16 lg:px-32 pt-2 shadow-none">
-            <Card className={`w-full ${px} ${py} rounded-2xl shadow-none border-none ${bgColor}`}>
+        <section className={cn(
+            "w-full px-4 md:px-16 lg:px-32 shadow-none"
+        )}>
+            <Card className={cn(
+                `w-full ${px} ${py} rounded-2xl shadow-none border-none ${bgColor}`,
+                props.className,
+            )}>
                 <CardContent className="w-full flex flex-col items-center p-0 gap-y-8">
                     {props.children}
                 </CardContent>
