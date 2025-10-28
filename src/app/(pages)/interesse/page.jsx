@@ -147,7 +147,7 @@ function InterestContent() {
                             Hva er dine interesser?
                         </h1>
                         <div
-                            className="flex md:flex-row md:items-end flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 text-popover-foreground gap-2">
+                            className="flex md:flex-row md:items-end flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 ring-2 ring-card/30 text-popover-foreground gap-2">
                             {/* Interesser dropdown */}
                             <FormField
                                 control={form.control}

@@ -4,6 +4,7 @@ import { Section } from "@/components/common/Section";
 import { useSearchParams } from "next/navigation";
 import { SearchParameters } from "@/components/features/searchParameters/SearchParameters";
 import React, { useEffect, useState, Suspense } from "react";
+import {getCityName} from "@/utils/cityFromDest";
 
 function ResultContent() {
     const searchParams = useSearchParams();
@@ -23,12 +24,13 @@ function ResultContent() {
         async function fetchAttractions() {
             try {
                 setLoading(true);
+                const city = getCityName(destination);
                 const params = new URLSearchParams({
-                    destination: destination || "",
+                    destination: city || "",
                     interests: interests || "",
                 });
 
-                const res = await fetch(`/api/attractions?${params.toString()}`);
+                const res = await fetch(`/api/getAttractions?${params.toString()}`);
                 const data = await res.json();
 
                 if (!res.ok) throw new Error(data.error || "Failed to fetch attractions");
