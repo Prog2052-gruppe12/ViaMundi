@@ -149,7 +149,7 @@ export const SearchForm = () => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex xl:flex-row flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 text-popover-foreground gap-2"
+                className="flex xl:flex-row flex-col w-full h-full py-4 px-4 rounded-xl bg-card/20 ring-2 ring-card/30 text-popover-foreground gap-2"
             >
                 {/* Destination */}
                 <FormField
@@ -226,7 +226,7 @@ export const SearchForm = () => {
                                                                             "size-4.5 border rounded-xs",
                                                                             field.value === opt.label
                                                                                 ? "bg-accent/100 border-accent"
-                                                                                : "bg-accent/0 border-primary/75"
+                                                                                : "bg-accent/0 border-primary/75 hover:bg-accent/20 cursor-pointer"
                                                                         )}>
                                                                             <Check
                                                                                 strokeWidth={2.5}
@@ -285,7 +285,7 @@ export const SearchForm = () => {
                         return (
                             <FormItem className="gap-y-1">
                                 <FormLabel className="font-bold text-sm text-card">Hvor går reisen?</FormLabel>
-                                <Drawer open={open} onOpenChange={setOpen} direction="top">
+                                <Drawer open={open} onOpenChange={setOpen} direction="bottom">
                                     <DrawerTrigger asChild>
                                         <FormControl>
                                             <Button
@@ -315,7 +315,7 @@ export const SearchForm = () => {
                                                     placeholder="Søk..."
                                                     className="placeholder:text-muted-foreground text-md"
                                                 />
-                                                <CommandList className="!max-h-[400px]">
+                                                <CommandList>
                                                     <CommandEmpty>Ingen treff.</CommandEmpty>
                                                     {allOptions.map((section) => (
                                                         <CommandGroup key={section.group} heading={section.group}>
@@ -366,36 +366,37 @@ export const SearchForm = () => {
                                                         </CommandGroup>
                                                     ))}
                                                 </CommandList>
-                                            </Command>
-                                            {/* Clear and close buttons */}
-                                            <div className="bg-popover border-t w-full p-2 flex justify-between gap-2">
-                                                <Button
-                                                    type="button"
-                                                    variant="default"
-                                                    className="rounded-md"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        setOpen(false);
-                                                    }}
-                                                >
-                                                    <CircleX /> Lukk
-                                                </Button>
-                                                {field.value && (
+                                                {/* Clear and close buttons */}
+                                                <div className="bg-popover border-t w-full p-2 flex justify-between gap-2">
                                                     <Button
                                                         type="button"
-                                                        variant="outline"
+                                                        variant="default"
                                                         className="rounded-md"
                                                         size="sm"
                                                         onClick={() => {
-                                                            field.value = "";
-                                                            field.onChange("");
-                                                            setOpen(true);
+                                                            setOpen(false);
                                                         }}
                                                     >
-                                                        <Trash /> Tøm
+                                                        <CircleX /> Lukk
                                                     </Button>
-                                                )}
-                                            </div>
+                                                    {field.value && (
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            className="rounded-md"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                field.value = "";
+                                                                field.onChange("");
+                                                                setOpen(true);
+                                                            }}
+                                                        >
+                                                            <Trash /> Tøm
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </Command>
+
                                         </div>
                                     </DrawerContent>
                                 </Drawer>

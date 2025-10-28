@@ -11,28 +11,32 @@ import Link from "next/link";
 export const Header = () => {
     return (
         <header
-            className="sticky top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 lg:mb-12 mb-6 flex items-center justify-between bg-card shadow z-50">
-            {/* Left: Logo */}
-            <div className="flex items-center gap-4">
-                <SidebarTrigger className="xl:hidden w-10 h-10 rounded-md border border-transparent"/>
-                <div className="hidden xl:block">
-                    <Logo/>
+            className="sticky top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 lg:mb-12 mb-6 flex items-center justify-center bg-card shadow z-50">
+            <div className="max-w-[1700px] w-full h-full flex items-center justify-between">
+                {/* Left: Logo */}
+                <div className="flex items-center gap-4">
+                    <SidebarTrigger className="xl:hidden w-10 h-10 rounded-md border border-transparent"/>
+                    {/*
+                    <div className="hidden xl:block">
+                        <Logo/>
+                    </div>
+                    */}
+                    <Link href="/" className="text-2xl font-bold text-accent relative top-[-1px]">
+                        <span>viamundi.no</span>
+                    </Link>
                 </div>
-                <Link href="/" className="text-2xl font-bold text-accent relative top-[-1px]">
-                    <span>viamundi.no</span>
-                </Link>
-            </div>
 
-            {/* Center: Nav */}
-            <div className="absolute left-1/2 -translate-x-1/2 hidden xl:block">
-            <Nav/>
-            </div>
+                {/* Center: Nav */}
+                <div className="absolute left-1/2 -translate-x-1/2 hidden xl:block">
+                <Nav/>
+                </div>
 
 
 
-            {/* Right: Auth buttons */}
-            <div className="flex items-center">
-                <AuthButtons/>
+                {/* Right: Auth buttons */}
+                <div className="flex items-center">
+                    <AuthButtons/>
+                </div>
             </div>
         </header>
 

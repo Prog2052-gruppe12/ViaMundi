@@ -16,10 +16,10 @@ export const Section = (props) => {
     }
     return (
         <section className={cn(
-            "w-full px-4 md:px-16 lg:px-32 shadow-none"
+            "w-full px-4 md:px-16 lg:px-32 shadow-none flex justify-center"
         )}>
             <Card className={cn(
-                `w-full ${px} ${py} rounded-2xl shadow-none border-none ${bgColor}`,
+                `w-full ${px} ${py} rounded-2xl shadow-none border-2 border-card/20 max-w-[1700px] ${bgColor}`,
                 props.className,
             )}>
                 <CardContent className="w-full flex flex-col items-center p-0 gap-y-8">

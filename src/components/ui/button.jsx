@@ -16,7 +16,7 @@ const buttonVariants = cva(
         outline:
           "rounded-full bg-transparent border border-accent text-accent hover:brightness-110",
         secondary:
-          "bg-gradient-secondary text-primary-foreground hover:brightness-140",
+          "bg-gradient-secondary text-primary-foreground hover:brightness-120 ring-1 ring-card/15",
         ghost:
             "rounded-md hover:bg-accent",
         fake:

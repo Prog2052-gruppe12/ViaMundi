@@ -85,8 +85,8 @@ function DropdownMenuCheckboxItem({
       {...props}>
       <span
         className={cn(
-            "pointer-events-none absolute left-2 flex size-4.5 items-center justify-center border rounded-xs",
-            checked ? "border-accent bg-accent/100" : "border-primary/75 bg-accent/0"
+            "pointer-events-none absolute left-2 flex size-4.5 items-center justify-center border rounded-xs cursor-pointer",
+            checked ? "border-accent bg-accent/100" : "border-primary/75 bg-accent/0",
         )}>
         <DropdownMenuPrimitive.ItemIndicator>
           <CheckIcon className="size-4 text-primary-foreground" strokeWidth={2.5} />

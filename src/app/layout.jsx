@@ -31,10 +31,10 @@ export default function RootLayout({children}) {
     return (
         <html lang="en">
         <body
-            className={`${geistSans.variable} ${geistMono.variable} ${fontLogo.variable} antialiased !transition-none flex flex-col min-h-screen\``}
+            className={`${geistSans.variable} ${geistMono.variable} ${fontLogo.variable} antialiased flex flex-col min-h-screen\``}
         >
         <SidebarProvider defaultOpen={false}>
-            <SidebarNav/>
+            <SidebarNav />
             <main className="w-full h-min-full">
                 <Header/>
                 {/* <DynamicBreadcrumb/> */}
