@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import rateLimit from '@/lib/ratelimiter/ratelimit';
-const rateLimiter = rateLimit(10, 60000);
+const rateLimiter = rateLimit(100, 60000);
 /**
  * Henter restauranter fra TripAdvisor
  * @param {Request} req 
