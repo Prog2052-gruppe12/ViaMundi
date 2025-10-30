@@ -27,8 +27,6 @@ export default function LocationView({info, image}) {
         url: location["web_url"],
     }
 
-    console.log(elements.description);
-
     return (
         <Card>
             <div className="flex flex-row gap-2 flex-wrap px-6">
