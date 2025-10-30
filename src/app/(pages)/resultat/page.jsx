@@ -33,7 +33,7 @@ export default function ResultContent() {
                     interests: interests || "",
                 });
 
-                const res = await fetch(`/api/getAttractions?${params.toString()}`);
+                const res = await fetch(`/api/attractions?${params.toString()}`);
                 const data = await res.json();
 
                 if (!res.ok) throw new Error(data.error || "Failed to fetch attractions");
