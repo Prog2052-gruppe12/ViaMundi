@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import rateLimit from '@/lib/ratelimiter/ratelimit';
 
+const rateLimiter = rateLimit(10, 60000);
 /**
  * Henter informasjon om en attraksjon fra TripAdvisor
  * @param {Request} request 
@@ -7,6 +9,27 @@ import { NextResponse } from 'next/server';
  */
 export async function GET(request) {
   try {
+    const rateLimitResult = await rateLimiter(request);
+    if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+              {
+                success: false,
+                error: 'Rate limit exceeded',
+                message: `Too many requests. Try again in ${rateLimitResult.retryAfter} seconds.`,
+                retryAfter: rateLimitResult.retryAfter
+              },
+              { 
+                status: 429,
+                headers: {
+                  'Retry-After': rateLimitResult.retryAfter.toString(),
+                  'X-RateLimit-Limit': '10',
+                  'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+                  'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+                }
+              }
+            );
+          }
+
     const { searchParams } = new URL(request.url);
     const locationId = searchParams.get('locationId');
 
@@ -48,7 +71,11 @@ export async function GET(request) {
 
     const data = await response.json();
 
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json(data, { status: 200, headers: {
+              'X-RateLimit-Limit': '10',
+              'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+              'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+            }});
 
   } catch (error) {
     console.error('Error fetching attraction details:', error);

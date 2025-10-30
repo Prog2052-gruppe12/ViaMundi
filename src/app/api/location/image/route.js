@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import rateLimit from '@/lib/ratelimiter/ratelimit';
 
+const rateLimiter = rateLimit(10, 60000);
 /**
  * Henter bilde fra TripAdvisor
  * @param {Request} request 
@@ -7,6 +9,26 @@ import { NextResponse } from 'next/server';
  */
 export async function GET(request) {
   try {
+     const rateLimitResult = await rateLimiter(request);
+        if (!rateLimitResult.allowed) {
+                return NextResponse.json(
+                  {
+                    success: false,
+                    error: 'Rate limit exceeded',
+                    message: `Too many requests. Try again in ${rateLimitResult.retryAfter} seconds.`,
+                    retryAfter: rateLimitResult.retryAfter
+                  },
+                  { 
+                    status: 429,
+                    headers: {
+                      'Retry-After': rateLimitResult.retryAfter.toString(),
+                      'X-RateLimit-Limit': '10',
+                      'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+                      'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+                    }
+                  }
+                );
+              }
     const { searchParams } = new URL(request.url);
     const locationId = searchParams.get('locationId');
 
@@ -50,7 +72,11 @@ export async function GET(request) {
 
     // Check if photos exist and return the "large type" image URL
     if (data.data && data.data.length > 0) {
-      return NextResponse.json(data.data[0].images.large.url, { status: 200 });
+      return NextResponse.json(data.data[0].images.large.url, { status: 200, headers: {
+              'X-RateLimit-Limit': '10',
+              'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+              'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+            } });
     } else {
       return NextResponse.json(
         { error: 'No photos found for this location' },

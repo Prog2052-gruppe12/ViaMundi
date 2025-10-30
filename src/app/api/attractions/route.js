@@ -1,7 +1,34 @@
 import { NextResponse } from 'next/server';
 import { decodeCityToCord } from '@/utils/decodeCityToCord';
+import rateLimit from '@/lib/ratelimiter/ratelimit';
+
+const rateLimiter = rateLimit(10, 60000);
+
 
 export async function GET(req) {
+
+  const rateLimitResult = await rateLimiter(req);
+  
+  if (!rateLimitResult.allowed) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Rate limit exceeded',
+            message: `Too many requests. Try again in ${rateLimitResult.retryAfter} seconds.`,
+            retryAfter: rateLimitResult.retryAfter
+          },
+          { 
+            status: 429,
+            headers: {
+              'Retry-After': rateLimitResult.retryAfter.toString(),
+              'X-RateLimit-Limit': '10',
+              'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+              'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+            }
+          }
+        );
+      }
+  
   const { searchParams } = new URL(req.url);
   console.log(searchParams);
   const searchQuery = searchParams.get('interests');
@@ -51,7 +78,16 @@ export async function GET(req) {
 
     const locationIds = responseData.data.map(location => location.location_id);
 
-    return NextResponse.json({ location_ids: locationIds });
+    return NextResponse.json(
+      { location_ids: locationIds },
+      {
+        headers: {
+          'X-RateLimit-Limit': '10',
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+        }
+      }
+    );
 
     //return NextResponse.json(responseData) All data
 
