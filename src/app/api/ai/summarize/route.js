@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { summerizeUserPrompt } from "@/lib/ai/services/summerizeUserPrompt";
+import { summerizeUserPrompt } from "@/lib/summerizeUserPrompt/summerizeUserPrompt";
 import rateLimit from "@/lib/ratelimiter/ratelimit";
 
 const rateLimiter = rateLimit(10, 60000);

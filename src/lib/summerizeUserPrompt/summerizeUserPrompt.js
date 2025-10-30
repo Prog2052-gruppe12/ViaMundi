@@ -1,5 +1,5 @@
-import groq from "../groq-client";
-import { SUMMARIZE_USER_INTERESTS_PROMPT, SYSTEM_PROMPT } from "../prompts";
+import groq from "../groq/client";
+import { PROMPT_SUMMARIZE_USER_INTERESTS, SYSTEM_PROMPT_SUMMARIZE_USER_INTERESTS } from "./prompts";
 
 
 /**

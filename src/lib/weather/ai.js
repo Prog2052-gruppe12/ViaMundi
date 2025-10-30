@@ -1,5 +1,5 @@
 import { createWeatherPrompt } from '@/lib/weather/prompt';
-import groq from '@/lib/ai/groq-client';
+import groq from '@/lib/groq/client';
 
 
 export async function summarizeWeather({ city, dateFrom, dateTo, weatherData }) {
