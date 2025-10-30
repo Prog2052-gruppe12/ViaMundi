@@ -33,15 +33,15 @@ export default function RootLayout({children}) {
         <body
             className={`${geistSans.variable} ${geistMono.variable} ${fontLogo.variable} antialiased flex flex-col min-h-screen\``}
         >
-        <SidebarProvider defaultOpen={false}>
-            <SidebarNav />
-            <main className="w-full h-min-full">
-                <Header/>
-                {/* <DynamicBreadcrumb/> */}
-                {children}
-            </main>
-        </SidebarProvider>
-        <Footer/>
+            <SidebarProvider defaultOpen={false}>
+                <SidebarNav />
+                <main className="w-full h-min-full">
+                    <Header/>
+                    {/* <DynamicBreadcrumb/> */}
+                    {children}
+                </main>
+            </SidebarProvider>
+            <Footer/>
         </body>
         </html>
     );

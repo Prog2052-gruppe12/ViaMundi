@@ -40,6 +40,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"
 import {useIsMobile} from "@/hooks/use-mobile";
+import LoadingPage from "@/app/loading";
 
 const tripTypes = [
     { label: "Syden", value: "syden" },
@@ -118,13 +119,10 @@ export const SearchForm = () => {
         }
     }, [dateFromValue]);
 
-    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
     const router = useRouter();
 
     const onSubmit = async (data) => {
         setLoading(true);
-        await sleep(500);
         try {
             // Validate schema manually
             formSchema.parse(data);
@@ -140,8 +138,6 @@ export const SearchForm = () => {
             router.push(`/interesse?${params.toString()}`);
         } catch (err) {
             alert(err.message);
-        } finally {
-            setLoading(false);
         }
     };
 

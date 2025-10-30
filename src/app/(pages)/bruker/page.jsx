@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Section } from "@/components/common/Section"
 import {Label} from "@/components/ui/label";
+import LoadingPage from "@/app/loading";
 
 
 /**
@@ -36,7 +37,7 @@ export default function UserPage() {
 
 
   if (loading) {
-    return <div>Laster...</div>;
+    return <LoadingPage/>;
   }
 
   if (!user) {
@@ -110,7 +111,7 @@ export default function UserPage() {
             <div>
               <Label>Konto opprettet</Label>
               <div className="py-2 px-4 rounded-md border mt-2 text-md">
-                {new Date(user.auth_time * 1000).toLocaleDateString("nb-NO")}
+                {user.auth_time}
               </div>
             </div>
           </div>

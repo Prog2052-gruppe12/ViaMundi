@@ -5,8 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { SearchParameters } from "@/components/features/searchParameters/SearchParameters";
 import React, { useEffect, useState, Suspense } from "react";
 import {getCityName} from "@/utils/cityFromDest";
+import LoadingPage from "@/app/loading";
+import LocationView from "@/components/features/travelPlan/LocationInfo";
 
-function ResultContent() {
+export default function ResultContent() {
     const searchParams = useSearchParams();
     const destination = searchParams.get("destination");
     const dateFrom = searchParams.get("dateFrom");
@@ -14,10 +16,11 @@ function ResultContent() {
     const travelers = searchParams.get("travelers");
     const interests = searchParams.get("interests");
 
-    const [attractionResult, setAttractionResult] = useState(null);
-    const [locationResult, setLocationResult] = useState(null);
+    const [locationIds, setLocationIds] = useState([]);
+    const [locationResult, setLocationResult] = useState([]);
+    const [locationImage, setLocationImage] = useState([]);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Fetch attractions first
     useEffect(() => {
@@ -35,28 +38,8 @@ function ResultContent() {
 
                 if (!res.ok) throw new Error(data.error || "Failed to fetch attractions");
 
-                setAttractionResult(data);
+                setLocationIds(prev => [...prev, ...data["location_ids"]]);
 
-                // If the API returns location IDs, pick the first one to fetch info
-                if (data?.location_ids?.length > 0) {
-                    await fetchInfoLocation(data.location_ids[0]);
-                }
-            } catch (err) {
-                console.error(err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        async function fetchInfoLocation(locationId) {
-            try {
-                const params = new URLSearchParams({ locationId });
-                const res = await fetch(`/api/location/details?${params.toString()}`);
-                const data = await res.json();
-
-                if (!res.ok) throw new Error(data.error || "Failed to fetch location info");
-                setLocationResult(data);
             } catch (err) {
                 console.error(err);
                 setError(err.message);
@@ -67,6 +50,58 @@ function ResultContent() {
             fetchAttractions().then();
         }
     }, [destination, interests]);
+
+    useEffect(() => {
+        async function fetchInfoLocation(locationId) {
+            try {
+                const params = new URLSearchParams({ locationId });
+                const res = await fetch(`/api/location/details?${params.toString()}`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Failed to fetch location info");
+
+                setLocationResult(prev => [...prev, data]);
+
+            } catch (err) {
+                console.error(err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        if (locationIds.length > 0) {
+            fetchInfoLocation(locationIds.at(0)).then();
+            fetchInfoLocation(locationIds.at(1)).then();
+        }
+    }, [locationIds]);
+
+    useEffect(() => {
+        async function fetchLocationImage(locationId) {
+            try {
+                const params = new URLSearchParams({ locationId });
+                const res = await fetch(`/api/location/image?${params.toString()}`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Failed to fetch location image");
+
+                setLocationImage(prev => [...prev, data]);
+
+            } catch (err) {
+                console.error(err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        if (locationIds.length > 0) {
+            fetchLocationImage(locationIds.at(0)).then();
+            fetchLocationImage(locationIds.at(1)).then();
+        }
+    }, [locationIds]);
+
+    if (loading) {
+        return <LoadingPage/>
+    }
 
     return (
         <div className="flex flex-col items-center w-full h-fit gap-y-12">
@@ -88,28 +123,39 @@ function ResultContent() {
 
                 {loading && <p className="mt-4 text-gray-500">Loading attractions...</p>}
 
-                {!loading && attractionResult && (
+                {/*
+                {!loading && locationIds && (
                     <div className="mt-4 text-sm text-gray-700 bg-gray-100 p-4 rounded-xl w-full">
                         <h2 className="text-lg font-semibold mb-2">Attraction Results</h2>
-                        <pre>{JSON.stringify(attractionResult, null, 2)}</pre>
+                        {locationIds.map((id, i) => (
+                            <p key={i}>LocationID: <span>{id}</span></p>
+                        ))}
                     </div>
                 )}
 
                 {!loading && locationResult && (
                     <div className="mt-4 text-sm text-gray-700 bg-gray-100 p-4 rounded-xl w-full overflow-scroll">
                         <h2 className="text-lg font-semibold mb-2">Location Details</h2>
-                        <pre>{JSON.stringify(locationResult, null, 2)}</pre>
+                        {locationResult.map((info, i) => (
+                            <div key={i}>
+                                <LocationView info={info} />
+                            </div>
+                        ))}
                     </div>
                 )}
+                */}
+
+                {!loading && locationResult && locationImage && (
+                    <div className="w-full h-fit flex flex-col gap-4">
+                        {locationResult.map((info, i) => (
+                            <div key={i}>
+                                <LocationView info={info} image={locationImage.at(i)} />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
             </Section>
         </div>
-    );
-}
-
-export default function Result() {
-    return (
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Laster...</div>}>
-            <ResultContent />
-        </Suspense>
     );
 }

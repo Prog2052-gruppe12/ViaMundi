@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, {useState, Suspense, useEffect} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,54 +27,63 @@ import {
 } from "@/components/ui/form";
 import {ChevronDown, ChevronUp, CircleX, Trash, X, Volleyball} from "lucide-react";
 import {cn} from "@/utils/cn";
+import LoadingPage from "@/app/loading";
 
-function InterestContent() {
-    const [loading, setLoading] = useState(false);
+const INTEREST_OPTIONS = [
+    { id: "nightLife", label: "Nattliv" },
+    { id: "history", label: "Historie" },
+    { id: "nature", label: "Natur" },
+    { id: "food", label: "Mat" },
+    { id: "culture", label: "Kultur" },
+];
+
+const formSchema = z.object({
+    interests: z
+        .object({
+            nightLife: z.boolean(),
+            history: z.boolean(),
+            nature: z.boolean(),
+            food: z.boolean(),
+            culture: z.boolean(),
+        })
+        .refine(
+            (interests) => Object.values(interests).some(Boolean),
+            { message: "Velg minst én interesse" }
+        ),
+    other: z.string().optional(),
+});
+
+export default function InterestContent() {
+    const [loading, setLoading] = useState(true);
+    const [open, setOpen] = useState(false);
+
     const searchParams = useSearchParams();
     const router = useRouter();
+
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 200);
+        return () => clearTimeout(timer);
+    }, []);
 
     const destination = searchParams.get("destination") || "";
     const dateFrom = searchParams.get("dateFrom") || "";
     const dateTo = searchParams.get("dateTo") || "";
     const travelers = searchParams.get("travelers") || "";
 
-    const options = [
-        { id: "nightLife", label: "Nattliv" },
-        { id: "history", label: "Historie" },
-        { id: "nature", label: "Natur" },
-        { id: "food", label: "Mat" },
-        { id: "culture", label: "Kultur" }
-    ];
-
-    const [selectedOptions, setSelectedOptions] = useState({
-        nightLife: false,
-        history: false,
-        nature: false,
-        food: false,
-        culture: false
+    const form = useForm({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            interests: Object.fromEntries(INTEREST_OPTIONS.map((opt) => [opt.id, false])),
+            other: "",
+        },
     });
 
-    const handleCheckedChange = (id, value) => {
-        const updated = {
-            ...selectedOptions,
-            [id]: value,
-        };
-        setSelectedOptions(updated);
-        form.setValue("interests", updated);
-    };
+    const { handleSubmit, setValue, watch } = form;
+    const selected = watch("interests");
 
-    const clearSelections = e => {
-        e.preventDefault();
-        const cleared = Object.keys(selectedOptions).reduce((acc, key) => {
-            acc[key] = false;
-            return acc;
-        }, {});
-        setSelectedOptions(cleared);
-    };
-
-    const selectedLabels = options
-        .filter(opt => selectedOptions[opt.id])
-        .map(opt => opt.label);
+    const selectedLabels = INTEREST_OPTIONS.filter((opt) => selected[opt.id]).map(
+        (opt) => opt.label
+    );
 
     const displayText =
         selectedLabels.length > 0 ? selectedLabels.join(", ") : "Velg...";
@@ -82,57 +91,44 @@ function InterestContent() {
     const textColorClass =
         selectedLabels.length > 0 ? "text-primary" : "text-muted-foreground";
 
-    const formSchema = z.object({
-        interests: z
-            .object({
-                nightLife: z.boolean(),
-                history: z.boolean(),
-                nature: z.boolean(),
-                food: z.boolean(),
-                culture: z.boolean()
-            })
-            .refine(
-                interests => Object.values(interests).some(Boolean),
-                { message: "Velg minst én interesse" }
-            ),
-        other: z.string().optional()
-    });
+    const handleCheckedChange = (id, value) => {
+        setValue(`interests.${id}`, value);
+    };
 
-    const form = useForm({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            interests: selectedOptions,
-            other: ""
-        },
-        shouldFocusError: false
-    });
+    const clearSelections = (e) => {
+        e.preventDefault();
+        const cleared = Object.fromEntries(
+            INTEREST_OPTIONS.map((opt) => [opt.id, false])
+        );
+        setValue("interests", cleared);
+    };
 
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-    const onSubmit = async data => {
+    const onSubmit = async (data) => {
         setLoading(true);
-        await sleep(500);
-
         try {
             formSchema.parse(data);
+
+            const selectedLabels = INTEREST_OPTIONS.filter(
+                (opt) => data.interests[opt.id]
+            ).map((opt) => opt.label);
 
             const params = new URLSearchParams({
                 destination,
                 dateFrom,
                 dateTo,
                 travelers,
-                interests: selectedLabels,
-                other: data.other || ""
+                interests: selectedLabels.join(","),
+                other: data.other || "",
             });
 
             router.push(`/resultat?${params.toString()}`);
         } catch (err) {
             console.error(err);
-            alert(err.message);
-        } finally {
-            setLoading(false);
+            alert("Noe gikk galt, prøv igjen.");
         }
     };
+
+    if (loading) return <LoadingPage />;
 
     return (
         <div>
@@ -183,10 +179,10 @@ function InterestContent() {
                                                         Interesser
                                                     </div>
                                                     <div className="px-1 pb-2">
-                                                        {options.map(option => (
+                                                        {INTEREST_OPTIONS.map(option => (
                                                             <DropdownMenuCheckboxItem
                                                                 key={option.id}
-                                                                checked={selectedOptions[option.id]}
+                                                                checked={selected[option.id]}
                                                                 onSelect={(e) => e.preventDefault()}
                                                                 onCheckedChange={value =>
                                                                     handleCheckedChange(option.id, value)
@@ -265,13 +261,5 @@ function InterestContent() {
                 </form>
             </Form>
         </div>
-    );
-}
-
-export default function Interest() {
-    return (
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Laster...</div>}>
-            <InterestContent />
-        </Suspense>
     );
 }
