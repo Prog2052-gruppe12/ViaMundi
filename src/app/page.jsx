@@ -1,10 +1,5 @@
-import {Header} from "@/components/layout/Header"
-import {Footer} from "@/components/layout/Footer"
 import {Section} from "@/components/common/Section"
-import {SearchForm} from "@/components/features/landing/SearchForm"
-import {Separator} from "@/components/ui/separator";
-import {SidebarProvider} from "@/components/ui/sidebar";
-import SidebarNav from "@/components/layout/SidebarNav";
+import {SearchForm} from "@/components/features/search/SearchForm"
 
 export default function Home() {
   return (

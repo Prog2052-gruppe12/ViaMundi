@@ -4,15 +4,17 @@ import React from "react";
 import {Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
+import {ArrowUpRight} from "lucide-react";
+import Link from "next/link";
+import {useRouter} from "next/navigation";
 
-export default function LocationView({info, image, description}) {
+export default function LocationView({info, image}) {
+    const router = useRouter();
+
     const location = info || {};
     if (!location) {
         return <div>Feil (ingen destinasjons info)</div>;
     }
-
-    console.log(location);
-    console.log(image);
 
     const elements = {
         name: location["name"],
@@ -22,7 +24,10 @@ export default function LocationView({info, image, description}) {
         ratingImage: location["rating_image_url"],
         ratingAmount: location["num_reviews"],
         description: location["description"],
+        url: location["web_url"],
     }
+
+    console.log(elements.description);
 
     return (
         <Card>
@@ -36,7 +41,7 @@ export default function LocationView({info, image, description}) {
                 <div className="w-80 h-52 rounded-lg overflow-hidden">
                     <img src={image} alt="location image" className="w-full h-full object-cover object-center"/>
                 </div>
-                <div className="flex flex-col gap-4 w-full h-52">
+                <div className="flex flex-col gap-x-4 gap-y-2 w-full h-52 max-h-52">
                     <CardHeader className="px-0">
                         <CardTitle className="text-2xl">{elements.name}</CardTitle>
                         <CardDescription className="flex flex-row">
@@ -45,16 +50,29 @@ export default function LocationView({info, image, description}) {
                             ({elements.ratingAmount})
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex flex-row gap-2 px-0 h-full">
-
-                        <div className="w-full flex h-full flex-wrap border">
-                            <p>{elements.description}</p>
-                        </div>
+                    <CardContent className="flex flex-col gap-4 px-0 overflow-hidden">
+                        <p className="break-words whitespace-normal h-32 line-clamp-4 text-pretty">
+                            {!!elements.description ? elements.description : "Ingen beskrivelse"}
+                        </p>
+                        <a
+                            href={elements.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-fit"
+                        >
+                            <Button
+                                size="sm"
+                                variant="secondary"
+                                className="w-fit h-fit !px-4 !py-1"
+                            >
+                                Les mer <ArrowUpRight/>
+                            </Button>
+                        </a>
                     </CardContent>
                 </div>
             </div>
             <CardFooter>
-                <p>Card Footer</p>
+                <p className="text-sm text-muted-foreground">Informasjon hentet fra © 2025 TripAdvisor</p>
             </CardFooter>
         </Card>
     )

@@ -29,9 +29,9 @@ export function AuthButtons() {
   if (user) {
     // Bruker er innlogget - vis bruker-ikon
     return (
-        <Button className="p-0 w-10">
+        <Button asChild variant="outline">
             <Link href="/bruker">
-                <User className="scale-125" />
+                <User/> Min bruker
             </Link>
         </Button>
     );
@@ -41,11 +41,11 @@ export function AuthButtons() {
   return (
     <div className="flex gap-3">
         <div className="hidden lg:block">
-            <Button variant="outline">
+            <Button variant="other" className="hidden">
                 <Link href="/signup">Registrer</Link>
             </Button>
         </div>
-      <Button className="h-9 md:h-10">
+      <Button asChild className="h-9 md:h-10">
         <Link href="/login">Logg inn</Link>
       </Button>
     </div>

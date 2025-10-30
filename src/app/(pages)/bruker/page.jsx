@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Section } from "@/components/common/Section"
 import {Label} from "@/components/ui/label";
 import LoadingPage from "@/app/loading";
+import {BackButton} from "@/components/common/BackButton";
 
 
 /**
@@ -46,13 +47,8 @@ export default function UserPage() {
 
   return (
     <Section type="transparent">
-      <div className="flex flex-col overflow-hidden w-full max-w-[1000px]">
-        <Link 
-          href="/" 
-          className="inline-block mb-4 w-fit text-sm text-gray-600 hover:text-gray-900"
-        >
-          ← Tilbake til forsiden
-        </Link>
+      <div className="flex flex-col overflow-hidden w-full max-w-[1000px] gap-2">
+        <BackButton/>
         
         <div className="bg-white px-8 lg:px-24 py-16 w-full rounded-2xl">
           <div className="flex flex-row justify-between">

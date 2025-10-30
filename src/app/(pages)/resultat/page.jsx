@@ -3,8 +3,8 @@
 import { Section } from "@/components/common/Section";
 import { useSearchParams } from "next/navigation";
 import { SearchParameters } from "@/components/features/searchParameters/SearchParameters";
-import React, { useEffect, useState, Suspense } from "react";
-import {getCityName} from "@/utils/cityFromDest";
+import React, { useEffect, useState } from "react";
+import { getCityName } from "@/utils/cityFromDest";
 import LoadingPage from "@/app/loading";
 import LocationView from "@/components/features/travelPlan/LocationInfo";
 
@@ -16,14 +16,30 @@ export default function ResultContent() {
     const travelers = searchParams.get("travelers");
     const interests = searchParams.get("interests");
 
+    // Store location data in an object keyed by ID
+    const [locations, setLocations] = useState({});
     const [locationIds, setLocationIds] = useState([]);
-    const [locationResult, setLocationResult] = useState([]);
-    const [locationImage, setLocationImage] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Fetch attractions first
+    // Helper to update one location entry
+    const updateLocation = (id, data) => {
+        setLocations(prev => ({ ...prev, [id]: { ...prev[id], ...data } }));
+    };
+
+    // Load cached data from localStorage (if available)
     useEffect(() => {
+        const cacheKey = `travelResults_${destination}_${interests}`;
+        const cached = localStorage.getItem(cacheKey);
+
+        if (cached) {
+            const parsed = JSON.parse(cached);
+            setLocationIds(parsed.locationIds || []);
+            setLocations(parsed.locations || {});
+            setLoading(false);
+            return;
+        }
+
         async function fetchAttractions() {
             try {
                 setLoading(true);
@@ -37,75 +53,71 @@ export default function ResultContent() {
                 const data = await res.json();
 
                 if (!res.ok) throw new Error(data.error || "Failed to fetch attractions");
-
-                setLocationIds(prev => [...prev, ...data["location_ids"]]);
-
+                setLocationIds(data["location_ids"]);
             } catch (err) {
                 console.error(err);
                 setError(err.message);
+            } finally {
+                setLoading(false);
             }
         }
 
-        if (destination && interests) {
-            fetchAttractions().then();
-        }
+        if (destination && interests) fetchAttractions().then();
     }, [destination, interests]);
 
+    // Fetch location details + images if not cached
     useEffect(() => {
-        async function fetchInfoLocation(locationId) {
+        if (locationIds.length === 0) return;
+
+        const cacheKey = `travelResults_${destination}_${interests}`;
+        const fetchData = async () => {
             try {
-                const params = new URLSearchParams({ locationId });
-                const res = await fetch(`/api/location/details?${params.toString()}`);
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || "Failed to fetch location info");
+                setLoading(true);
+                for (const locationId of locationIds) {
+                    // Skip fetch if we already have cached data
+                    if (locations[locationId]?.info && locations[locationId]?.image) continue;
 
-                setLocationResult(prev => [...prev, data]);
+                    const [infoRes, imgRes] = await Promise.all([
+                        fetch(`/api/location/details?locationId=${locationId}`),
+                        fetch(`/api/location/image?locationId=${locationId}`),
+                    ]);
 
+                    const infoData = await infoRes.json();
+                    const imgData = await imgRes.json();
+
+                    if (!infoRes.ok) throw new Error(infoData.error || "Failed to fetch location info");
+                    if (!imgRes.ok) throw new Error(imgData.error || "Failed to fetch location image");
+
+                    updateLocation(locationId, { info: infoData, image: imgData });
+                }
             } catch (err) {
                 console.error(err);
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
-        }
+        };
 
-        if (locationIds.length > 0) {
-            fetchInfoLocation(locationIds.at(0)).then();
-            fetchInfoLocation(locationIds.at(1)).then();
-        }
+        fetchData().then();
     }, [locationIds]);
 
+    // Persist fetched data to localStorage
     useEffect(() => {
-        async function fetchLocationImage(locationId) {
-            try {
-                const params = new URLSearchParams({ locationId });
-                const res = await fetch(`/api/location/image?${params.toString()}`);
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || "Failed to fetch location image");
-
-                setLocationImage(prev => [...prev, data]);
-
-            } catch (err) {
-                console.error(err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
+        if (locationIds.length > 0 && Object.keys(locations).length > 0) {
+            const cacheKey = `travelResults_${destination}_${interests}`;
+            const dataToCache = {
+                locationIds,
+                locations,
+                cachedAt: Date.now(),
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
         }
+    }, [locationIds, locations]);
 
-        if (locationIds.length > 0) {
-            fetchLocationImage(locationIds.at(0)).then();
-            fetchLocationImage(locationIds.at(1)).then();
-        }
-    }, [locationIds]);
-
-    if (loading) {
-        return <LoadingPage/>
-    }
+    if (loading) return <LoadingPage />;
 
     return (
         <div className="flex flex-col items-center w-full h-fit gap-y-12">
-
             <Section>
                 <SearchParameters
                     destination={destination}
@@ -115,46 +127,34 @@ export default function ResultContent() {
                     interests={interests}
                 />
 
-                <h1 className="font-bold text-4xl text-center text-primary-foreground">
-                    Reiseplan
-                </h1>
+                <h1 className="font-bold text-4xl text-center text-primary-foreground">Reiseplan</h1>
 
                 {error && <p className="text-red-500 mt-4">Error: {error}</p>}
 
-                {loading && <p className="mt-4 text-gray-500">Loading attractions...</p>}
-
                 {/*
-                {!loading && locationIds && (
+                {!loading && locationIds.length > 0 && (
                     <div className="mt-4 text-sm text-gray-700 bg-gray-100 p-4 rounded-xl w-full">
                         <h2 className="text-lg font-semibold mb-2">Attraction Results</h2>
-                        {locationIds.map((id, i) => (
-                            <p key={i}>LocationID: <span>{id}</span></p>
-                        ))}
-                    </div>
-                )}
-
-                {!loading && locationResult && (
-                    <div className="mt-4 text-sm text-gray-700 bg-gray-100 p-4 rounded-xl w-full overflow-scroll">
-                        <h2 className="text-lg font-semibold mb-2">Location Details</h2>
-                        {locationResult.map((info, i) => (
-                            <div key={i}>
-                                <LocationView info={info} />
-                            </div>
+                        {locationIds.map(id => (
+                            <p key={id}>LocationID: <span>{id}</span></p>
                         ))}
                     </div>
                 )}
                 */}
 
-                {!loading && locationResult && locationImage && (
+                {!loading && locationIds.length > 0 && (
                     <div className="w-full h-fit flex flex-col gap-4">
-                        {locationResult.map((info, i) => (
-                            <div key={i}>
-                                <LocationView info={info} image={locationImage.at(i)} />
-                            </div>
-                        ))}
+                        {locationIds.map(id => {
+                            const loc = locations[id];
+                            if (!loc?.info) return null;
+                            return (
+                                <div key={id}>
+                                    <LocationView info={loc.info} image={loc.image} />
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
-
             </Section>
         </div>
     );

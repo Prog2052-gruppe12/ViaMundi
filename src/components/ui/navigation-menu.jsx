@@ -119,7 +119,7 @@ function NavigationMenuLink({
       data-slot="navigation-menu-link"
       data-active={isActive}
       className={cn(
-        "text-muted-foreground text-center h-fit data-[active=true]:text-primary-foreground data-[active=true]:bg-accent/90 hover:bg-accent/10 focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col justify-center gap-1 rounded-md py-2 px-3 text-sm font-semibold outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+        "text-muted-foreground text-center h-fit data-[active=true]:text-primary-foreground data-[active=true]:bg-accent/90 hover:bg-accent/10 focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col justify-center gap-1 rounded-full py-2 px-4 text-sm font-semibold outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props} />

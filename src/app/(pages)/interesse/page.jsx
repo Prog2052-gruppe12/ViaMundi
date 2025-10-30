@@ -121,6 +121,8 @@ export default function InterestContent() {
                 other: data.other || "",
             });
 
+            console.log(params)
+
             router.push(`/resultat?${params.toString()}`);
         } catch (err) {
             console.error(err);

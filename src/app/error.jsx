@@ -8,7 +8,7 @@ import Link from "next/link";
 import {Section} from "@/components/common/Section";
 import {RefreshCcw} from "lucide-react";
 
-export default function Error({ error, reset }) {
+export default function ErrorPage({ error, reset }) {
   useEffect(() => {
     console.error(error);
   }, [error]);

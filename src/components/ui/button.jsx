@@ -11,19 +11,22 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-gradient-primary hover:brightness-110 text-primary-foreground",
+        other:
+            "text-muted-foreground hover:bg-accent/10 !h-fit !py-1 font-medium",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
-          "rounded-full bg-transparent border border-accent text-accent hover:brightness-110",
+          "rounded-full bg-transparent border-1 border-accent text-accent hover:brightness-110",
         secondary:
-          "bg-gradient-secondary text-primary-foreground hover:brightness-120 ring-1 ring-card/15",
+          "bg-gradient-secondary text-primary-foreground hover:brightness-120",
         ghost:
             "rounded-md hover:bg-accent",
         fake:
             "dark:hover:bg-accent/50 cursor-pointer font-medium",
         menu:
             "text-xl !h-8 !w-8 hover:bg-accent/20",
-        link: "text-primary underline-offset-4 hover:underline",
+        link:
+            "text-primary underline-offset-4 hover:underline",
       },
       size: {
         fake: "h-10 px-7 py-2.5 has-[>svg]:px-3",
