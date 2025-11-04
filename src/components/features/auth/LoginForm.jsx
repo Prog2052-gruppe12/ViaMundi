@@ -30,7 +30,23 @@ export function LoginForm() {
       router.push(data.profileCompleted ? "/bruker" : "/onboarding");
     } catch (err) {
       console.error("Innloggingsfeil:", err);
-      setError("Innlogging feilet. Sjekk e-post og passord.");
+      
+      // Håndter spesifikke Firebase feil
+      if (err.code === "auth/user-not-found") {
+        setError("Ingen bruker funnet med denne e-postadressen. Opprett en konto?");
+      } else if (err.code === "auth/wrong-password") {
+        setError("Feil passord. Prøv igjen.");
+      } else if (err.code === "auth/invalid-email") {
+        setError("Ugyldig e-postadresse.");
+      } else if (err.code === "auth/user-disabled") {
+        setError("Denne kontoen er deaktivert. Kontakt support.");
+      } else if (err.code === "auth/too-many-requests") {
+        setError("For mange forsøk. Prøv igjen senere.");
+      } else if (err.code === "auth/invalid-credential") {
+        setError("Ugyldig e-post eller passord. Sjekk informasjonen din.");
+      } else {
+        setError("Innlogging feilet. Sjekk e-post og passord.");
+      }
     } finally {
       setLoading(false);
     }
@@ -48,8 +64,22 @@ export function LoginForm() {
       router.push(data.profileCompleted ? "/bruker" : "/onboarding");
     } catch (err) {
       console.error("Google innloggingsfeil:", err);
-      if (err.message !== 'POPUP_CLOSED') {
-        setError("Google innlogging feilet.");
+      
+      if (err.message === 'POPUP_CLOSED') {
+        // Brukeren lukket popup, vis ingen feilmelding
+        return;
+      }
+      
+      // Håndter spesifikke Firebase feil
+      if (err.code === "auth/popup-blocked") {
+        setError("Popup ble blokkert. Vennligst tillat popup-vinduer for denne siden.");
+      } else if (err.code === "auth/cancelled-popup-request") {
+        // Ignorér, brukeren avbrøt
+        return;
+      } else if (err.code === "auth/account-exists-with-different-credential") {
+        setError("En konto eksisterer allerede med samme e-post men annen innloggingsmetode.");
+      } else {
+        setError("Google innlogging feilet. Prøv igjen.");
       }
     } finally {
       setLoading(false);

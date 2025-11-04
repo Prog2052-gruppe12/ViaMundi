@@ -39,7 +39,17 @@ export function SignUpForm() {
       router.push("/onboarding");
     } catch (err) {
       console.error("Registreringsfeil:", err);
-      setError("Registrering feilet. Prøv igjen.");
+      
+      // Håndter spesifikke Firebase feil
+      if (err.code === "auth/email-already-in-use") {
+        setError("Denne e-postadressen er allerede registrert. Prøv å logge inn i stedet.");
+      } else if (err.code === "auth/invalid-email") {
+        setError("Ugyldig e-postadresse.");
+      } else if (err.code === "auth/weak-password") {
+        setError("Passordet er for svakt. Bruk minst 6 tegn.");
+      } else {
+        setError("Registrering feilet. Prøv igjen.");
+      }
     } finally {
       setLoading(false);
     }
@@ -57,8 +67,22 @@ export function SignUpForm() {
       router.push(data.profileCompleted ? "/bruker" : "/");
     } catch (err) {
       console.error("Google registreringsfeil:", err);
-      if (err.message !== 'POPUP_CLOSED') {
-        setError("Google registrering feilet.");
+      
+      if (err.message === 'POPUP_CLOSED') {
+        // Brukeren lukket popup, vis ingen feilmelding
+        return;
+      }
+      
+      // Håndter spesifikke Firebase feil
+      if (err.code === "auth/email-already-in-use") {
+        setError("Denne Google-kontoen er allerede registrert. Prøv å logge inn i stedet.");
+      } else if (err.code === "auth/popup-blocked") {
+        setError("Popup ble blokkert. Vennligst tillat popup-vinduer for denne siden.");
+      } else if (err.code === "auth/cancelled-popup-request") {
+        // Ignorér, brukeren avbrøt
+        return;
+      } else {
+        setError("Google registrering feilet. Prøv igjen.");
       }
     } finally {
       setLoading(false);
