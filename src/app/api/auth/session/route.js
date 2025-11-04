@@ -101,11 +101,19 @@ export async function POST(req) {
     }
 
     // Opprett eller oppdater brukerdokument i Firestore
-    await ensureUserDoc(decoded.uid, {
+    const userInfo = {
       email: decoded.email,
-      name: decoded.name,
-      picture: decoded.picture,
-    });
+    };
+    
+    // Legg kun til name og picture hvis de eksisterer
+    if (decoded.name) {
+      userInfo.name = decoded.name;
+    }
+    if (decoded.picture) {
+      userInfo.picture = decoded.picture;
+    }
+    
+    await ensureUserDoc(decoded.uid, userInfo);
 
     // Opprett session cookie og returner respons
     return await setSessionCookie({ idToken });

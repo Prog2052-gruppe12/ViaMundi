@@ -10,10 +10,28 @@ import { User } from "lucide-react"
 export function AuthButtons() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      
+      // Hent profilbilde fra Firestore hvis bruker er innlogget
+      if (currentUser) {
+        try {
+          const response = await fetch("/api/user/profile");
+          if (response.ok) {
+            const data = await response.json();
+            setProfilePicture(data.userData?.picture || currentUser.photoURL);
+          } else {
+            setProfilePicture(currentUser.photoURL);
+          }
+        } catch (error) {
+          console.error("Feil ved henting av profilbilde:", error);
+          setProfilePicture(currentUser.photoURL);
+        }
+      }
+      
       setLoading(false);
     });
 
@@ -27,11 +45,22 @@ export function AuthButtons() {
   }
 
   if (user) {
-    // Bruker er innlogget - vis bruker-ikon
+    // Bruker er innlogget - vis bruker-ikon eller profilbilde
     return (
         <Button asChild variant="outline">
-            <Link href="/bruker">
-                <User/> Min bruker
+            <Link href="/bruker" className="flex items-center gap-2">
+                {profilePicture ? (
+                    <img 
+                        src={profilePicture} 
+                        alt="Bruker bilde" 
+                        width={24} 
+                        height={24}
+                        className="rounded-full w-6 h-6 object-cover"
+                    />
+                ) : (
+                    <User className="h-4 w-4" />
+                )}
+                <span>Min bruker</span>
             </Link>
         </Button>
     );

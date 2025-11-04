@@ -32,6 +32,23 @@ export async function POST(req) {
     // Ignore user id and update the rest of the data
     const {userId: _, ...profileData } = data;
 
+    // Valider profilbilde størrelse hvis det er inkludert
+    if (profileData.picture) {
+      // Sjekk om det er en base64 streng
+      if (typeof profileData.picture === 'string' && profileData.picture.startsWith('data:image/')) {
+        // Beregn størrelsen (Firestore har 1MB limit per felt)
+        const sizeInBytes = profileData.picture.length;
+        const maxSizeInBytes = 1024 * 1024; // 1MB (Firestore limit)
+        
+        if (sizeInBytes > maxSizeInBytes) {
+          return NextResponse.json(
+            { ok: false, error: "Profilbilde er for stort etter komprimering. Prøv et mindre bilde." },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Get reference to user document
     const userRef = adminDb.collection("users").doc(userId);
     // Update user document

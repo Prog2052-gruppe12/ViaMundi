@@ -83,7 +83,20 @@ export default function UserPage() {
                   </div>
               )}
             </div>
-
+            <div>
+              {user.picture && (
+                <div>
+                  <Label>Profilbilde</Label>
+                  <div className="py-2 px-4 rounded-md border mt-2 flex justify-center">
+                    <img 
+                      src={user.picture} 
+                      alt="Profilbilde" 
+                      className="w-32 h-32 rounded-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
             {user.address && (
                 <div>
                   <div className="grid grid-cols-2 gap-4">
@@ -104,12 +117,6 @@ export default function UserPage() {
                 </div>
                 </div>
             )}
-            <div>
-              <Label>Konto opprettet</Label>
-              <div className="py-2 px-4 rounded-md border mt-2 text-md">
-                {user.auth_time}
-              </div>
-            </div>
           </div>
         </div>
       </div>
