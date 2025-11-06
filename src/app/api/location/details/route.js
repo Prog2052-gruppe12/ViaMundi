@@ -84,7 +84,10 @@ export async function GET(request) {
     const response = await fetch(`${url}?${params}`, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        accept: 'application/json',
+        'x-api-key': apiKey,
+        'Referer': 'https://prog-2053-semester-project.vercel.app',
+        'Origin': 'https://prog-2053-semester-project.vercel.app',
       },
     });
 
