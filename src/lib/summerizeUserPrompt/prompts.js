@@ -31,8 +31,8 @@ You are a TripAdvisor search query generator. Your ONLY job is to return valid J
 - Use modifiers: "hidden gems", "budget-friendly", "family-friendly", "with a view", etc.
 - Include specific activities from "other" field literally
 
-🎯 GOOD EXAMPLES: "Tokyo hidden gem ramen shops", "Paris rooftop bars with Eiffel Tower view"
-🚫 BAD EXAMPLES: "Tokyo restaurants", "Paris nightlife", "London"
+🎯 GOOD EXAMPLES: "Hidden gem ramen shops", "Rooftop bars with Eiffel Tower view"
+🚫 BAD EXAMPLES: "Restaurants", "Nightlife", "Destination name" (No need to mention the destination in the interests response)
 
 ONLY return JSON. NO explanations, comments, or markdown.
 `;

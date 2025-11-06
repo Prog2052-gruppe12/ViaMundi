@@ -17,6 +17,7 @@ import { useDetailsFetcher } from "./hooks/useDetailsFetcher";
 import { getCityName } from "@/utils/cityFromDest";
 import { decodeCityToCord } from "@/utils/decodeCityToCord";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import * as nextResponse from "zod";
 
 export default function ResultContent() {
     const searchParams = useSearchParams();
@@ -24,7 +25,37 @@ export default function ResultContent() {
     const dateFrom = searchParams.get("dateFrom");
     const dateTo = searchParams.get("dateTo");
     const travelers = searchParams.get("travelers");
-    const interests = searchParams.get("interests");
+    const interests_tmp = searchParams.get("interests");
+
+    const [interests, setInterest] = useState(null);
+
+    useEffect(() => {
+        const fetchInterests = async () => {
+            try {
+                const res = await fetch('api/ai/summarize', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        "destination": destination,
+                        "dateFrom": dateFrom,
+                        "dateTo": dateTo,
+                        "travelers": travelers,
+                        "interests": interests_tmp,
+                    })
+                });
+                const data = await res.json();
+                setInterest(data.data.queries[0]);
+                if (!res.ok) throw new Error(data?.error || "Failed to fetch interests from summarizer");
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchInterests().then();
+
+    }, [interests_tmp]);
 
     // ✅ Cache Hook (loads cached values from localStorage if available)
     const {
