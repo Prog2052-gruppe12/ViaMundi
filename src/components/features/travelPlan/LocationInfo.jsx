@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useState} from "react";
 import {Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
@@ -11,10 +11,11 @@ import {useRouter} from "next/navigation";
 export default function LocationView({info, image}) {
     const router = useRouter();
 
-    const location = info || {};
-    if (!location) {
-        return <div>Feil (ingen destinasjons info)</div>;
+    if (!info && !image) {
+        return (<div className="h-16 w-full bg-primary/10 animate-pulse rounded-lg"/>)
     }
+
+    const location = info || {};
 
     const elements = {
         name: location["name"],

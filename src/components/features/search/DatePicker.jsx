@@ -92,13 +92,16 @@ export const DatePicker = ({ label, form, today, dateMax, dateFromWatch }) => {
                             </PopoverTrigger>
                             <PopoverContent
                                 align = {isDateTo ? "end" : "start"}
-                                className="flex flex-col p-0 border-none bg-popover"
+                                className="flex flex-col p-0 border-none bg-popover w-fit"
                             >
                                 <Calendar
                                     mode="single"
                                     today={dateFromWatch}
                                     selected={field.value}
-                                    onSelect={field.onChange}
+                                    onSelect={(date) => {
+                                        field.onChange(date);
+                                        if (date) setOpen(false);
+                                    }}
                                     disabled={(date) => {
                                         if (isDateTo && dateFromWatch) {
                                             return date <= dateFromWatch || date > dateMax;

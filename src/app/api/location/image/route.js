@@ -51,6 +51,14 @@ export async function GET(request) {
 
     // Make request to TripAdvisor API
     const url = `https://api.content.tripadvisor.com/api/v1/location/${locationId}/photos`;
+
+      //** DEV MOCK *//
+      if (process.env.NODE_ENV === 'development') {
+          //console.log('Mock response for ' + url);
+
+          return NextResponse.json('https://picsum.photos/200');
+      }
+
     const params = new URLSearchParams({
       key: apiKey,
       language: 'no',

@@ -10,11 +10,13 @@ import { DatePicker } from "./DatePicker";
 import { DestinationSelect } from "./DestinationSelect";
 import { TravelersInput } from "./TravelersInput";
 import { formSchema } from "./schema";
-import {addDays, addYears} from "date-fns";
+import {addDays, addYears, endOfDay, format, startOfDay} from "date-fns";
 
 export const SearchForm = () => {
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [today, setToday] = useState(null);
+    const [dateMax, setDateMax] = useState(null);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -26,36 +28,28 @@ export const SearchForm = () => {
         },
     });
 
-    const [today, setToday] = useState(null);
-    const [dateMax, setDateMax] = useState(null);
-
     useEffect(() => {
-        const d = new Date();
-        d.setHours(0, 0, 0, 0);
-        setToday(d);
-        setDateMax(addYears(d, 5));
+        const current = new Date();
+        current.setHours(0, 0, 0, 0);
+        setToday(current);
+        setDateMax(addYears(current, 5));
     }, []);
 
-    useEffect(() => {
-        if (today && dateMax) setLoading(false);
-    }, [today, dateMax]);
-
     const dateFromValue = form.watch("dateFrom");
-
     useEffect(() => {
         const dateTo = form.getValues("dateTo");
         if (dateFromValue && dateTo && dateTo < dateFromValue) {
             form.setValue("dateTo", addDays(dateFromValue, 1));
         }
-    }, [dateFromValue]);
+    }, [dateFromValue, form]);
 
     const onSubmit = async (data) => {
         setLoading(true);
         try {
             const params = new URLSearchParams({
                 destination: data.destination,
-                dateFrom: data.dateFrom?.toISOString(),
-                dateTo: data.dateTo?.toISOString(),
+                dateFrom: data.dateFrom ? format(data.dateFrom, "yyyy-MM-dd") : "",
+                dateTo: data.dateTo ? format(data.dateTo, "yyyy-MM-dd") : "",
                 travelers: data.travelers.toString(),
             });
             router.push(`/interesse?${params.toString()}`);
@@ -74,16 +68,28 @@ export const SearchForm = () => {
                 <div className="flex flex-col md:flex-row w-full items-center md:items-end gap-2">
 
                     <div className="flex flex-col sm:flex-row gap-2 w-full">
-                        <DatePicker label="Dato fra" form={form} today={today} dateMax={dateMax}
-                                    dateFromWatch={dateFromValue}/>
+                        <DatePicker label="Dato fra"
+                                    form={form}
+                                    today={today}
+                                    dateMax={dateMax}
+                                    dateFromWatch={dateFromValue}
+                        />
 
-                        <DatePicker label="Dato til" form={form} today={dateFromValue} dateMax={dateMax}
-                                    dateFromWatch={dateFromValue}/>
+                        <DatePicker label="Dato til"
+                                    form={form}
+                                    today={dateFromValue}
+                                    dateMax={dateMax}
+                                    dateFromWatch={dateFromValue}
+                        />
                     </div>
 
                     <TravelersInput label="Antall reisende" form={form}/>
 
-                    <Button type="submit" variant="secondary" className="w-full md:w-fit mt-2" disabled={loading}>
+                    <Button type="submit"
+                            variant="secondary"
+                            className="w-full md:w-fit mt-2"
+                            disabled={loading}
+                    >
                         {loading ? "Laster..." : "Søk"}
                     </Button>
                 </div>

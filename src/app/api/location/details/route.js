@@ -58,6 +58,29 @@ export async function GET(request) {
       currency: 'NOK'
     });
 
+    //** DEV MOCK *//
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Mock response for ' + url + '?' + params);
+
+      return NextResponse.json({
+        location_id: locationId,
+        name: `Mock destination ${locationId}`,
+        subcategory: [
+          { localized_name: "Mock gruppe 1" },
+          { localized_name: "Mock gruppe 2" },
+          { localized_name: "Mock gruppe 3" },
+        ],
+        rating: "4.5", // 👈 string or number, as expected
+        ranking_data: {
+          ranking_string: "Nr. 3 av 140 mock ting å gjøre" // 👈 matches location["ranking_data"]["ranking_string"]
+        },
+        rating_image_url: "https://picsum.photos/70/5/", // 👈 matches location["rating_image_url"]
+        num_reviews: "254", // 👈 matches location["num_reviews"]
+        description: "This is a mocked description for the destination.",
+        web_url: `https://example.com/location/${locationId}`, // 👈 matches location["web_url"]
+      });
+    }
+
     const response = await fetch(`${url}?${params}`, {
       method: 'GET',
       headers: {

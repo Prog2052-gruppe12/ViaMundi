@@ -4,9 +4,7 @@ import rateLimit from '@/lib/ratelimiter/ratelimit';
 
 const rateLimiter = rateLimit(100, 60000);
 
-
 export async function GET(req) {
-
   const rateLimitResult = await rateLimiter(req);
   
   if (!rateLimitResult.allowed) {
@@ -30,7 +28,7 @@ export async function GET(req) {
       }
   
   const { searchParams } = new URL(req.url);
-  console.log(searchParams);
+  //console.log(searchParams);
   const searchQuery = searchParams.get('interests');
   const city = searchParams.get('destination');
   const radiusUnit = searchParams.get('radiusUnit');
@@ -58,7 +56,19 @@ export async function GET(req) {
   if (radiusUnit) params.append('radiusUnit', radiusUnit);
 
   const url = `${baseUrl}?${params.toString()}`;
-  console.log(url);
+  //console.log(url);
+
+  //** DEV MOCK *//
+  if (process.env.NODE_ENV === 'development') {
+    //console.log('Mock response for ' + url);
+
+    return NextResponse.json({
+      location_ids: [
+        "00001", "00002", "00003", "00004", "00005",
+        "00006", "00007", "00008", "00009", "00010",
+      ],
+    });
+  }
 
   try {
     const response = await fetch(url, {

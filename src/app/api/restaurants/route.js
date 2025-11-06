@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import rateLimit from '@/lib/ratelimiter/ratelimit';
+
 const rateLimiter = rateLimit(100, 60000);
 /**
  * Henter restauranter fra TripAdvisor
@@ -57,6 +58,18 @@ export async function GET(req) {
   if (radiusUnit) params.append('radiusUnit', radiusUnit);
 
   const url = `${baseUrl}?${params.toString()}`;
+
+  //** DEV MOCK *//
+  if (process.env.NODE_ENV === 'development') {
+    //console.log('Mock response for ' + url);
+
+    return NextResponse.json({
+      location_ids: [
+        "11111", "11112", "11113", "11114", "11115",
+        "11116", "11117", "11118", "11119", "11120",
+      ],
+    });
+  }
 
   try {
     const response = await fetch(url, {
