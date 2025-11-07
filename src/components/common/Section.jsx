@@ -9,7 +9,7 @@ export const Section = (props) => {
     let px = "px-4 md:px-6 lg:px-16 2xl:px-32"
     let py = "py-12 lg:py-20"
     let border = "border-2 border-card/20"
-    let rounded = "rounded-xl"
+    let rounded = "rounded-2xl"
     if (type === "secondary") {
         bgColor = "bg-gradient-secondary"
     } else if (type === "transparent") {
@@ -24,16 +24,19 @@ export const Section = (props) => {
         rounded = "rounded-none";
         bgColor = "bg-transparent";
         sect = "p-0"
+    } else if (type === "image") {
+        bgColor = "bg-transparent";
+        border = "border-none";
     }
     return (
         <section className={cn(
             `w-full ${sect} shadow-none flex justify-center border-none`
         )}>
             <Card className={cn(
-                `w-full ${px} ${py} ${rounded} shadow-none ${border} max-w-[1700px] ${bgColor}`,
+                `w-full ${px} ${py} ${rounded} shadow-none ${border} max-w-[1700px] ${bgColor} relative overflow-hidden`,
                 props.className,
             )}>
-                <CardContent className="w-full flex flex-col items-center p-0 gap-y-8">
+                <CardContent className="w-full flex flex-col items-center p-0 gap-y-6">
                     {props.children}
                 </CardContent>
             </Card>

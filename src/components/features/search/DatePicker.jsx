@@ -26,14 +26,15 @@ export const DatePicker = ({ label, form, today, dateMax, dateFromWatch }) => {
         if (today && dateMax) setLoading(false);
     }, [today, dateMax]);
 
-    const TriggerButton = ({ field }) => (
+    const TriggerButton = ({ field, left }) => (
         <Button
             variant="fake"
             size="fake"
             className={cn(
-                "bg-card w-full justify-between rounded-md text-md",
+                "bg-card w-full justify-between text-md rounded-md",
                 !field.value && "text-muted-foreground",
-                currentForm.formState.errors[field.name] && "ring-[3px] ring-destructive/30"
+                currentForm.formState.errors[field.name] && "ring-[3px] ring-destructive/30",
+                !isDateTo ? "sm:rounded-l-md sm:rounded-r-none xl:rounded-none" : "sm:rounded-r-md sm:rounded-l-none md:rounded-none"
             )}
             disabled={loading}
         >
@@ -88,7 +89,7 @@ export const DatePicker = ({ label, form, today, dateMax, dateFromWatch }) => {
                         <FormLabel className="font-bold text-sm text-card">{label}</FormLabel>
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
-                                <FormControl>{TriggerButton({ field })}</FormControl>
+                                <FormControl>{TriggerButton({ field, isDateTo })}</FormControl>
                             </PopoverTrigger>
                             <PopoverContent
                                 align = {isDateTo ? "end" : "start"}

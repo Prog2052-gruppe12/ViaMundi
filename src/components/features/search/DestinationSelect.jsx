@@ -34,7 +34,7 @@ export const DestinationSelect = ({ label, form }) => {
                 size="fake"
                 role="combobox"
                 className={cn(
-                    "bg-card w-full justify-between rounded-md py-5 text-md",
+                    "bg-card w-full justify-between rounded-md xl:rounded-l-md xl:rounded-r-none py-5 text-md",
                     open ? "cursor-default" : "cursor-pointer",
                     !field.value && "text-muted-foreground",
                     currentForm.formState.errors.destination && "ring-[3px] ring-destructive/30"

@@ -26,7 +26,7 @@ export const TravelersInput = ({ label, form }) => {
                             min={1}
                             max={10}
                             className={cn(
-                                "w-full bg-card text-foreground text-md font-medium pl-10.25 rounded-md",
+                                "w-full bg-card text-foreground text-md font-medium pl-10.25 md:rounded-l-none md:rounded-r-md",
                                 currentForm.formState.errors.travelers && "ring-[3px] ring-destructive/40"
                             )}
                             {...field}

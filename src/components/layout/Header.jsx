@@ -11,7 +11,7 @@ import Link from "next/link";
 export const Header = () => {
     return (
         <header
-            className="sticky top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 lg:mb-12 mb-6 flex items-center justify-center bg-card z-39">
+            className="sticky top-0 left-0 w-full h-20 px-4 md:px-16 lg:px-32 py-5 lg:mb-12 mb-6 flex items-center justify-center z-39">
             <div className="max-w-[1700px] w-full h-full flex items-center justify-between">
                 {/* Left: Logo */}
                 <div className="flex items-center gap-4">

@@ -6,6 +6,9 @@ import {SidebarProvider} from "@/components/ui/sidebar";
 import SidebarNav from "@/components/layout/SidebarNav";
 import {DynamicBreadcrumb} from "@/components/common/DynamicBreadcrumb";
 
+import Image from "next/image";
+import bgImage from "@/assets/main_bg.webp";
+
 const geistSans = Geist({
     variable: "--font-sans",
     subsets: ["latin"],
@@ -36,6 +39,7 @@ export default function RootLayout({children}) {
             <SidebarProvider defaultOpen={false}>
                 <SidebarNav />
                 <main className="w-full h-min-full">
+                    
                     <Header/>
                     {/* <DynamicBreadcrumb/> */}
                     {children}
