@@ -6,6 +6,9 @@ import LoadingPage from "@/app/loading";
 import { Section } from "@/components/common/Section";
 import { SearchParameters } from "@/components/features/searchParameters/SearchParameters";
 import PlanDay from "@/components/features/travelPlan/PlanDay";
+import { usePdfExport } from "@/hooks/usePdfExport";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 export default function SavedTripPage() {
   const params = useParams();
@@ -14,6 +17,14 @@ export default function SavedTripPage() {
   const [trip, setTrip] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { exportPdf, isExporting, error: pdfError } = usePdfExport();
+
+  const handleExportPdf = async () => {
+    if (trip) {
+      await exportPdf(trip);
+    }
+  };
 
   useEffect(() => {
     const fetchTrip = async () => {
@@ -71,6 +82,26 @@ export default function SavedTripPage() {
           travelers={trip.travelers}
           interests={interestsEffective}
         />
+
+        {/* PDF Export Button */}
+        <div className="flex justify-end items-center p-4 border-b bg-card">
+          <div className="flex items-center gap-3">
+            {pdfError && (
+              <span className="text-sm text-red-600">
+                {pdfError}
+              </span>
+            )}
+            <Button 
+              onClick={handleExportPdf}
+              disabled={isExporting}
+              className="flex items-center gap-2"
+              variant="outline"
+            >
+              <Download size={16} />
+              {isExporting ? "Genererer PDF..." : "Last ned som PDF"}
+            </Button>
+          </div>
+        </div>
 
         <Section type="plan">
           {Object.keys(trip.finalPlan || {}).length > 0 ? (
