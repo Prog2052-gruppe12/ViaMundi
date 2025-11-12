@@ -5,6 +5,11 @@
     "icon": "House"
   },
   {
+    "title": "Mine reiser",
+    "url": "/bruker/reiser",
+    "icon": "Plane"
+  },
+  {
     "title": "Finn reise",
     "url": "/finn-reise",
     "icon": "TicketsPlane"

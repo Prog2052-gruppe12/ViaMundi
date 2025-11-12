@@ -17,6 +17,11 @@ export const Nav = () => {
                 </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
+                <NavigationMenuLink href="/bruker/reiser" asChild>
+                    <Link href="/bruker/reiser">Mine reiser</Link>
+                </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
                 <NavigationMenuLink href="/finn-reise" asChild>
                     <Link href="/finn-reise">Finn reise</Link>
                 </NavigationMenuLink>
