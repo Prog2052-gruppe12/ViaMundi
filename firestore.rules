@@ -7,7 +7,18 @@ service cloud.firestore {
       allow read: if true;
       allow write: if true; // TEMP for local testing
     }
-      match /{doc=**} {
+    
+    // User profile and trips rules
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Trips subcollection rules
+      match /trips/{tripId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    match /{doc=**} {
       allow read, write: if request.auth != null;
     }
   }
