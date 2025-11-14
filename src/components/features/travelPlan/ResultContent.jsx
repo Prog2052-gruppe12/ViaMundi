@@ -28,6 +28,7 @@ export default function ResultContent() {
     const travelers = searchParams.get("travelers") || "";
     const interestsFromUrl = searchParams.get("interests") || "";
 
+    /*
     // Cache/hydration
     const {
         locationIds,
@@ -105,6 +106,9 @@ export default function ResultContent() {
         idsReady,
         isDetailsReady,
     });
+    */
+
+    
 
     // Save trip functionality
     const { saveTrip, isSaving, error: saveError } = useSaveTrip();
