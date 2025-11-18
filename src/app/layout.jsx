@@ -5,6 +5,7 @@ import {Footer} from "@/components/layout/Footer";
 import {SidebarProvider} from "@/components/ui/sidebar";
 import SidebarNav from "@/components/layout/SidebarNav";
 import {DynamicBreadcrumb} from "@/components/common/DynamicBreadcrumb";
+import {SpeedInsights} from "@vercel/speed-insights/next";
 
 import Image from "next/image";
 import bgImage from "@/assets/main_bg.webp";
@@ -46,6 +47,7 @@ export default function RootLayout({children}) {
                 </main>
             </SidebarProvider>
             <Footer/>
+            <SpeedInsights/>
         </body>
         </html>
     );
