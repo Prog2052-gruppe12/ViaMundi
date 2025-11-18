@@ -18,14 +18,14 @@ export default function LocationView({info, image}) {
     const location = info || {};
 
     const elements = {
-        name: location["name"],
-        groups: location["subcategory"],
-        rating: location["rating"],
-        ratingInfo: location["ranking_data"]["ranking_string"],
-        ratingImage: location["rating_image_url"],
-        ratingAmount: location["num_reviews"],
-        description: location["description"],
-        url: location["web_url"],
+        name: location?.["name"] || "Ukjent sted",
+        groups: location?.["subcategory"] || [],
+        rating: location?.["rating"] || "N/A",
+        ratingInfo: location?.["ranking_data"]?.["ranking_string"] || "Ukjent rangering",
+        ratingImage: location?.["rating_image_url"] || "N/A",
+        ratingAmount: location?.["num_reviews"] || "0",
+        description: location?.["description"] || "Ingen beskrivelse tilgjengelig",
+        url: location?.["web_url"] || "#",
     }
 
     return (

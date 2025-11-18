@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
-import { nb } from "date-fns/locale";
+import { da, nb } from "date-fns/locale";
 import LocationView from "@/components/features/travelPlan/LocationInfo";
 import {
     Accordion,
@@ -23,7 +23,11 @@ function safeParseYMD(ymd) {
     return Number.isNaN(dt.getTime()) ? null : dt;
 }
 
-const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, activity, restaurant }) {
+const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, restaurants }) {
+
+    const attractionObj = attractions[0];
+    const restaurantObj = restaurants[0]
+
     const dateObj = useMemo(() => safeParseYMD(dateKey), [dateKey]);
     const dateLabel = useMemo(() => {
         if (!dateObj) return dateKey;
@@ -50,15 +54,15 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, activity, rest
                             <div className="flex flex-col gap-2">
                                 <h4 className="font-medium text-primary">Aktivitet</h4>
                                 <LocationView
-                                    info={activity?.info || null}
-                                    image={activity?.image || null}
+                                    info={attractionObj || null}
+                                    image={attractionObj?.image || null}
                                 />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h4 className="font-medium text-primary">Restaurant</h4>
                                 <LocationView
-                                    info={restaurant?.info || null}
-                                    image={restaurant?.image || null}
+                                    info={restaurantObj || null}
+                                    image={restaurantObj?.image || null}
                                 />
                             </div>
                         </div>

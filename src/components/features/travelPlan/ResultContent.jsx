@@ -1,143 +1,204 @@
+// Updated code using fetchDetails.
+
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import LoadingPage from "@/app/loading";
+import { decodeCityToCord } from "@/utils/decodeCityToCord";
+import { parseYMD } from "@/lib/date/parseYMD";
+import { formatYMDLocal } from "@/lib/date/formatYMDLocal";
 import { Section } from "@/components/common/Section";
 import { SearchParameters } from "@/components/features/searchParameters/SearchParameters";
-import LoadingPage from "@/app/loading";
-
-import { useCache } from "@/hooks/useCache"
-import { usePlan } from "@/hooks/usePlan";
-import { useDetailsFetcher } from "@/hooks/useDetailsFetcher";
 import PlanDay from "@/components/features/travelPlan/PlanDay";
-
-import { useInterestsLoader } from "@/hooks/useInterestsLoader";
-import { useIdsLoader } from "@/hooks/useIdsLoader";
-import { useDetailsReady } from "@/hooks/useDetailsReady";
-import { usePageReady } from "@/hooks/usePageReady";
 import { useSaveTrip } from "@/hooks/useSaveTrip";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { getCityName } from "@/utils/cityFromDest";
 
+async function runSummarize(params, paramType) {
+    const res = await fetch("/api/ai/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            destination: params.destination,
+            dateFrom: params.dateFrom,
+            dateTo: params.dateTo,
+            travelers: params.travelers,
+            interests: params.interests,
+            other: params.other,
+            type: paramType = "both"
+        })
+    });
+    return res.json();
+}
+
+async function fetchLocationIds(destination, interests) {
+    const qs = new URLSearchParams();
+    if (destination) qs.set("destination", destination);
+    if (interests) qs.set("interests", interests);
+    const res = await fetch(`/api/attractions?${qs.toString()}`);
+    return res.json();
+}
+
+async function fetchRestaurantIds(destination, interests) {
+    const qs = new URLSearchParams();
+    let lat = null, long = null;
+
+    try {
+        const coords = await decodeCityToCord(destination.split(',')[1].trim());
+        lat = coords?.latitude ?? null;
+        long = coords?.longitude ?? null;
+    } catch { }
+
+    const latLong = lat != null && long != null ? `${lat},${long}` : "";
+    if (destination) qs.set("latLong", latLong);
+    if (interests) qs.set("searchQuery", interests);
+
+    const res = await fetch(`/api/restaurants?${qs.toString()}`);
+    return res.json();
+}
+
+async function fetchDetails(id) {
+    const res = await fetch(`/api/location/details?locationId=${id}`);
+    return res.json();
+}
+
+async function fetchImage(id) {
+    const res = await fetch(`/api/location/image?locationId=${id}`);
+    return res.json();
+}
+
+function createPlanSkeleton(dateFrom, dateTo) {
+    const start = parseYMD(dateFrom);
+    const end = parseYMD(dateTo);
+    if (!start || !end || start > end) return {};
+
+    const days = [];
+    const cursor = new Date(start);
+    while (cursor <= end) {
+        days.push(new Date(cursor));
+        cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return days.reduce((acc, date, idx) => {
+        const key = formatYMDLocal(date);
+        acc[key] = {
+            dayNumber: idx + 1,
+            attractions: [],
+            restaurants: []
+        };
+        return acc;
+    }, {});
+}
+
+async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds) {
+    const filled = { ...planSkeleton };
+    const attractions = locationIds?.location_ids ?? [];
+    const restaurants = restaurantIds?.location_ids ?? [];
+
+    const keys = Object.keys(filled);
+
+    for (let i = 0; i < keys.length; i++) {
+        const dayKey = keys[i];
+        const attractionId = attractions[i];
+        const restaurantId = restaurants[i];
+
+        // Fetch details for each ID
+        const [attractionDetails, restaurantDetails] = await Promise.all([
+            attractionId ? fetchDetails(attractionId) : null,
+            restaurantId ? fetchDetails(restaurantId) : null
+        ]);
+
+        const [attractionImage, restaurantImage] = await Promise.all([
+            attractionId ? fetchImage(attractionId) : null,
+            restaurantId ? fetchImage(restaurantId) : null
+        ]);
+
+        filled[dayKey].attractions = attractionDetails ? [{ ...attractionDetails, image: attractionImage ?? null }] : [];
+        filled[dayKey].restaurants = restaurantDetails ? [{ ...restaurantDetails, image: restaurantImage ?? null }] : [];
+    }
+
+    return filled;
+}
+
 export default function ResultContent() {
     const searchParams = useSearchParams();
-    const destination = searchParams.get("destination") || "";
-    const dateFrom = searchParams.get("dateFrom") || "";
-    const dateTo = searchParams.get("dateTo") || "";
-    const travelers = searchParams.get("travelers") || "";
-    const interestsFromUrl = searchParams.get("interests") || "";
+    const destinationParam = searchParams.get("destination") || "";
+    const dateFromParam = searchParams.get("dateFrom") || "";
+    const dateToParam = searchParams.get("dateTo") || "";
+    const travelersParam = searchParams.get("travelers") || "";
+    const interestsParam = searchParams.get("interests") || "";
+    const otherParam = searchParams.get("other") || "";
 
-    /*
-    // Cache/hydration
-    const {
-        locationIds,
-        restaurantIds,
-        detailsCache,
-        interestsCache,
-        setInterestsCache,
-        setLocationIds,
-        setRestaurantIds,
-        setDetailsCache,
-        error,
-        setError,
-        isHydrated,
-        cacheKey,
-    } = useCache({
-        destination,
-        dateFrom,
-        dateTo,
-        interests: interestsFromUrl,
-    });
+    const [loading, setLoading] = useState(true);
+    const [summarized, setSummarized] = useState(null);
+    const [fullPlan, setFullPlan] = useState(null);
 
-    // AI (or fallback) interests
-    const { interests, isFetchingInterests } = useInterestsLoader({
-        destination,
-        dateFrom,
-        dateTo,
-        travelers,
-        interestsFromUrl,
-        isHydrated,
-        interestsCache,
-        setInterestsCache,
-    });
-    const interestsEffective = interests ?? interestsFromUrl;
+    const params = {
+        destination: destinationParam,
+        dateFrom: dateFromParam,
+        dateTo: dateToParam,
+        travelers: travelersParam,
+        interests: interestsParam,
+        other: otherParam
+    };
 
-    // Plan (deterministic selection)
-    const { dayKeys, finalPlan, plannedIds, isPlanFullyCached } = usePlan({
-        dateFrom,
-        dateTo,
-        locationIds,
-        restaurantIds,
-        detailsCache,
-        destination,
-        interests: interestsEffective,
-    });
+    useEffect(() => {
+        let mounted = true;
 
-    // IDs loading
-    const { idsReady } = useIdsLoader({
-        destination,
-        interestsEffective,
-        isHydrated,
-        cacheKey,
-        locationIds,
-        restaurantIds,
-        setLocationIds,
-        setRestaurantIds,
-        setDetailsCache,
-        setError,
-    });
+        (async () => {
+            setLoading(true);
+            try {
+                const summary = await runSummarize(params);
+                if (mounted) setSummarized(summary?.data.interests.queries[0] ?? interestsParam);
+                const locationQuery = summary?.data.interests.queries[0] ?? interestsParam;
+                const restaurantQuery = summary?.data.restaurants.queries[0] ?? interestsParam;
 
-    // Details loading (worker)
-    useDetailsFetcher(
-        idsReady ? plannedIds : [],
-        detailsCache,
-        setDetailsCache,
-        isHydrated,
-        cacheKey,
-        idsReady
-    );
+                const [locationIds, restaurantIds] = await Promise.all([
+                    fetchLocationIds(destinationParam, locationQuery),
+                    fetchRestaurantIds(destinationParam, restaurantQuery)
+                ]);
 
-    // Readiness gates
-    const { isDetailsReady } = useDetailsReady({ idsReady, plannedIds, detailsCache });
-    const { pageReady } = usePageReady({
-        isHydrated,
-        isFetchingInterests,
-        idsReady,
-        isDetailsReady,
-    });
-    */
+                const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
+                const fullPlan = await fillPlanWithDetails(skeleton, locationIds, restaurantIds);
 
-    
+                if (mounted) setFullPlan(fullPlan);
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        })();
+
+        return () => { mounted = false; };
+    }, [destinationParam, dateFromParam, dateToParam, travelersParam, interestsParam, otherParam]);
 
     // Save trip functionality
     const { saveTrip, isSaving, error: saveError } = useSaveTrip();
     const [saveSuccess, setSaveSuccess] = useState(false);
 
+    const dayKeys = Object.keys(fullPlan || {});
+
     const handleSaveTrip = async () => {
         setSaveSuccess(false);
-        
+
         // Extract thumbnail from first day's activity if available
         const firstDayKey = dayKeys[0];
-        const thumbnailUrl = finalPlan[firstDayKey]?.activity?.image?.images?.large?.url || null;
+        const firstAttraction = fullPlan[firstDayKey]?.attractions?.[0] ?? null;
+        const thumbnailUrl = firstAttraction?.image?.url || null;
 
         const tripData = {
-            destination,
-            dateFrom,
-            dateTo,
-            travelers: parseInt(travelers) || 1,
-            interests: interestsEffective || "",
-            interestsRaw: interestsFromUrl || "",
-            locationIds,
-            restaurantIds,
-            plannedIds,
-            finalPlan,
-            detailsCache,
+            destination: params.destination,
+            dateFrom: params.dateFrom,
+            dateTo: params.dateTo,
+            travelers: parseInt(params.travelers) || 1,
+            interests: summarized || "",
+            interestsRaw: params.interests || "",
+            plan: fullPlan,
             metadata: {
-                cityName: getCityName(destination) || destination,
+                cityName: getCityName(params.destination) || params.destination,
                 dayCount: dayKeys.length,
                 thumbnailUrl,
-            }
+            },
         };
 
         const result = await saveTrip(tripData);
@@ -147,43 +208,53 @@ export default function ResultContent() {
         }
     };
 
-    if (!pageReady) return <LoadingPage />;
+    if (loading) return <LoadingPage />;
 
     return (
         <div className="flex flex-col items-center w-full h-fit px-4 md:px-16 lg:px-32 ">
-            {error && (
-                <p className="absolute border p-1 px-3 bg-card text-red-500 text-xs top-22 opacity-70">
-                    Error: {error}
-                </p>
-            )}
             <div className="flex flex-col w-full overflow-hidden rounded-2xl border max-w-[1700px]">
                 <SearchParameters
-                    destination={destination}
-                    dateFrom={dateFrom}
-                    dateTo={dateTo}
-                    travelers={travelers}
-                    interests={interestsEffective}
+                    destination={params.destination}
+                    dateFrom={params.dateFrom}
+                    dateTo={params.dateTo}
+                    travelers={params.travelers}
+                    interests={summarized}
                 />
-                
+
                 {/* Save Trip Button */}
                 <div className="flex justify-between items-center p-4 border-b bg-card">
+
+                    {/* Left side summary */}
                     <div className="text-sm text-muted-foreground">
-                        {dayKeys.length} dag{dayKeys.length !== 1 ? "er" : ""} planlagt • {plannedIds.length} lokasjoner
+                        {dayKeys.length} dag{dayKeys.length !== 1 ? "er" : ""} planlagt •{" "}
+                        {
+                            Object.values(fullPlan || {})
+                                .reduce((total, day) => {
+                                    const a = day.attractions?.length || 0;
+                                    const r = day.restaurants?.length || 0;
+                                    return total + a + r;
+                                }, 0)
+                        }{" "}
+                        lokasjoner
                     </div>
+
+                    {/* Right side buttons */}
                     <div className="flex items-center gap-3">
                         {saveSuccess && (
                             <span className="text-sm text-green-600 font-medium">
                                 ✓ Reise lagret!
                             </span>
                         )}
+
                         {saveError && (
                             <span className="text-sm text-red-600">
                                 {saveError}
                             </span>
                         )}
-                        <Button 
+
+                        <Button
                             onClick={handleSaveTrip}
-                            disabled={isSaving || !pageReady || dayKeys.length === 0 || plannedIds.length === 0}
+                            disabled={isSaving || dayKeys.length === 0}
                             className="flex items-center gap-2"
                             variant="default"
                         >
@@ -192,17 +263,18 @@ export default function ResultContent() {
                         </Button>
                     </div>
                 </div>
-                
+
+
                 <Section type="plan">
-                    {Object.keys(finalPlan || {}).length > 0 ? (
+                    {Object.keys(fullPlan || {}).length > 0 ? (
                         <div className="flex flex-col gap-4 w-full">
-                            {Object.entries(finalPlan).map(([dateKey, plan]) => (
+                            {Object.entries(fullPlan).map(([dateKey, plan]) => (
                                 <PlanDay
                                     key={dateKey}
                                     dateKey={dateKey}
                                     dayNumber={plan.dayNumber}
-                                    activity={plan.activity}
-                                    restaurant={plan.restaurant}
+                                    attractions={plan.attractions}
+                                    restaurants={plan.restaurants}
                                 />
                             ))}
                         </div>
