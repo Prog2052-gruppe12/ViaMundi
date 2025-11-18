@@ -193,7 +193,7 @@ export default function ResultContent() {
             travelers: parseInt(params.travelers) || 1,
             interests: summarized || "",
             interestsRaw: params.interests || "",
-            plan: fullPlan,
+            finalPlan: fullPlan,
             metadata: {
                 cityName: getCityName(params.destination) || params.destination,
                 dayCount: dayKeys.length,
