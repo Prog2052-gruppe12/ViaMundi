@@ -60,7 +60,7 @@ export default function LocationView({ info, image }) {
                 </div>
                 <div className="flex-1 flex flex-col gap-x-4 gap-y-2 w-full">
                     <CardHeader className="px-0 gap-1">
-                        <CardTitle className="text-lg break-words whitespace-normal line-clamp-1 text-pretty">
+                        <CardTitle className="text-lg font-medium break-words whitespace-normal line-clamp-1 text-pretty">
                             <a href={elements.url}
                                 target="_blank"
                                 rel="noopener noreferrer"

@@ -1,47 +1,48 @@
-import { CloudSun } from "lucide-react";
-import { CloudDrizzle } from "lucide-react";
-import { CloudSnow } from "lucide-react";
-import { CloudLightning } from "lucide-react";
-import { Snowflake } from "lucide-react";
-import { CloudRain } from "lucide-react";
-import { CloudHail } from "lucide-react";
-import { CloudFog } from "lucide-react";
-import { Sun } from "lucide-react";
+import { CloudSun, CloudDrizzle, CloudSnow, CloudLightning, Snowflake, CloudRain, CloudHail, CloudFog, Sun } from "lucide-react";
 
-export function getWeatherIcon(weatherCode) {
-    let icon = null;
+export function getWeatherIcon(weatherCode, size) {
+    const code = Number(weatherCode);
+    if (Number.isNaN(code)) return <Sun size={size}/>;
 
-    switch (weatherCode) {
+    switch (code) {
         case 0:
-            icon = <Sun />;
-            break;
-        case 1, 2, 3:
-            icon = <CloudSun />;
-            break;
-        case 45, 48:
-            icon = <CloudFog />;
-            break;
-        case 51, 53, 55:
-            icon = <CloudDrizzle />;
-            break;
-        case 56, 57, 66, 67:
-            icon = <CloudHail />;
-            break;
-        case 61, 63, 65, 80, 81, 82:
-            icon = <CloudRain />;
-            break;
-        case 71, 73, 75, 85, 86:
-            icon = <CloudSnow />;
-            break;
+            return <Sun size={size}/>;
+        case 1:
+        case 2:
+        case 3:
+            return <CloudSun size={size}/>;
+        case 45:
+        case 48:
+            return <CloudFog size={size}/>;
+        case 51:
+        case 53:
+        case 55:
+            return <CloudDrizzle size={size}/>;
+        case 56:
+        case 57:
+        case 66:
+        case 67:
+            return <CloudHail size={size}/>;
+        case 61:
+        case 63:
+        case 65:
+        case 80:
+        case 81:
+        case 82:
+            return <CloudRain size={size}/>;
+        case 71:
+        case 73:
+        case 75:
+        case 85:
+        case 86:
+            return <CloudSnow size={size}/>;
         case 77:
-            icon = <Snowflake />;
-            break;
-        case 95, 96, 99:
-            icon = <CloudLightning />;
-            break;
+            return <Snowflake size={size}/>;
+        case 95:
+        case 96:
+        case 99:
+            return <CloudLightning size={size}/>;
         default:
-            break;
+            return <Sun size={size}/>;
     }
-
-    return icon;
 }

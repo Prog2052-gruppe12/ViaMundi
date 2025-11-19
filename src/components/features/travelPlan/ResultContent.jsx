@@ -68,7 +68,6 @@ async function fetchWeather(destination, dateFrom, dateTo) {
     if (dateFrom) qs.set("dateFrom", dateFrom);
     if (dateTo) qs.set("dateTo", dateTo);
     const res = await fetch(`/api/weather-summary?${qs.toString()}`);
-    console.log(res);
     return res.json();
 }
 
@@ -213,6 +212,7 @@ export default function ResultContent() {
     const [summarized, setSummarized] = useState(null);
     const [fullPlan, setFullPlan] = useState(null);
     const [summarizedPlan, setSummarizedPlan] = useState(null);
+    const [weatherSummary, setWeatherSummary] = useState(null);
 
     const params = {
         destination: destinationParam,
@@ -245,7 +245,7 @@ export default function ResultContent() {
                     fetchRestaurantIds(destinationParam, restaurantQuery)
                 ]);
 
-                //const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+                const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
 
                 const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
 
@@ -263,6 +263,7 @@ export default function ResultContent() {
                 if (mounted) {
                     setFullPlan(fullPlan);
                     setSummarizedPlan(summarizedPlan);
+                    setWeatherSummary(weatherSummary);
                 }
             } finally {
                 if (mounted) setLoading(false);
@@ -377,6 +378,7 @@ export default function ResultContent() {
                                     attractions={plan.attractions}
                                     restaurants={plan.restaurants}
                                     planSummary={summarizedPlan["summarizedPlan"][dateKey]}
+                                    weatherSummary={weatherSummary["aiSummary"]["days"][plan.dayNumber - 1]}
                                 />
                             ))}
                         </div>
