@@ -195,74 +195,87 @@ export function TripPdfDocument({ trip }) {
             year: "numeric",
           });
 
+          // Handle both old and new data structures
+          const attraction = plan.attractions?.[0] || plan.activity;
+          const restaurant = plan.restaurants?.[0] || plan.restaurant;
+
           return (
             <View key={dateKey} style={styles.daySection} wrap={false}>
               <Text style={styles.dayHeader}>
                 Dag {plan.dayNumber} • {date}
               </Text>
 
-              {/* Activity */}
-              {plan.activity?.info && (
+              {/* Activity/Attraction */}
+              {attraction && (
                 <View style={styles.activityBox}>
                   <View style={styles.boxHeader}>
                     <Text style={[styles.boxTitle, styles.activityTitle]}>
-                      {plan.activity.info.name || "Ukjent aktivitet"}
+                      {attraction.name || "Ukjent aktivitet"}
                     </Text>
-                    {plan.activity.info.rating && (
+                    {attraction.rating && (
                       <Text style={styles.ratingBadge}>
-                        ★ {plan.activity.info.rating}/5
+                        ★ {attraction.rating}/5
                       </Text>
                     )}
                   </View>
 
-                  {plan.activity.info.description && (
+                  {attraction.description && (
                     <Text style={styles.description}>
-                      {plan.activity.info.description}
+                      {attraction.description}
                     </Text>
                   )}
 
                   <View style={styles.detailsGrid}>
-                    {plan.activity.info.address && (
+                    {attraction.address_obj?.address_string && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Adresse:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.activity.info.address}
+                          {attraction.address_obj.address_string}
                         </Text>
                       </View>
                     )}
 
-                    {plan.activity.info.phone && (
+                    {attraction.phone && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Telefon:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.activity.info.phone}
+                          {attraction.phone}
                         </Text>
                       </View>
                     )}
 
-                    {plan.activity.info.website && (
+                    {attraction.website && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Nettside:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.activity.info.website}
+                          {attraction.website}
                         </Text>
                       </View>
                     )}
 
-                    {plan.activity.info.web_url && (
+                    {attraction.web_url && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>TripAdvisor:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.activity.info.web_url}
+                          {attraction.web_url}
                         </Text>
                       </View>
                     )}
 
-                    {plan.activity.info.ranking && (
+                    {attraction.ranking_data?.ranking_string && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Rangering:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.activity.info.ranking}
+                          {attraction.ranking_data.ranking_string}
+                        </Text>
+                      </View>
+                    )}
+
+                    {attraction.num_reviews && (
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Anmeldelser:</Text>
+                        <Text style={styles.detailValue}>
+                          {attraction.num_reviews} anmeldelser
                         </Text>
                       </View>
                     )}
@@ -271,32 +284,32 @@ export function TripPdfDocument({ trip }) {
               )}
 
               {/* Restaurant */}
-              {plan.restaurant?.info && (
+              {restaurant && (
                 <View style={styles.restaurantBox}>
                   <View style={styles.boxHeader}>
                     <Text style={[styles.boxTitle, styles.restaurantTitle]}>
-                      {plan.restaurant.info.name || "Ukjent restaurant"}
+                      {restaurant.name || "Ukjent restaurant"}
                     </Text>
-                    {plan.restaurant.info.rating && (
+                    {restaurant.rating && (
                       <Text style={styles.ratingBadge}>
-                        ★ {plan.restaurant.info.rating}/5
+                        ★ {restaurant.rating}/5
                       </Text>
                     )}
                   </View>
 
-                  {plan.restaurant.info.description && (
+                  {restaurant.description && (
                     <Text style={styles.description}>
-                      {plan.restaurant.info.description}
+                      {restaurant.description}
                     </Text>
                   )}
 
-                  {plan.restaurant.info.cuisine && plan.restaurant.info.cuisine.length > 0 && (
+                  {restaurant.cuisine && restaurant.cuisine.length > 0 && (
                     <View style={styles.detailRow}>
                       <Text style={styles.detailLabel}>Kjøkken:</Text>
                       <View style={styles.cuisineContainer}>
-                        {plan.restaurant.info.cuisine.map((c, idx) => (
+                        {restaurant.cuisine.map((c, idx) => (
                           <Text key={idx} style={styles.cuisineTag}>
-                            {c.name}
+                            {c.name || c.localized_name}
                           </Text>
                         ))}
                       </View>
@@ -304,65 +317,65 @@ export function TripPdfDocument({ trip }) {
                   )}
 
                   <View style={styles.detailsGrid}>
-                    {plan.restaurant.info.address && (
+                    {restaurant.address_obj?.address_string && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Adresse:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.restaurant.info.address}
+                          {restaurant.address_obj.address_string}
                         </Text>
                       </View>
                     )}
 
-                    {plan.restaurant.info.phone && (
+                    {restaurant.phone && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Telefon:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.restaurant.info.phone}
+                          {restaurant.phone}
                         </Text>
                       </View>
                     )}
 
-                    {plan.restaurant.info.website && (
+                    {restaurant.website && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Nettside:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.restaurant.info.website}
+                          {restaurant.website}
                         </Text>
                       </View>
                     )}
 
-                    {plan.restaurant.info.web_url && (
+                    {restaurant.web_url && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>TripAdvisor:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.restaurant.info.web_url}
+                          {restaurant.web_url}
                         </Text>
                       </View>
                     )}
 
-                    {plan.restaurant.info.price_level && (
+                    {restaurant.price_level && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Prisnivå:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.restaurant.info.price_level}
+                          {restaurant.price_level}
                         </Text>
                       </View>
                     )}
 
-                    {plan.restaurant.info.ranking && (
+                    {restaurant.ranking_data?.ranking_string && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Rangering:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.restaurant.info.ranking}
+                          {restaurant.ranking_data.ranking_string}
                         </Text>
                       </View>
                     )}
 
-                    {plan.restaurant.info.num_reviews && (
+                    {restaurant.num_reviews && (
                       <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>Anmeldelser:</Text>
                         <Text style={styles.detailValue}>
-                          {plan.restaurant.info.num_reviews} anmeldelser
+                          {restaurant.num_reviews} anmeldelser
                         </Text>
                       </View>
                     )}
