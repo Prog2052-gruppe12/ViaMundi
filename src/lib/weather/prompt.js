@@ -1,4 +1,4 @@
-export function lagVærPrompt({ by, datoFra, datoTil, værdata }) {
+export function createWeatherPromt({ by, datoFra, datoTil, værdata }) {
   return `Oppsummer været for ${by ?? "destinasjonen"} fra ${datoFra ?? "start"} til ${datoTil ?? "slutt"}.
 
 Du får et svar fra Open-Meteo API med disse nøklene:

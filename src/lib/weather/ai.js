@@ -1,15 +1,15 @@
-import { createWeatherPrompt } from '@/lib/weather/prompt';
+import { createWeatherPromt } from '@/lib/weather/prompt';
 import groq from '@/lib/groq/client';
 
 
 export async function summarizeWeather({ city, dateFrom, dateTo, weatherData }) {
-  const prompt = createWeatherPrompt({ 
-    city, 
-    dateFrom, 
-    dateTo, 
-    weatherData: weatherData 
+  const prompt = createWeatherPromt({
+    city,
+    dateFrom,
+    dateTo,
+    weatherData: weatherData
   });
-  
+
   const response = await groq.chat.completions.create({
     model: 'llama-3.1-8b-instant',
     messages: [

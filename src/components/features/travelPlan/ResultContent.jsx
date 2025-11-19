@@ -68,6 +68,7 @@ async function fetchWeather(destination, dateFrom, dateTo) {
     if (dateFrom) qs.set("dateFrom", dateFrom);
     if (dateTo) qs.set("dateTo", dateTo);
     const res = await fetch(`/api/weather-summary?${qs.toString()}`);
+    console.log(res);
     return res.json();
 }
 
@@ -94,7 +95,8 @@ function createPlanSkeleton(dateFrom, dateTo) {
     }, {});
 }
 
-async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds) {
+async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, weatherSummary) {
+    console.log(weatherSummary);
     const filled = { ...planSkeleton };
     const attractions = locationIds?.location_ids ?? [];
     const restaurants = restaurantIds?.location_ids ?? [];
@@ -136,7 +138,6 @@ export default function ResultContent() {
     const [loading, setLoading] = useState(true);
     const [summarized, setSummarized] = useState(null);
     const [fullPlan, setFullPlan] = useState(null);
-    const [weather, setWeather] = useState(null);
 
     const params = {
         destination: destinationParam,
@@ -163,14 +164,14 @@ export default function ResultContent() {
                     fetchRestaurantIds(destinationParam, restaurantQuery)
                 ]);
 
-                const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
-                const fullPlan = await fillPlanWithDetails(skeleton, locationIds, restaurantIds);
-
                 const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+
+                const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
+
+                const fullPlan = await fillPlanWithDetails(skeleton, locationIds, restaurantIds, weatherSummary);
 
                 if (mounted) {
                     setFullPlan(fullPlan);
-                    setWeather(weatherSummary || null);
                 }
             } finally {
                 if (mounted) setLoading(false);
@@ -301,10 +302,6 @@ export default function ResultContent() {
 
             <pre>
                 {JSON.stringify(fullPlan, null, 2)}
-            </pre>
-
-            <pre>
-                {JSON.stringify(weather, null, 2)}
             </pre>
         </div>
     );

@@ -1,5 +1,8 @@
 import { CloudSun } from "lucide-react";
 import { CloudDrizzle } from "lucide-react";
+import { CloudSnow } from "lucide-react";
+import { CloudLightning } from "lucide-react";
+import { Snowflake } from "lucide-react";
 import { CloudRain } from "lucide-react";
 import { CloudHail } from "lucide-react";
 import { CloudFog } from "lucide-react";
@@ -24,16 +27,21 @@ export function getWeatherIcon(weatherCode) {
         case 56, 57, 66, 67:
             icon = <CloudHail />;
             break;
-        case 61, 63, 65:
+        case 61, 63, 65, 80, 81, 82:
             icon = <CloudRain />;
             break;
-        case 51, 53, 55:
-            icon = <CloudDrizzle />;
+        case 71, 73, 75, 85, 86:
+            icon = <CloudSnow />;
             break;
-        case 51, 53, 55:
-            icon = <CloudDrizzle />;
+        case 77:
+            icon = <Snowflake />;
+            break;
+        case 95, 96, 99:
+            icon = <CloudLightning />;
             break;
         default:
             break;
     }
+
+    return icon;
 }
