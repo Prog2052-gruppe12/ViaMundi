@@ -1,11 +1,11 @@
-import {Geist, Geist_Mono, Oleo_Script, Oleo_Script_Swash_Caps} from "next/font/google";
+import { Geist, Geist_Mono, Oleo_Script, Oleo_Script_Swash_Caps } from "next/font/google";
 import "./globals.css";
-import {Header} from "@/components/layout/Header";
-import {Footer} from "@/components/layout/Footer";
-import {SidebarProvider} from "@/components/ui/sidebar";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import SidebarNav from "@/components/layout/SidebarNav";
-import {DynamicBreadcrumb} from "@/components/common/DynamicBreadcrumb";
-import {SpeedInsights} from "@vercel/speed-insights/next";
+import { DynamicBreadcrumb } from "@/components/common/DynamicBreadcrumb";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import Image from "next/image";
 import bgImage from "@/assets/main_bg.webp";
@@ -31,24 +31,25 @@ export const metadata = {
     description: "Semester Project 2025 - gruppe 12",
 };
 
-export default function RootLayout({children}) {
+export default function RootLayout({ children }) {
     return (
         <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} ${fontLogo.variable} antialiased flex flex-col min-h-screen`}
-        >
-            <SidebarProvider defaultOpen={false}>
-                <SidebarNav />
-                <main className="w-full h-min-full">
-                    
-                    <Header/>
-                    {/* <DynamicBreadcrumb/> */}
-                    {children}
-                </main>
-            </SidebarProvider>
-            <Footer/>
-            <SpeedInsights/>
-        </body>
+            <body
+                suppressHydrationWarning
+                className={`${geistSans.variable} ${geistMono.variable} ${fontLogo.variable} antialiased flex flex-col min-h-screen`}
+            >
+                <SidebarProvider defaultOpen={false}>
+                    <SidebarNav />
+                    <main className="w-full h-min-full">
+
+                        <Header />
+                        {/* <DynamicBreadcrumb/> */}
+                        {children}
+                    </main>
+                </SidebarProvider>
+                <Footer />
+                <SpeedInsights />
+            </body>
         </html>
     );
 }

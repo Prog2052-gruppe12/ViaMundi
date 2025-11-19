@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Calendar } from "lucide-react";
+import { Calendar, Ticket, UtensilsCrossed } from "lucide-react";
 import { format } from "date-fns";
 import { da, nb } from "date-fns/locale";
 import LocationView from "@/components/features/travelPlan/LocationInfo";
@@ -35,13 +35,13 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
     }, [dateObj]);
 
     return (
-        <div className="flex flex-col rounded-xl border bg-card">
+        <div className="flex flex-col bg-card">
             <Accordion type="single" collapsible defaultValue={1}>
                 <AccordionItem value={dayNumber}>
-                    <AccordionTrigger className="p-4 flex flex-row items-center">
-                        <div className="flex flex-row items-center gap-3">
-                            <div className="flex flex-row items-center gap-2 font-medium text-sm px-3 py-1 border border-primary rounded-md">
-                                Dag {dayNumber}
+                    <AccordionTrigger className="p-4 flex flex-row items-center border-b rounded-none">
+                        <div className="flex flex-row items-center gap-5">
+                            <div className="font-semibold text-xl">
+                                <span className="leading-5.5 align-text-top">Dag {dayNumber}</span>
                             </div>
                             <div className="flex flex-row items-center gap-2 font-medium text-sm px-3 py-1 bg-primary/5 text-muted-foreground rounded-md">
                                 <Calendar size={14} />
@@ -49,21 +49,39 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                             </div>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="grid gap-4 h-fit px-4">
-                            <div className="flex flex-col gap-2">
-                                <h4 className="font-medium text-primary">Aktivitet</h4>
-                                <LocationView
-                                    info={attractionObj || null}
-                                    image={attractionObj?.image || null}
-                                />
+                    <AccordionContent className="pb-0">
+                        <div className="grid gap-4 h-fit py-4 px-4 w-full border-b">
+                            <div className="flex flex-row w-full gap-4">
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="!w-10 !h-10 min-h-10 bg-gradient-secondary flex items-center justify-center rounded-md">
+                                        <Ticket size={26} className="text-primary-foreground" />
+                                    </div>
+                                    <span className="h-full w-1 rounded bg-gradient-secondary"></span>
+                                </div>
+                                <div className="flex flex-col gap-2 w-full">
+                                    <h4 className="text-xs font-semibold text-primary border w-fit px-2 py-1 rounded-md pointer-events-none">Aktivitet</h4>
+                                    <h2 className="text-lg font-medium">{attractionObj?.["name"] || "Kunne ikke hente aktivitet"}</h2>
+                                    <LocationView
+                                        info={attractionObj || null}
+                                        image={attractionObj?.image || null}
+                                    />
+                                </div>
                             </div>
-                            <div className="flex flex-col gap-2">
-                                <h4 className="font-medium text-primary">Restaurant</h4>
-                                <LocationView
-                                    info={restaurantObj || null}
-                                    image={restaurantObj?.image || null}
-                                />
+                            <div className="flex flex-row w-full gap-4">
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="!w-10 !h-10 min-h-10 bg-gradient-secondary flex items-center justify-center rounded-md">
+                                        <UtensilsCrossed size={26} className="text-primary-foreground" />
+                                    </div>
+                                    <span className="h-full w-1 rounded bg-gradient-secondary"></span>
+                                </div>
+                                <div className="flex flex-col gap-2 w-full">
+                                    <h4 className="text-xs font-semibold text-primary border w-fit px-2 py-1 rounded-md pointer-events-none">Restaurant</h4>
+                                    <h2 className="text-lg font-medium">{restaurantObj?.["name"] || "Kunne ikke hente restaurant"}</h2>
+                                    <LocationView
+                                        info={restaurantObj || null}
+                                        image={restaurantObj?.image || null}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </AccordionContent>

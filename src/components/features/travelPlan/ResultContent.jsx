@@ -222,7 +222,7 @@ export default function ResultContent() {
                 />
 
                 {/* Save Trip Button */}
-                <div className="flex justify-between items-center p-4 border-b bg-card">
+                <div className="flex justify-between items-center px-5 py-4 border-b bg-card">
 
                     {/* Left side summary */}
                     <div className="text-sm text-muted-foreground">
@@ -255,8 +255,9 @@ export default function ResultContent() {
                         <Button
                             onClick={handleSaveTrip}
                             disabled={isSaving || dayKeys.length === 0}
-                            className="flex items-center gap-2"
+                            className="flex items-center gap-2 rounded-lg !px-5"
                             variant="default"
+                            size="sm"
                         >
                             <Save size={16} />
                             {isSaving ? "Lagrer..." : "Lagre reise"}
@@ -265,9 +266,9 @@ export default function ResultContent() {
                 </div>
 
 
-                <Section type="plan">
+                <Section type="plan" className="p-0">
                     {Object.keys(fullPlan || {}).length > 0 ? (
-                        <div className="flex flex-col gap-4 w-full">
+                        <div className="flex flex-col w-full">
                             {Object.entries(fullPlan).map(([dateKey, plan]) => (
                                 <PlanDay
                                     key={dateKey}
@@ -282,6 +283,12 @@ export default function ResultContent() {
                         <p className="mt-6 opacity-70">Building your plan…</p>
                     )}
                 </Section>
+
+                <div className="flex items-center justify-center p-6 bg-card">
+                    <div className="text-sm text-muted-foreground">
+                        Reise generert av © 2025 ViaMundi med hjelp av AI
+                    </div>
+                </div>
             </div>
         </div>
     );

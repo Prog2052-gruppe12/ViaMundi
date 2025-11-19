@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { MapPin, ChevronDown, ChevronUp, Check, Trash, CircleX } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Drawer, DrawerTrigger, DrawerContent } from "@/components/ui/drawer";
-import {FormControl, FormField, FormItem, FormLabel} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { allOptions } from "./constants";
 
@@ -41,11 +41,11 @@ export const DestinationSelect = ({ label, form }) => {
                 )}
             >
                 <div className="flex flex-row items-center gap-3">
-                    <MapPin strokeWidth={2.5}/>
+                    <MapPin strokeWidth={2.5} />
                     {field.value ? field.value : "Reisemål..."}
                 </div>
 
-                {open ? <ChevronUp/> : <ChevronDown/>}
+                {open ? <ChevronUp /> : <ChevronDown />}
             </Button>
         )
     };
@@ -53,47 +53,48 @@ export const DestinationSelect = ({ label, form }) => {
     const DestinationList = ({ field }) => {
         return (
             allOptions.map((section) => (
-                    <CommandGroup key={section.group} heading={section.group}>
-                        {section.items.map((opt) => (
-                            <CommandItem
-                                key={opt.value}
-                                value={opt.label}
-                                onSelect={() => {
-                                    if (field.value === opt.label) {
-                                        // Uncheck if selecting same again
-                                        field.value = "";
-                                        field.onChange("");
-                                    } else {
-                                        // Otherwise select new
-                                        field.value = opt.label;
-                                        field.onChange(opt.label);
-                                    }
+                <CommandGroup key={section.group} heading={section.group}>
+                    {section.items.map((opt) => (
+                        <CommandItem
+                            key={opt.value}
+                            value={opt.label}
+                            onSelect={() => {
+                                if (field.value === opt.label) {
+                                    // Uncheck if selecting same again
+                                    field.value = "";
+                                    field.onChange("");
                                     setOpen(true);
-                                }}
-                            >
-                                <div className="w-6">
-                                    <div className={cn(
-                                        "size-4.5 border rounded-xs",
-                                        field.value === opt.label
-                                            ? "bg-accent/100 border-accent"
-                                            : "bg-accent/0 border-primary/75"
-                                    )}>
-                                        <Check
-                                            strokeWidth={2.5}
-                                            className={cn(
-                                                "text-primary-foreground",
-                                                field.value === opt.label
-                                                    ? "opacity-100"
-                                                    : "opacity-0"
-                                            )}
-                                        />
-                                    </div>
+                                } else {
+                                    // Otherwise select new
+                                    field.value = opt.label;
+                                    field.onChange(opt.label);
+                                    setOpen(false);
+                                }
+                            }}
+                        >
+                            <div className="w-6">
+                                <div className={cn(
+                                    "size-4.5 border rounded-xs",
+                                    field.value === opt.label
+                                        ? "bg-accent/100 border-accent"
+                                        : "bg-accent/0 border-primary/75"
+                                )}>
+                                    <Check
+                                        strokeWidth={2.5}
+                                        className={cn(
+                                            "text-primary-foreground",
+                                            field.value === opt.label
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                        )}
+                                    />
                                 </div>
-                                {opt.label}
+                            </div>
+                            {opt.label}
 
-                            </CommandItem>
-                        ))}
-                    </CommandGroup>
+                        </CommandItem>
+                    ))}
+                </CommandGroup>
             ))
         )
     };
@@ -103,7 +104,7 @@ export const DestinationSelect = ({ label, form }) => {
             <div className={cn(
                 "bg-popover w-full p-2 flex justify-between gap-2",
                 position === "top" ? "border-none" : "border-t",
-                )
+            )
             }
             >
                 <Button
@@ -141,7 +142,7 @@ export const DestinationSelect = ({ label, form }) => {
             <FormField
                 control={currentForm.control}
                 name="destination"
-                render={({field}) => {
+                render={({ field }) => {
                     if (!isMobile) {
                         return (
                             <FormItem className="flex flex-col justify-start w-full gap-y-1">
@@ -149,7 +150,7 @@ export const DestinationSelect = ({ label, form }) => {
                                 <Popover open={open} onOpenChange={setOpen}>
                                     <PopoverTrigger asChild className="w-full">
                                         <FormControl>
-                                            {TriggerButton({field})}
+                                            {TriggerButton({ field })}
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent
@@ -163,9 +164,9 @@ export const DestinationSelect = ({ label, form }) => {
                                             />
                                             <CommandList>
                                                 <CommandEmpty>Ingen treff.</CommandEmpty>
-                                                {DestinationList({field})}
+                                                {DestinationList({ field })}
                                             </CommandList>
-                                            {ClearAndClose({field})}
+                                            {ClearAndClose({ field })}
                                         </Command>
                                     </PopoverContent>
                                 </Popover>
@@ -179,20 +180,20 @@ export const DestinationSelect = ({ label, form }) => {
                             <Drawer open={open} onOpenChange={setOpen} direction="bottom">
                                 <DrawerTrigger asChild>
                                     <FormControl>
-                                        {TriggerButton({field})}
+                                        {TriggerButton({ field })}
                                     </FormControl>
                                 </DrawerTrigger>
                                 <DrawerContent className="overflow-hidden border-none pt-1 h-fit">
                                     <div>
                                         <Command>
-                                            {ClearAndClose({field, position: "top"})}
+                                            {ClearAndClose({ field, position: "top" })}
                                             <CommandInput
                                                 placeholder="Søk..."
                                                 className="placeholder:text-muted-foreground text-md"
                                             />
                                             <CommandList className="max-h-96 min-h-96">
                                                 <CommandEmpty>Ingen treff.</CommandEmpty>
-                                                {DestinationList({field})}
+                                                {DestinationList({ field })}
                                             </CommandList>
                                         </Command>
                                     </div>
