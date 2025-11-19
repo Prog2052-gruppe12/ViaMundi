@@ -1,98 +1,99 @@
-export function createWeatherPromt({ by, datoFra, datoTil, værdata }) {
-  return `Oppsummer været for ${by ?? "destinasjonen"} fra ${datoFra ?? "start"} til ${datoTil ?? "slutt"}.
+export function creatweather({ city, dateFrom, dateTo, weatherData }) {
+  return `Du er en værassistent for reisende. Returner KUN gyldig JSON (ingen forklaringer, markdown eller kodeblokker). Svaret skal starte med { og slutte med }.
 
-Du får et svar fra Open-Meteo API med disse nøklene:
-- timezone (streng), timezone_abbreviation (streng), utc_offset_seconds (nummer)
-- daily_units: enheter for hvert daglig felt
-- daily: objekt med arrays av lik lengde for:
-  - time (YYYY-MM-DD)
-  - temperature_2m_min (°C), temperature_2m_max (°C)
-  - precipitation_sum (mm)
-  - precipitation_probability_max (%)
-  - wind_speed_10m_max (m/s)
-  - wind_gusts_10m_max (m/s)
-  - weather_code (WMO-kode)
+Oppsummer været for ${city ?? "destinasjonen"} fra ${dateFrom ?? "start"} til ${dateTo ?? "slutt"}.
 
-Returner KUN gyldig JSON (ingen kommentarer eller markdown).
+🛡️ Validering (må returneres i error-format hvis feilen oppstår):
+1. Mangler "daily" eller en nødvendig array → returner error JSON med MISSING_FIELD
+2. Ulik lengde på arrays → error: LENGTH_MISMATCH
+3. Feil datoformat i daily.time → error: INVALID_DATE
+4. Ikke-numeriske verdier → sett til null + advarsel: NON_NUMERIC
+5. Ingen gyldige dager igjen → error: NO_DATA
+6. Datoer utenfor [${dateFrom ?? "start"}..${dateTo ?? "slutt"}] → ignorer + advarsel: OUT_OF_RANGE
 
-Enheter og avrunding:
-- Temperatur: °C, nærmeste heltall
-- Nedbør: mm, 1 desimal
-- Sjanser: %, nærmeste heltall
-- Vind: m/s, 1 desimal
-- Datoformat: YYYY-MM-DD
+🎯 Enheter & avrunding:
+- Temperatur: °C (heltall)
+- Nedbør: mm (1 desimal)
+- Sannsynlighet: % (heltall)
+- Vind: m/s (1 desimal)
+- Dato: YYYY-MM-DD
 
-Regler for korthet:
-- "summary": Maks 30 ord. Bruk enkelt reisespråk på norsk bokmål. Prioriter: vått/tørt → temperatur → vind.
-- "summaryOfTheDay": Maks 30 ord på norsk bokmål. Bruk frasereglene under.
-
-Fraseregler for summaryOfTheDay (bruk kun oppgitte felter):
-- Fuktighet fra nedbør + sannsynlighet:
-  - "Tørt" (nedbør = 0 OG sannsynlighet < 30)
-  - "Mulighet for byger" (sannsynlighet 30–59 OG nedbør < 5)
-  - "Bygevær" (sannsynlighet 60–79 ELLER nedbør 1–4.9)
-  - "Regn" (sannsynlighet ≥ 80 ELLER nedbør ≥ 5)
-- Temperaturfølelse fra t_max_c:
-  - ≤5 = "kaldt", 6–12 = "kjølig", 13–20 = "mildt", ≥21 = "varmt"
-- Vind fra vindkast maks (bruk vindstyrke maks hvis kast mangler):
-  - <8 = utelat vindbeskrivelse, 8–12.9 = "frisk bris", ≥13 = "vindfullt"
-- Format: <Fuktighet>. <Temperaturfølelse> [temp°C]. [Vind]. (utelat manglende deler)
-
-Skjema:
+📋 Struktur:
 {
-  "summary": "streng, maks 30 ord PÅ NORSK",
-  "days": [{
-    "summaryOfTheDay": "streng, maks 30 ord på NORSK",
-    "date": "YYYY-MM-DD",
-    "t_min_c": number | null,
-    "t_max_c": number | null,
-    "precip_mm": number | null,
-    "pop_max_pct": number | null,
-    "wind_gust_max_ms": number | null,
-    "wind_speed_max_ms": number | null,
-    "weather_code": number | null
-  }],
+  "summary": "streng, maks 30 ord på norsk bokmål",
+  "days": [
+    {
+      "summaryOfTheDay": "streng, maks 30 ord på norsk bokmål",
+      "date": "YYYY-MM-DD",
+      "t_min_c": number | null,
+      "t_max_c": number | null,
+      "precip_mm": number | null,
+      "pop_max_pct": number | null,
+      "wind_gust_max_ms": number | null,
+      "wind_speed_max_ms": number | null,
+      "weather_code": number | null,
+      "icon": "string | null" // valgfritt
+    }
+  ],
   "meta": {
     "timezone": "string" | null,
     "timezone_abbreviation": "string" | null,
     "utc_offset_seconds": number | null
   },
   "error": boolean,
-  "errors": [{
-    "code": "string",
-    "path": "string",
-    "message": "string"
-  }] | []
+  "errors": [ { "code": "string", "path": "string", "message": "string" } ]
 }
 
-Validering og robust feilbehandling:
-1) Hvis "daily" eller påkrevde arrays mangler, returner:
-   {"summary":"","days":[],"meta":{...},"error":true,"errors":[{"code":"MISSING_FIELD","path":"daily.<navn>","message":"Mangler påkrevd felt"}]}
-2) Hvis arrays har ulik lengde, returner feil:
-   {"code":"LENGTH_MISMATCH","path":"daily","message":"Alle daily-arrays må ha lik lengde"}
-3) Hvis noen verdier i daily.time ikke er gyldige datoer, returner:
-   {"code":"INVALID_DATE","path":"daily.time[i]","message":"Ugyldig datoformat; forventet YYYY-MM-DD"}
-4) Hvis verdier ikke er numeriske hvor det er forventet tall, sett til null og legg til advarsel:
-   {"code":"NON_NUMERIC","path":"daily.<navn>[i]","message":"Forventet tall; satt til null"}
-   Fortsett med gjenværende gyldige rader.
-5) Hvis ingen gyldige rader gjenstår, returner:
-   {"summary":"","days":[],"meta":{...},"error":true,"errors":[{"code":"NO_DATA","path":"daily","message":"Ingen gyldige daglige rader"}]}
-6) Inkluder kun datoer innenfor [${datoFra ?? "start"}..${datoTil ?? "slutt"}] (inkludert). Andre ignoreres med advarsel:
-   {"code":"OUT_OF_RANGE","path":"daily.time[i]","message":"Dato utenfor forespurt periode; ignorert"}
+📌 Mapping:
+- time → date
+- temperature_2m_min → t_min_c (0 desimaler)
+- temperature_2m_max → t_max_c (0 desimaler)
+- precipitation_sum → precip_mm (1 desimal)
+- precipitation_probability_max → pop_max_pct (0 desimaler)
+- wind_gusts_10m_max → wind_gust_max_ms (1 desimal)
+- wind_speed_10m_max → wind_speed_max_ms (1 desimal)
+- weather_code → weather_code
+- weather_code → icon (se emoji-mapping under)
 
-Mapping:
-- Input → Output (per dag):
-  time → date
-  temperature_2m_min → t_min_c (avrundet til 0)
-  temperature_2m_max → t_max_c (avrundet til 0)
-  precipitation_sum → precip_mm (1 desimal)
-  precipitation_probability_max → pop_max_pct (0 desimaler)
-  wind_gusts_10m_max → wind_gust_max_ms (1 desimal)
-  wind_speed_10m_max → wind_speed_max_ms (1 desimal)
-  weather_code → weather_code
+🗣️ summary (for hele perioden):
+- Kort sammendrag (maks 30 ord). Enkelt og tydelig norsk reisespråk. Prioriter vått/tørt → temperatur → vind.
+- Eks: "For det meste tørt. Kjølige dager med svak vind. Mulighet for regn på slutten."
 
-Hvis et påkrevd felt mangler for en dag, sett verdien til null for den dagen (ikke fjern dagen).
+🧠 summaryOfTheDay (for hver dag):
+Bruk tilgjengelige datafelter. Kombiner 2–4 av disse elementene i naturlige setninger:
+
+1. Nedbør:
+  - precip_mm = 0 og pop_max_pct < 30 → "Tørt"
+  - 30–59% og precip_mm < 5 → "Mulighet for byger"
+  - 60–79% eller precip_mm 1–4.9 → "Bygevær"
+  - ≥80% eller ≥5 mm → "Regn"
+
+2. Temperatur:
+  - ≤5°C = "kaldt", 6–12 = "kjølig", 13–20 = "mildt", ≥21 = "varmt"
+  - Bruk faktisk verdi hvis mulig: "kjølig med 7°C"
+
+3. Vind:
+  - gusts eller speed: 
+    - <3 → "nesten vindstille"
+    - 3–7.9 → "svak vind"
+    - 8–12.9 → "frisk bris"
+    - ≥13 → "vindfullt"
+
+4. Tillegg (valgfritt):
+  - Hvis mulig: "klart", "overskyet", "delvis skyet", "rolig vær", "klare forhold"
+  - Ikke gjetting. Bruk kun felter eller værkode.
+
+✏️ Format:
+- Maks 30 ord.
+- Naturlig språk på norsk bokmål.
+- Varier setningsstruktur. Bruk én eller to korte setninger.
+- Eks:
+  - "Tørt og klart vær. Kaldt med svak vind."
+  - "Bygevær på ettermiddagen. Mild temperatur og frisk bris."
+  - "Regn hele dagen. Kjølig og vindfullt med 6°C."
+
+🛑 Kun norsk i tekstfeltene. Ikke oversett. Dersom du vil inkludere engelsk versjon også, legg til "summary_en" og "summaryOfTheDay_en" som ekstra felt.
 
 Værdata:
-${JSON.stringify(værdata)}`;
+${JSON.stringify(weatherData)}`;
 }
