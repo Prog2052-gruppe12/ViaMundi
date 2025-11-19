@@ -295,6 +295,8 @@ export default function ResultContent() {
             interests: summarized || "",
             interestsRaw: params.interests || "",
             finalPlan: fullPlan,
+            summarizedPlan: summarizedPlan?.summarizedPlan || {},
+            weatherSummary: weatherSummary?.aiSummary || {},
             metadata: {
                 cityName: getCityName(params.destination) || params.destination,
                 dayCount: dayKeys.length,

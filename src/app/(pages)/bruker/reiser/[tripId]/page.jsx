@@ -103,18 +103,30 @@ export default function SavedTripPage() {
           </div>
         </div>
 
-        <Section type="plan">
+        <Section type="plan" className="p-0">
           {Object.keys(trip.finalPlan || {}).length > 0 ? (
-            <div className="flex flex-col gap-4 w-full">
-              {Object.entries(trip.finalPlan).map(([dateKey, plan]) => (
-                <PlanDay
-                  key={dateKey}
-                  dateKey={dateKey}
-                  dayNumber={plan.dayNumber}
-                  activity={plan.activity}
-                  restaurant={plan.restaurant}
-                />
-              ))}
+            <div className="flex flex-col w-full">
+              {Object.entries(trip.finalPlan).map(([dateKey, plan]) => {
+                // Handle both old and new data structures
+                const attractions = plan.attractions || (plan.activity ? [plan.activity] : []);
+                const restaurants = plan.restaurants || (plan.restaurant ? [plan.restaurant] : []);
+                
+                // Get AI summaries and weather data
+                const planSummary = trip.summarizedPlan?.[dateKey] || { attractions: [], restaurants: [] };
+                const weatherSummary = trip.weatherSummary?.days?.[plan.dayNumber - 1] || {};
+                
+                return (
+                  <PlanDay
+                    key={dateKey}
+                    dateKey={dateKey}
+                    dayNumber={plan.dayNumber}
+                    attractions={attractions}
+                    restaurants={restaurants}
+                    planSummary={planSummary}
+                    weatherSummary={weatherSummary}
+                  />
+                );
+              })}
             </div>
           ) : (
             <p className="mt-6 opacity-70">Ingen planlagte aktiviteter</p>
