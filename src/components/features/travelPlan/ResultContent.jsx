@@ -322,7 +322,7 @@ export default function ResultContent() {
                 />
 
                 {/* Save Trip Button */}
-                <div className="flex justify-between items-center px-5 py-4 border-b bg-card">
+                <div className="flex justify-between items-center p-4 border-b bg-card">
 
                     {/* Left side summary */}
                     <div className="text-sm text-muted-foreground">
@@ -370,7 +370,6 @@ export default function ResultContent() {
                     {Object.keys(fullPlan || {}).length > 0 ? (
                         <div className="flex flex-col w-full">
                             {Object.entries(fullPlan).map(([dateKey, plan]) => (
-                                console.log(summarizedPlan["summarizedPlan"][dateKey]),
                                 <PlanDay
                                     key={dateKey}
                                     dateKey={dateKey}
