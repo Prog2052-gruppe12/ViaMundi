@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { decodeCityToCord } from '@/utils/decodeCityToCord';
 import rateLimit from '@/lib/ratelimiter/ratelimit';
 
 const rateLimiter = rateLimit(100, 60000);
@@ -10,31 +11,34 @@ const rateLimiter = rateLimit(100, 60000);
 export async function GET(req) {
 
   const rateLimitResult = await rateLimiter(req);
-    
-    if (!rateLimitResult.allowed) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: 'Rate limit exceeded',
-              message: `Too many requests. Try again in ${rateLimitResult.retryAfter} seconds.`,
-              retryAfter: rateLimitResult.retryAfter
-            },
-            { 
-              status: 429,
-              headers: {
-                'Retry-After': rateLimitResult.retryAfter.toString(),
-                'X-RateLimit-Limit': '10',
-                'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-                'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
-              }
-            }
-          );
+
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Rate limit exceeded',
+        message: `Too many requests. Try again in ${rateLimitResult.retryAfter} seconds.`,
+        retryAfter: rateLimitResult.retryAfter
+      },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': rateLimitResult.retryAfter.toString(),
+          'X-RateLimit-Limit': '10',
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
         }
-    
+      }
+    );
+  }
+
 
   const { searchParams } = new URL(req.url);
   const searchQuery = searchParams.get('searchQuery');
-  const latLong = searchParams.get('latLong')
+  const country = searchParams.get('destination').split(',')[0].trim();
+  const city = searchParams.get('destination').split(',')[1].trim();
+  const { latitude: lat, longitude: lon } = await decodeCityToCord(city, country);
+  const latLong = lat && lon ? `${lat},${lon}` : null;
   const radiusUnit = searchParams.get('radiusUnit') || 'km';
   const radius = searchParams.get('radius') || '10';
 
@@ -93,15 +97,15 @@ export async function GET(req) {
     const locationIds = responseData.data.map(location => location.location_id);
 
     return NextResponse.json(
-          { location_ids: locationIds },
-          {
-            headers: {
-              'X-RateLimit-Limit': '10',
-              'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-              'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
-            }
-          }
-        );
+      { location_ids: locationIds },
+      {
+        headers: {
+          'X-RateLimit-Limit': '10',
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+        }
+      }
+    );
 
   } catch (error) {
     console.error('Internal server error:', error);

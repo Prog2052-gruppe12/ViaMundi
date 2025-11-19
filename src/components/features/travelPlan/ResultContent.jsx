@@ -35,6 +35,7 @@ async function runSummarize(params, paramType) {
 
 async function fetchLocationIds(destination, interests) {
     const qs = new URLSearchParams();
+
     if (destination) qs.set("destination", destination);
     if (interests) qs.set("interests", interests);
     const res = await fetch(`/api/attractions?${qs.toString()}`);
@@ -43,18 +44,9 @@ async function fetchLocationIds(destination, interests) {
 
 async function fetchRestaurantIds(destination, interests) {
     const qs = new URLSearchParams();
-    let lat = null, long = null;
 
-    try {
-        const coords = await decodeCityToCord(destination.split(',')[1].trim());
-        lat = coords?.latitude ?? null;
-        long = coords?.longitude ?? null;
-    } catch { }
-
-    const latLong = lat != null && long != null ? `${lat},${long}` : "";
-    if (destination) qs.set("latLong", latLong);
+    if (destination) qs.set("destination", destination);
     if (interests) qs.set("searchQuery", interests);
-
     const res = await fetch(`/api/restaurants?${qs.toString()}`);
     return res.json();
 }

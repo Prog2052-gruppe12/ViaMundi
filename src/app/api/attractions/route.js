@@ -30,9 +30,11 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   //console.log(searchParams);
   const searchQuery = searchParams.get('interests');
+  //const city = searchParams.get('destination').split(',')[1].trim();
+  const country = searchParams.get('destination').split(',')[0].trim();
   const city = searchParams.get('destination').split(',')[1].trim();
   const radiusUnit = searchParams.get('radiusUnit') || 'km';
-  const { latitude: lat, longitude: lon } = await decodeCityToCord(city);
+  const { latitude: lat, longitude: lon } = await decodeCityToCord(city, country);
   const latLong = lat && lon ? `${lat},${lon}` : null;
   const radius = searchParams.get('radius') || '10';
 
