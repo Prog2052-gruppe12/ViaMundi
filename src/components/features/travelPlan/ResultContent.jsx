@@ -95,31 +95,96 @@ function createPlanSkeleton(dateFrom, dateTo) {
     }, {});
 }
 
-async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, weatherSummary) {
-    const filled = { ...planSkeleton };
-    const attractions = locationIds?.location_ids ?? [];
-    const restaurants = restaurantIds?.location_ids ?? [];
+async function curateLocations(locations, userInterests, destination) {
+    try {
+        const res = await fetch('/api/ai/curate-activities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                locations,
+                userInterests,
+                destination
+            })
+        });
 
+        const data = await res.json();
+
+        if (!data.success) {
+            console.error('Curation failed:', data.error);
+            // Fallback: return all location IDs if curation fails
+            return locations.map(loc => loc.location_id);
+        }
+
+        console.log(`AI Curation: kept ${data.kept_count}/${locations.length} locations. Reason: ${data.reason}`);
+        return data.curated;
+    } catch (error) {
+        console.error('Error during curation:', error);
+        // Fallback: return all location IDs if curation fails
+        return locations.map(loc => loc.location_id);
+    }
+}
+
+async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, weatherSummary, userInterests, destination) {
+    const filled = { ...planSkeleton };
+    const attractionIds = locationIds?.location_ids ?? [];
+    const restaurantIdsArray = restaurantIds?.location_ids ?? [];
+
+    // Fetch ALL details first (for AI curation)
+    console.log(`Fetching details for ${attractionIds.length} attractions and ${restaurantIdsArray.length} restaurants...`);
+
+    const [allAttractionDetails, allRestaurantDetails] = await Promise.all([
+        Promise.all(attractionIds.map(id => fetchDetails(id))),
+        Promise.all(restaurantIdsArray.map(id => fetchDetails(id)))
+    ]);
+
+    // Filter out null/failed fetches
+    const validAttractions = allAttractionDetails.filter(Boolean);
+    const validRestaurants = allRestaurantDetails.filter(Boolean);
+
+    // AI CURATION STEP
+    console.log('Running AI curation on attractions and restaurants...');
+    const [curatedAttractionIds, curatedRestaurantIds] = await Promise.all([
+        curateLocations(validAttractions, userInterests, destination),
+        curateLocations(validRestaurants, userInterests, destination)
+    ]);
+
+    // Filter details to only curated ones
+    const curatedAttractions = validAttractions.filter(loc =>
+        curatedAttractionIds.includes(loc.location_id)
+    );
+    const curatedRestaurants = validRestaurants.filter(loc =>
+        curatedRestaurantIds.includes(loc.location_id)
+    );
+
+    console.log(`After curation: ${curatedAttractions.length} attractions, ${curatedRestaurants.length} restaurants`);
+
+    // Fetch images for curated locations
+    const [attractionImages, restaurantImages] = await Promise.all([
+        Promise.all(curatedAttractions.map(loc => fetchImage(loc.location_id))),
+        Promise.all(curatedRestaurants.map(loc => fetchImage(loc.location_id)))
+    ]);
+
+    // Add images to curated details
+    const attractionsWithImages = curatedAttractions.map((loc, idx) => ({
+        ...loc,
+        image: attractionImages[idx] ?? null
+    }));
+
+    const restaurantsWithImages = curatedRestaurants.map((loc, idx) => ({
+        ...loc,
+        image: restaurantImages[idx] ?? null
+    }));
+
+    // Distribute curated locations across days
     const keys = Object.keys(filled);
 
     for (let i = 0; i < keys.length; i++) {
         const dayKey = keys[i];
-        const attractionId = attractions[i];
-        const restaurantId = restaurants[i];
+        const attraction = attractionsWithImages[i] || null;
+        const restaurant = restaurantsWithImages[i] || null;
 
-        // Fetch details for each ID
-        const [attractionDetails, restaurantDetails] = await Promise.all([
-            attractionId ? fetchDetails(attractionId) : null,
-            restaurantId ? fetchDetails(restaurantId) : null
-        ]);
-
-        const [attractionImage, restaurantImage] = await Promise.all([
-            attractionId ? fetchImage(attractionId) : null,
-            restaurantId ? fetchImage(restaurantId) : null
-        ]);
-
-        filled[dayKey].attractions = attractionDetails ? [{ ...attractionDetails, image: attractionImage ?? null }] : [];
-        filled[dayKey].restaurants = restaurantDetails ? [{ ...restaurantDetails, image: restaurantImage ?? null }] : [];
+        filled[dayKey].attractions = attraction ? [attraction] : [];
+        filled[dayKey].restaurants = restaurant ? [restaurant] : [];
     }
 
     return filled;
@@ -165,9 +230,15 @@ export default function ResultContent() {
             setLoading(true);
             try {
                 const summary = await runSummarize(params);
-                if (mounted) setSummarized(summary?.data.interests.queries[0] ?? interestsParam);
-                const locationQuery = summary?.data.interests.queries[0] ?? interestsParam;
-                const restaurantQuery = summary?.data.restaurants.queries[0] ?? interestsParam;
+                console.log('Summary response:', summary);
+
+                if (!summary || !summary.data) {
+                    console.error('Invalid summary response:', summary);
+                }
+
+                if (mounted) setSummarized(summary?.data?.interests?.queries?.[0] ?? interestsParam);
+                const locationQuery = summary?.data?.interests?.queries?.[0] ?? interestsParam;
+                const restaurantQuery = summary?.data?.restaurants?.queries?.[0] ?? interestsParam;
 
                 const [locationIds, restaurantIds] = await Promise.all([
                     fetchLocationIds(destinationParam, locationQuery),
@@ -178,7 +249,14 @@ export default function ResultContent() {
 
                 const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
 
-                const fullPlan = await fillPlanWithDetails(skeleton, locationIds, restaurantIds, null);
+                const fullPlan = await fillPlanWithDetails(
+                    skeleton,
+                    locationIds,
+                    restaurantIds,
+                    null,
+                    interestsParam,
+                    destinationParam
+                );
 
                 const summarizedPlan = await fetchSummarizedPlan(fullPlan);
 

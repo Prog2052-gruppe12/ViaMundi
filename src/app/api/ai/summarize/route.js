@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { summarizeUserInterests, summarizeUserRestaurants } from "@/lib/summerizeUserPrompt/summerizeUserPrompt";
+import { summerizeUserPrompt } from "@/lib/summerizeUserPrompt/summerizeUserPrompt";
 import rateLimit from "@/lib/ratelimiter/ratelimit";
+import { success } from "zod";
 
 const rateLimiter = rateLimit(100, 60000);
 
@@ -20,7 +21,7 @@ export async function POST(req) {
           status: 429,
           headers: {
             'Retry-After': rateLimitResult.retryAfter.toString(),
-            'X-RateLimit-Limit': '100',
+            'X-RateLimit-Limit': '10',
             'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
             'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
           }
@@ -30,40 +31,40 @@ export async function POST(req) {
 
     const body = await req.json();
 
-    // Validate required fields
+    // Validate required fields only
     if (!body.destination) {
       return NextResponse.json(
-        { 
-          success: false,
-          error: 'destination is required' 
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate type parameter
-    const queryType = body.type || 'interests';
-    if (!['interests', 'restaurants', 'both'].includes(queryType)) {
-      return NextResponse.json(
-        { 
-          success: false,
-          error: 'type must be one of: interests, restaurants, both' 
-        },
+        { error: 'destination is required' },
         { status: 400 }
       );
     }
 
     //** DEV MOCK *//
     if (process.env.NODE_ENV === 'development') {
-      const mockData = {
-        interests: { queries: ["Mock interest query 1", "Mock interest query 2"] },
-        restaurants: { queries: ["Mock restaurant query 1", "Mock restaurant query 2"] }
-      };
+      //console.log('Mock response for ' + url);
 
       return NextResponse.json({
         success: true,
-        type: queryType,
-        data: queryType === 'both' ? mockData : mockData[queryType]
+        type: body.type || 'both',
+        data: {
+          interests: {
+            queries: [
+              "museums in " + body.destination,
+              "historical landmarks in " + body.destination,
+              "parks and nature in " + body.destination,
+              "local experiences in " + body.destination,
+              "cultural attractions in " + body.destination
+            ]
+          },
+          restaurants: {
+            queries: [
+              "local restaurants in " + body.destination,
+              "traditional cuisine in " + body.destination,
+              "cafes and coffee shops in " + body.destination,
+              "food markets in " + body.destination
+            ]
+          }
+        }
       });
     }
 
@@ -76,33 +77,15 @@ export async function POST(req) {
       other: body.other || ''
     };
 
-    let result;
-
-    // Handle different query types
-    if (queryType === 'both') {
-      const [interestsResult, restaurantsResult] = await Promise.all([
-        summarizeUserInterests(userData),
-        summarizeUserRestaurants(userData)
-      ]);
-      
-      result = {
-        interests: interestsResult,
-        restaurants: restaurantsResult
-      };
-    } else if (queryType === 'restaurants') {
-      result = await summarizeUserRestaurants(userData);
-    } else {
-      result = await summarizeUserInterests(userData);
-    }
+    const result = await summerizeUserPrompt(userData, userData);
 
     const response = NextResponse.json({
       success: true,
-      type: queryType,
       data: result
     });
 
     // Add rate limit headers
-    response.headers.set('X-RateLimit-Limit', '100');
+    response.headers.set('X-RateLimit-Limit', '10');
     response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
     response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString());
 
