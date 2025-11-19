@@ -7,9 +7,8 @@ import { signOutEverywhere } from "@/lib/auth/client";
 import LoadingPage from "@/app/loading";
 import ErrorPage from "@/app/error";
 
-export function LogoutButton() {
+export function LogoutButton({ loading, setLoading }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const handleLogout = async () => {
@@ -27,10 +26,6 @@ export function LogoutButton() {
 
   if (error) {
     return <ErrorPage />
-  }
-
-  if (loading) {
-    return <LoadingPage/>;
   }
 
   return (
