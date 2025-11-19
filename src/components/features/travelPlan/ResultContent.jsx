@@ -61,6 +61,16 @@ async function fetchImage(id) {
     return res.json();
 }
 
+async function fetchWeather(destination, dateFrom, dateTo) {
+    const qs = new URLSearchParams();
+
+    if (destination) qs.set("destination", destination);
+    if (dateFrom) qs.set("dateFrom", dateFrom);
+    if (dateTo) qs.set("dateTo", dateTo);
+    const res = await fetch(`/api/weather-summary?${qs.toString()}`);
+    return res.json();
+}
+
 function createPlanSkeleton(dateFrom, dateTo) {
     const start = parseYMD(dateFrom);
     const end = parseYMD(dateTo);
@@ -126,6 +136,7 @@ export default function ResultContent() {
     const [loading, setLoading] = useState(true);
     const [summarized, setSummarized] = useState(null);
     const [fullPlan, setFullPlan] = useState(null);
+    const [weather, setWeather] = useState(null);
 
     const params = {
         destination: destinationParam,
@@ -155,7 +166,12 @@ export default function ResultContent() {
                 const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
                 const fullPlan = await fillPlanWithDetails(skeleton, locationIds, restaurantIds);
 
-                if (mounted) setFullPlan(fullPlan);
+                const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+
+                if (mounted) {
+                    setFullPlan(fullPlan);
+                    setWeather(weatherSummary || null);
+                }
             } finally {
                 if (mounted) setLoading(false);
             }
@@ -282,6 +298,14 @@ export default function ResultContent() {
                     </div>
                 </div>
             </div>
+
+            <pre>
+                {JSON.stringify(fullPlan, null, 2)}
+            </pre>
+
+            <pre>
+                {JSON.stringify(weather, null, 2)}
+            </pre>
         </div>
     );
 }

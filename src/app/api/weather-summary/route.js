@@ -32,7 +32,8 @@ export async function GET(request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const city = searchParams.get('city') ?? '';
+    const country = searchParams.get('destination').split(',')[0].trim();
+    const city = searchParams.get('destination').split(',')[1].trim();
     const dateFrom = searchParams.get('dateFrom') ?? new Date().toISOString().slice(0,10);
     const d = new Date(dateFrom); d.setDate(d.getDate() + 4);
     const dateTo = searchParams.get('dateTo') ?? d.toISOString().slice(0,10);
@@ -41,7 +42,7 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Invalid city' }, { status: 400 });
     }
 
-    const { latitude, longitude } = await decodeCityToCord(city);
+    const { latitude, longitude } = await decodeCityToCord(city, country);
     const weatherData = await fetchWeather({ latitude, longitude, dateFrom, dateTo });
     
     const aiSummary = await summarizeWeather({ 
