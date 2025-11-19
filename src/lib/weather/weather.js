@@ -1,12 +1,11 @@
-// Minimal daily fields supported by Open-Meteo
 const daily_forecast = [
   'temperature_2m_min',
   'temperature_2m_max',
   'precipitation_sum',
-  'precipitation_probability_max', // optional but useful
+  'precipitation_probability_max', 
   'wind_speed_10m_max',
-  'wind_gusts_10m_max',            // optional
-  'weather_code'                   // optional (icons/conditions)
+  'wind_gusts_10m_max',            
+  'weather_code'                 
 ].join(',');
 
 export async function fetchWeather({ latitude, longitude, dateFrom, dateTo }) {
