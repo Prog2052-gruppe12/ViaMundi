@@ -64,8 +64,13 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                                     <span className="h-full w-1 rounded bg-gradient-secondary"></span>
                                 </div>
                                 <div className="flex flex-col gap-2 w-full">
-                                    <h4 className="text-xs font-semibold text-primary border w-fit px-2 py-1 rounded-md pointer-events-none">Aktivitet</h4>
-                                    <h2 className="text-lg font-medium">{attractionObj?.["name"] || "Kunne ikke hente aktivitet"}</h2>
+                                    <div className="flex flex-row gap-2">
+                                        <h4 className="text-xs font-semibold text-primary border w-fit px-2 py-1 rounded-md pointer-events-none">Aktivitet</h4>
+                                        <h2 className="text-lg font-medium">{attractionObj?.["name"] || "Kunne ikke hente aktivitet"}</h2>
+                                    </div>
+                                    <div>
+                                        Beskrivelse her
+                                    </div>
                                     <LocationView
                                         info={attractionObj || null}
                                         image={attractionObj?.image || null}
@@ -80,8 +85,13 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                                     <span className="h-full w-1 rounded bg-gradient-secondary"></span>
                                 </div>
                                 <div className="flex flex-col gap-2 w-full">
-                                    <h4 className="text-xs font-semibold text-primary border w-fit px-2 py-1 rounded-md pointer-events-none">Restaurant</h4>
-                                    <h2 className="text-lg font-medium">{restaurantObj?.["name"] || "Kunne ikke hente restaurant"}</h2>
+                                    <div className="flex flex-row gap-2">
+                                        <h4 className="text-xs font-semibold text-primary border w-fit px-2 py-1 rounded-md pointer-events-none">Restaurant</h4>
+                                        <h2 className="text-lg font-medium">{restaurantObj?.["name"] || "Kunne ikke hente restaurant"}</h2>
+                                    </div>
+                                    <div>
+                                        Beskrivelse her
+                                    </div>
                                     <LocationView
                                         info={restaurantObj || null}
                                         image={restaurantObj?.image || null}
