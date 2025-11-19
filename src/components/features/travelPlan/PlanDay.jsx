@@ -25,10 +25,12 @@ function safeParseYMD(ymd) {
 
 
 
-const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, restaurants }) {
+const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, restaurants, planSummary }) {
 
     const attractionObj = attractions[0];
-    const restaurantObj = restaurants[0]
+    const attractionSummaryObj = planSummary["attractions"][0];
+    const restaurantObj = restaurants[0];
+    const restaurantSummaryObj = planSummary["restaurants"][0];
 
     const dateObj = useMemo(() => safeParseYMD(dateKey), [dateKey]);
     const dateLabel = useMemo(() => {
@@ -69,7 +71,9 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                                         <h2 className="text-lg font-medium">{attractionObj?.["name"] || "Kunne ikke hente aktivitet"}</h2>
                                     </div>
                                     <div>
-                                        Beskrivelse her
+                                        <span>
+                                            {attractionSummaryObj["attraction_summary"] || "Ingen beskrivelse tilgjengelig"}
+                                        </span>
                                     </div>
                                     <LocationView
                                         info={attractionObj || null}
@@ -90,7 +94,9 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                                         <h2 className="text-lg font-medium">{restaurantObj?.["name"] || "Kunne ikke hente restaurant"}</h2>
                                     </div>
                                     <div>
-                                        Beskrivelse her
+                                        <span>
+                                            {restaurantSummaryObj["restaurant_summary"] || "Ingen beskrivelse tilgjengelig"}
+                                        </span>
                                     </div>
                                     <LocationView
                                         info={restaurantObj || null}

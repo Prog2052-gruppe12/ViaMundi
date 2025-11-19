@@ -96,7 +96,6 @@ function createPlanSkeleton(dateFrom, dateTo) {
 }
 
 async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, weatherSummary) {
-    console.log(weatherSummary);
     const filled = { ...planSkeleton };
     const attractions = locationIds?.location_ids ?? [];
     const restaurants = restaurantIds?.location_ids ?? [];
@@ -126,6 +125,16 @@ async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, wea
     return filled;
 }
 
+async function fetchSummarizedPlan(fullPlan) {
+    const res = await fetch('/api/travelPlan-summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ travelPlan: fullPlan })
+    });
+    const data = await res.json();
+    return data;
+}
+
 export default function ResultContent() {
     const searchParams = useSearchParams();
     const destinationParam = searchParams.get("destination") || "";
@@ -138,6 +147,7 @@ export default function ResultContent() {
     const [loading, setLoading] = useState(true);
     const [summarized, setSummarized] = useState(null);
     const [fullPlan, setFullPlan] = useState(null);
+    const [summarizedPlan, setSummarizedPlan] = useState(null);
 
     const params = {
         destination: destinationParam,
@@ -164,14 +174,17 @@ export default function ResultContent() {
                     fetchRestaurantIds(destinationParam, restaurantQuery)
                 ]);
 
-                const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+                //const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
 
                 const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
 
-                const fullPlan = await fillPlanWithDetails(skeleton, locationIds, restaurantIds, weatherSummary);
+                const fullPlan = await fillPlanWithDetails(skeleton, locationIds, restaurantIds, null);
+
+                const summarizedPlan = await fetchSummarizedPlan(fullPlan);
 
                 if (mounted) {
                     setFullPlan(fullPlan);
+                    setSummarizedPlan(summarizedPlan);
                 }
             } finally {
                 if (mounted) setLoading(false);
@@ -279,12 +292,14 @@ export default function ResultContent() {
                     {Object.keys(fullPlan || {}).length > 0 ? (
                         <div className="flex flex-col w-full">
                             {Object.entries(fullPlan).map(([dateKey, plan]) => (
+                                console.log(summarizedPlan["summarizedPlan"][dateKey]),
                                 <PlanDay
                                     key={dateKey}
                                     dateKey={dateKey}
                                     dayNumber={plan.dayNumber}
                                     attractions={plan.attractions}
                                     restaurants={plan.restaurants}
+                                    planSummary={summarizedPlan["summarizedPlan"][dateKey]}
                                 />
                             ))}
                         </div>
@@ -299,10 +314,6 @@ export default function ResultContent() {
                     </div>
                 </div>
             </div>
-
-            <pre>
-                {JSON.stringify(fullPlan, null, 2)}
-            </pre>
         </div>
     );
 }

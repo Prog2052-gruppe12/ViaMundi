@@ -52,7 +52,7 @@ export const SearchParameters = ({ destination, dateFrom, dateTo, travelers, int
                         </div>
                     </div>
                 </div>
-                {interests && interests.trim() !== "" && (
+                {interests && (
                     <div className="w-full pointer-events-none">
                         <div
                             className="flex flex-row items-center gap-3 font-medium text-sm text-muted-foreground border px-3 py-1.5 rounded-lg">
