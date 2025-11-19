@@ -29,14 +29,14 @@ export default function LocationView({ info, image }) {
     }
 
     return (
-        <Card className="shadow-none">
-            <div className="flex flex-row gap-2 flex-wrap px-6">
+        <Card className="shadow-none p-4">
+            <div className="flex flex-row gap-2 flex-wrap">
                 <Badge>{elements.ratingInfo}</Badge>
                 {elements.groups.map((group, i) => (
                     <Badge key={i} variant="secondary">{group["localized_name"]}</Badge>
                 ))}
             </div>
-            <div className="w-full px-6 flex flex-row gap-4">
+            <div className="w-full flex flex-row gap-4">
                 <div className="w-80 h-52 rounded-lg overflow-hidden">
                     <img src={image} alt="location image" className="w-full h-full object-cover object-center" />
                 </div>
@@ -70,7 +70,7 @@ export default function LocationView({ info, image }) {
                     </CardContent>
                 </div>
             </div>
-            <CardFooter>
+            <CardFooter className="p-0">
                 <p className="text-sm text-muted-foreground">Informasjon hentet fra © 2025 TripAdvisor</p>
             </CardFooter>
         </Card>

@@ -6,35 +6,35 @@ const rateLimiter = rateLimit(100, 60000);
 
 export async function GET(req) {
   const rateLimitResult = await rateLimiter(req);
-  
+
   if (!rateLimitResult.allowed) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Rate limit exceeded',
-            message: `Too many requests. Try again in ${rateLimitResult.retryAfter} seconds.`,
-            retryAfter: rateLimitResult.retryAfter
-          },
-          { 
-            status: 429,
-            headers: {
-              'Retry-After': rateLimitResult.retryAfter.toString(),
-              'X-RateLimit-Limit': '10',
-              'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
-              'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
-            }
-          }
-        );
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Rate limit exceeded',
+        message: `Too many requests. Try again in ${rateLimitResult.retryAfter} seconds.`,
+        retryAfter: rateLimitResult.retryAfter
+      },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': rateLimitResult.retryAfter.toString(),
+          'X-RateLimit-Limit': '10',
+          'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+          'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+        }
       }
-  
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   //console.log(searchParams);
   const searchQuery = searchParams.get('interests');
   const city = searchParams.get('destination').split(',')[1].trim();
-  const radiusUnit = searchParams.get('radiusUnit');
+  const radiusUnit = searchParams.get('radiusUnit') || 'km';
   const { latitude: lat, longitude: lon } = await decodeCityToCord(city);
   const latLong = lat && lon ? `${lat},${lon}` : null;
-  const radius = searchParams.get('radius');
+  const radius = searchParams.get('radius') || '10';
 
   if (!searchQuery) {
     return NextResponse.json({ error: 'searchQuery is required' }, { status: 400 });

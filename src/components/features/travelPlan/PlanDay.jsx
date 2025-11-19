@@ -23,6 +23,8 @@ function safeParseYMD(ymd) {
     return Number.isNaN(dt.getTime()) ? null : dt;
 }
 
+
+
 const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, restaurants }) {
 
     const attractionObj = attractions[0];
@@ -39,9 +41,12 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
             <Accordion type="single" collapsible defaultValue={1}>
                 <AccordionItem value={dayNumber}>
                     <AccordionTrigger className="p-4 flex flex-row items-center border-b rounded-none">
-                        <div className="flex flex-row items-center gap-5">
+                        <div className="flex flex-row items-center gap-3 w-full">
                             <div className="font-semibold text-xl">
                                 <span className="leading-5.5 align-text-top">Dag {dayNumber}</span>
+                            </div>
+                            <div className="flex-1 font-medium text-md break-words whitespace-normal line-clamp-1 text-pretty">
+                                <span className="align-text-center">{attractionObj?.["name"]} and dinner at {restaurantObj?.["name"]}</span>
                             </div>
                             <div className="flex flex-row items-center gap-2 font-medium text-sm px-3 py-1 bg-primary/5 text-muted-foreground rounded-md">
                                 <Calendar size={14} />

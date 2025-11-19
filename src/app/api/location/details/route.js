@@ -60,7 +60,7 @@ export async function GET(request) {
 
     //** DEV MOCK *//
     if (process.env.NODE_ENV === 'development') {
-      console.log('Mock response for ' + url + '?' + params);
+      //console.log('Mock response for ' + url + '?' + params);
 
       return NextResponse.json({
         location_id: locationId,
