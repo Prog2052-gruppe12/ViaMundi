@@ -91,11 +91,12 @@ export default function SavedTripPage() {
                 {pdfError}
               </span>
             )}
-            <Button 
+            <Button
               onClick={handleExportPdf}
               disabled={isExporting}
-              className="flex items-center gap-2"
-              variant="outline"
+              className="flex items-center gap-2 rounded-lg !px-5"
+              variant="default"
+              size="sm"
             >
               <Download size={16} />
               {isExporting ? "Genererer PDF..." : "Last ned som PDF"}
@@ -110,11 +111,11 @@ export default function SavedTripPage() {
                 // Handle both old and new data structures
                 const attractions = plan.attractions || (plan.activity ? [plan.activity] : []);
                 const restaurants = plan.restaurants || (plan.restaurant ? [plan.restaurant] : []);
-                
+
                 // Get AI summaries and weather data
                 const planSummary = trip.summarizedPlan?.[dateKey] || { attractions: [], restaurants: [] };
                 const weatherSummary = trip.weatherSummary?.days?.[plan.dayNumber - 1] || {};
-                
+
                 return (
                   <PlanDay
                     key={dateKey}
