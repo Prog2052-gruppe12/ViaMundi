@@ -24,7 +24,7 @@ export default function LocationView({ info, image }) {
         ratingInfo: location?.["ranking_data"]?.["ranking_string"] || "Ukjent rangering",
         ratingImage: location?.["rating_image_url"] || "N/A",
         ratingAmount: location?.["num_reviews"] || "0",
-        description: location?.["description"] || "Ingen beskrivelse tilgjengelig",
+        description: location?.["description"] || "Ingen beskrivelse fra TripAdvisor",
         url: location?.["web_url"] || "#",
     }
 
