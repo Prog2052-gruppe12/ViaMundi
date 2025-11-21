@@ -56,7 +56,12 @@ export default function LocationView({ info, image }) {
             </div>
             <div className="w-full flex flex-row gap-4">
                 <div className="w-32 md:w-52 h-32 rounded-lg overflow-hidden">
-                    <img src={image} alt="location image" className="w-full h-full object-cover object-center" />
+                    {!image ? (
+                        <div className="w-full h-full bg-primary/10 animate-pulse" />
+                    ) : (
+                        <img src={image} alt="location image" className="w-full h-full object-cover object-center" />
+                    )}
+
                 </div>
                 <div className="flex-1 flex flex-col gap-x-4 gap-y-2 w-full">
                     <CardHeader className="px-0 gap-1">
