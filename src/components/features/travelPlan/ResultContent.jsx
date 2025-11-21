@@ -337,6 +337,7 @@ export default function ResultContent() {
                 );
 
                 const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+                console.log("Fetched weather:", weatherSummary);
 
                 const summarizedPlan = await fetchSummarizedPlan(fullPlan);
 
@@ -498,8 +499,8 @@ export default function ResultContent() {
                                     dayNumber={plan.dayNumber}
                                     attractions={plan.attractions}
                                     restaurants={plan.restaurants}
-                                    planSummary={summarizedPlan["summarizedPlan"][dateKey]}
-                                    weatherSummary={weatherSummary["aiSummary"]["days"][plan.dayNumber - 1]}
+                                    planSummary={summarizedPlan?.["summarizedPlan"]?.[dateKey] || null}
+                                    weatherSummary={weatherSummary?.["aiSummary"]?.["days"]?.[plan.dayNumber - 1] || null}
                                 />
                             ))}
                         </div>
