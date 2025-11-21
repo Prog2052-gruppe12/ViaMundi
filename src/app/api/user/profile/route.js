@@ -111,7 +111,7 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       userData,
-      profileCompleted: userData.profileCompleted,
+      profileCompleted: userData.profileCompleted ?? false,
     });
   } catch (error) {
     console.error("Error checking profile:", error);

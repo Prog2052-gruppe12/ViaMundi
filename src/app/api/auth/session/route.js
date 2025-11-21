@@ -60,7 +60,7 @@ async function ensureUserDoc(uid, info = {}) {
   const data = {
     ...info,
     updatedAt: now,
-    ...(existing ? {} : { createdAt: now }),
+    ...(existing ? {} : { createdAt: now, profileCompleted: false }),
   };
 
   await ref.set(data, { merge: true });
