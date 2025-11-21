@@ -297,10 +297,33 @@ export default function ResultContent() {
                     if (!queries) continue;
 
                     const lIds = await fetchLocationIds(destinationParam, queries.activity);
-                    locationIds[day] = lIds["location_ids"].slice(0, 2);
-
                     const rIds = await fetchRestaurantIds(destinationParam, queries.restaurant);
-                    restaurantIds[day] = rIds["location_ids"].slice(0, 2);
+
+                    // Extract location IDs and restaurant IDs
+                    const fetchedLocationIds = lIds["location_ids"];
+                    const fetchedRestaurantIds = rIds["location_ids"];
+
+                    // Find the first two non-duplicate activity IDs
+                    const nonDuplicateActivityIds = fetchedLocationIds.filter(
+                        id => !Object.values(locationIds).flat().includes(id)
+                    ).slice(0, 2);
+
+                    if (nonDuplicateActivityIds.length > 0) {
+                        locationIds[day] = nonDuplicateActivityIds;
+                    } else {
+                        console.warn(`No unique activities found for day ${day}`);
+                    }
+
+                    // Find the first two non-duplicate restaurant IDs
+                    const nonDuplicateRestaurantIds = fetchedRestaurantIds.filter(
+                        id => !Object.values(restaurantIds).flat().includes(id)
+                    ).slice(0, 2);
+
+                    if (nonDuplicateRestaurantIds.length > 0) {
+                        restaurantIds[day] = nonDuplicateRestaurantIds;
+                    } else {
+                        console.warn(`No unique restaurants found for day ${day}`);
+                    }
                 }
 
                 const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
@@ -314,6 +337,7 @@ export default function ResultContent() {
                 );
 
                 const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+                console.log("Fetched weather:", weatherSummary);
 
                 const summarizedPlan = await fetchSummarizedPlan(fullPlan);
 
@@ -475,8 +499,8 @@ export default function ResultContent() {
                                     dayNumber={plan.dayNumber}
                                     attractions={plan.attractions}
                                     restaurants={plan.restaurants}
-                                    planSummary={summarizedPlan["summarizedPlan"][dateKey]}
-                                    weatherSummary={weatherSummary["aiSummary"]["days"][plan.dayNumber - 1]}
+                                    planSummary={summarizedPlan?.["summarizedPlan"]?.[dateKey] || null}
+                                    weatherSummary={weatherSummary?.["aiSummary"]?.["days"]?.[plan.dayNumber - 1] || null}
                                 />
                             ))}
                         </div>

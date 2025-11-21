@@ -44,7 +44,7 @@ export async function GET(request) {
 
     const { latitude, longitude } = await decodeCityToCord(city, country);
     const weatherData = await fetchWeather({ latitude, longitude, dateFrom, dateTo });
-    
+
     const aiSummary = await summarizeWeather({ 
       city, 
       dateFrom, 
