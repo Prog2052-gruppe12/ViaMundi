@@ -40,9 +40,7 @@ export async function POST(req) {
     }
 
     //** DEV MOCK *//
-    if (process.env.NODE_ENV === 'development') {
-      //console.log('Mock response for ' + url);
-
+    if (process.env.MODE === 'dev') {
       return NextResponse.json({
         success: true,
         type: body.type || 'both',
@@ -77,11 +75,15 @@ export async function POST(req) {
       other: body.other || ''
     };
 
-    const result = await summarizeUserInterests(userData, userData);
+    const activityResult = await summarizeUserInterests(userData, userData);
+    const restaurantResult = await summarizeUserRestaurants(userData, userData);
 
     const response = NextResponse.json({
       success: true,
-      data: result
+      data: {
+        interests: activityResult,
+        restaurants: restaurantResult
+      }
     });
 
     // Add rate limit headers

@@ -1,0 +1,105 @@
+import { NextResponse } from "next/server";
+import { createTravelStory } from "@/lib/createStory/createStory";
+import rateLimit from "@/lib/ratelimiter/ratelimit";
+
+const rateLimiter = rateLimit(100, 60000);
+
+export async function POST(req) {
+    try {
+        const rateLimitResult = await rateLimiter(req);
+
+        if (!rateLimitResult.allowed) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Rate limit exceeded',
+                    message: `Too many requests. Try again in ${rateLimitResult.retryAfter} seconds.`,
+                    retryAfter: rateLimitResult.retryAfter
+                },
+                {
+                    status: 429,
+                    headers: {
+                        'Retry-After': rateLimitResult.retryAfter.toString(),
+                        'X-RateLimit-Limit': '10',
+                        'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+                        'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+                    }
+                }
+            );
+        }
+
+        const body = await req.json();
+
+        // Validate required fields only
+        if (!body.destination) {
+            return NextResponse.json(
+                { error: 'destination is required' },
+                { status: 400 }
+            );
+        }
+
+        //** DEV MOCK *//
+        if (process.env.MODE === 'dev') {
+            return NextResponse.json({
+                success: true,
+                type: body.type || 'both',
+                data: {
+                    interests: {
+                        queries: [
+                            "museums in " + body.destination,
+                            "historical landmarks in " + body.destination,
+                            "parks and nature in " + body.destination,
+                            "local experiences in " + body.destination,
+                            "cultural attractions in " + body.destination
+                        ]
+                    },
+                    restaurants: {
+                        queries: [
+                            "local restaurants in " + body.destination,
+                            "traditional cuisine in " + body.destination,
+                            "cafes and coffee shops in " + body.destination,
+                            "food markets in " + body.destination
+                        ]
+                    }
+                }
+            });
+        }
+
+        const userData = {
+            destination: body.destination,
+            dateFrom: body.dateFrom || '',
+            dateTo: body.dateTo || '',
+            travelers: body.travelers || 1,
+            interests: body.interests || '',
+            other: body.other || ''
+        };
+
+        const storyResult = await createTravelStory(userData);
+
+        const response = NextResponse.json({
+            success: true,
+            data: {
+                story: storyResult,
+            }
+        });
+
+        // Add rate limit headers
+        response.headers.set('X-RateLimit-Limit', '10');
+        response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
+        response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString());
+
+        return response;
+
+    } catch (error) {
+        console.error('AI Summarize API error:', error);
+        return NextResponse.json(
+            {
+                success: false,
+                error: error.message || 'Failed to generate search queries',
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            },
+            { status: 500 }
+        );
+    }
+}
+

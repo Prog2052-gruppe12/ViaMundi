@@ -33,6 +33,22 @@ async function runSummarize(params, paramType) {
     return res.json();
 }
 
+async function fetchTravelStory(params) {
+    const res = await fetch("/api/ai/create-story", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            destination: params.destination,
+            dateFrom: params.dateFrom,
+            dateTo: params.dateTo,
+            travelers: params.travelers,
+            interests: params.interests,
+            other: params.other
+        })
+    });
+    return res.json();
+}
+
 async function fetchLocationIds(destination, interests) {
     const qs = new URLSearchParams();
 
@@ -94,13 +110,13 @@ function createPlanSkeleton(dateFrom, dateTo) {
     }, {});
 }
 
-async function curateLocations(locations, userInterests, destination) {
+async function curateLocations(details, userInterests, destination) {
     try {
         const res = await fetch('/api/ai/curate-activities', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                locations,
+                locations: details,
                 userInterests,
                 destination
             })
@@ -111,25 +127,61 @@ async function curateLocations(locations, userInterests, destination) {
         if (!data.success) {
             console.error('Curation failed:', data.error);
             // Fallback: return all location IDs if curation fails
-            return locations.map(loc => loc.location_id);
+            return details;
         }
 
-        console.log(`AI Curation: kept ${data.kept_count}/${locations.length} locations. Reason: ${data.reason}`);
-        return data.curated;
+        //console.log(`AI Curation: kept ${data.kept_count}/${details.length} locations. Reason: ${data.reason}`);
+        const out = details.filter(loc => data.curated.includes(loc.location_id));
+        return out[0];
     } catch (error) {
         console.error('Error during curation:', error);
         // Fallback: return all location IDs if curation fails
-        return locations.map(loc => loc.location_id);
+        return details.map(loc => loc.location_id);
     }
 }
 
-async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, weatherSummary, userInterests, destination) {
+async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, userInterests, destination) {
     const filled = { ...planSkeleton };
-    const attractionIds = locationIds?.location_ids ?? [];
-    const restaurantIdsArray = restaurantIds?.location_ids ?? [];
 
-    // Fetch ALL details first (for AI curation)
-    console.log(`Fetching details for ${attractionIds.length} attractions and ${restaurantIdsArray.length} restaurants...`);
+    for (const [day, entries] of Object.entries(planSkeleton)) {
+        if (!entries || !entries.dayNumber) continue;
+
+        const activities = locationIds[entries.dayNumber];
+        const restaurants = restaurantIds[entries.dayNumber];
+
+        // Fetch details in parallel
+        const [activityDetails, restaurantDetails] = await Promise.all([
+            Promise.all(activities.map(id => fetchDetails(id))),
+            Promise.all(restaurants.map(id => fetchDetails(id)))
+        ]);
+
+        const curatedActivity = await curateLocations(activityDetails, userInterests[entries.dayNumber.activity], destination);
+        const curatedRestaurant = await curateLocations(restaurantDetails, userInterests[entries.dayNumber.restaurant], destination);
+
+        // Fetch images only for the curated activity and restaurant
+        const [activityImage, restaurantImage] = await Promise.all([
+            curatedActivity ? fetchImage(curatedActivity.location_id) : null,
+            curatedRestaurant ? fetchImage(curatedRestaurant.location_id) : null
+        ]);
+
+        // Combine curated details with images
+        const activityWithImage = curatedActivity
+            ? { ...curatedActivity, image: activityImage ?? null }
+            : null;
+
+        const restaurantWithImage = curatedRestaurant
+            ? { ...curatedRestaurant, image: restaurantImage ?? null }
+            : null;
+
+        // Save the curated activity and restaurant
+        filled[day].attractions = activityWithImage ? [activityWithImage] : [];
+        filled[day].restaurants = restaurantWithImage ? [restaurantWithImage] : [];
+    }
+    console.log('Filled plan with details:', filled);
+
+    return filled;
+
+    /*
 
     const [allAttractionDetails, allRestaurantDetails] = await Promise.all([
         Promise.all(attractionIds.map(id => fetchDetails(id))),
@@ -187,6 +239,7 @@ async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, wea
     }
 
     return filled;
+    */
 }
 
 async function fetchSummarizedPlan(fullPlan) {
@@ -229,29 +282,56 @@ export default function ResultContent() {
         (async () => {
             setLoading(true);
             try {
-                console.log(
-                    JSON.stringify({
-                        destination: params.destination,
-                        dateFrom: params.dateFrom,
-                        dateTo: params.dateTo,
-                        travelers: params.travelers,
-                        interests: params.interests,
-                        other: params.other,
-                        type: "both"
-                    })
-                );
-                const summary = await runSummarize(params);
-                console.log('Summary response:', summary);
+                const storyData = await fetchTravelStory(params) ?? null;
+                if (!storyData) throw new Error("No story returned from AI");
+                if (!storyData.data || !storyData.data.story || !storyData.data.story.days) {
+                    throw new Error("Invalid story data structure");
+                }
 
-                if (!summary || !summary.data) {
-                    console.error('Invalid summary response:', summary);
+                const storyResult = storyData.data.story.days;
+
+                const locationIds = {};
+                const restaurantIds = {};
+
+                for (const [day, queries] of Object.entries(storyResult)) {
+                    if (!queries) continue;
+
+                    const lIds = await fetchLocationIds(destinationParam, queries.activity);
+                    locationIds[day] = lIds["location_ids"].slice(0, 2);
+
+                    const rIds = await fetchRestaurantIds(destinationParam, queries.restaurant);
+                    restaurantIds[day] = rIds["location_ids"].slice(0, 2);
+                }
+
+                const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
+
+                const fullPlan = await fillPlanWithDetails(
+                    skeleton,
+                    locationIds,
+                    restaurantIds,
+                    storyResult,
+                    params.destination
+                );
+
+                const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+
+                const summarizedPlan = await fetchSummarizedPlan(fullPlan);
+
+                if (mounted) {
+                    setFullPlan(fullPlan);
+                    setSummarizedPlan(summarizedPlan);
+                    setWeatherSummary(weatherSummary);
                 }
 
                 /*
+                const summary = await runSummarize(params);
 
-                if (mounted) setSummarized(summary?.data?.interests?.queries?.[0] ?? interestsParam);
-                const locationQuery = summary?.data?.interests?.queries?.[0] ?? interestsParam;
-                const restaurantQuery = summary?.data?.restaurants?.queries?.[0] ?? interestsParam;
+                if (mounted) setSummarized(summary?.data?.interests?.queries ?? interestsParam);
+                const locationQueries = summary?.data?.interests?.queries ?? interestsParam;
+                const restaurantQueies = summary?.data?.restaurants?.queries ?? interestsParam;
+
+                console.log("Generated location queries:", locationQueries);
+                console.log("Generated restaurant queries:", restaurantQueies);
 
                 const [locationIds, restaurantIds] = await Promise.all([
                     fetchLocationIds(destinationParam, locationQuery),
@@ -279,6 +359,8 @@ export default function ResultContent() {
                     setWeatherSummary(weatherSummary);
                 }
                     */
+            } catch (error) {
+                console.error("Error generating travel plan:", error);
             } finally {
                 if (mounted) setLoading(false);
             }
