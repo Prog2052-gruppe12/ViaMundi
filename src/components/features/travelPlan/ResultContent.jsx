@@ -229,12 +229,25 @@ export default function ResultContent() {
         (async () => {
             setLoading(true);
             try {
+                console.log(
+                    JSON.stringify({
+                        destination: params.destination,
+                        dateFrom: params.dateFrom,
+                        dateTo: params.dateTo,
+                        travelers: params.travelers,
+                        interests: params.interests,
+                        other: params.other,
+                        type: "both"
+                    })
+                );
                 const summary = await runSummarize(params);
                 console.log('Summary response:', summary);
 
                 if (!summary || !summary.data) {
                     console.error('Invalid summary response:', summary);
                 }
+
+                /*
 
                 if (mounted) setSummarized(summary?.data?.interests?.queries?.[0] ?? interestsParam);
                 const locationQuery = summary?.data?.interests?.queries?.[0] ?? interestsParam;
@@ -265,6 +278,7 @@ export default function ResultContent() {
                     setSummarizedPlan(summarizedPlan);
                     setWeatherSummary(weatherSummary);
                 }
+                    */
             } finally {
                 if (mounted) setLoading(false);
             }

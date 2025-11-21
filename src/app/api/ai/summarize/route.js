@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { summerizeUserPrompt } from "@/lib/summerizeUserPrompt/summerizeUserPrompt";
+import { summarizeUserInterests, summarizeUserRestaurants } from "@/lib/summerizeUserPrompt/summerizeUserPrompt";
 import rateLimit from "@/lib/ratelimiter/ratelimit";
 import { success } from "zod";
 
@@ -77,7 +77,7 @@ export async function POST(req) {
       other: body.other || ''
     };
 
-    const result = await summerizeUserPrompt(userData, userData);
+    const result = await summarizeUserInterests(userData, userData);
 
     const response = NextResponse.json({
       success: true,
