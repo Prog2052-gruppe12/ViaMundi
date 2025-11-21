@@ -79,7 +79,7 @@ export async function POST(req) {
     const { locations, userInterests, destination } = body;
 
     //** DEV MOCK *//
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.MODE === 'dev') {
       // In development, return first 50% of locations as "curated"
       const halfCount = Math.ceil(locations.length / 2);
       const mockCurated = locations
