@@ -39,8 +39,9 @@ export async function GET(req) {
   const city = searchParams.get('destination').split(',')[1].trim();
   const { latitude: lat, longitude: lon } = await decodeCityToCord(city, country);
   const latLong = lat && lon ? `${lat},${lon}` : null;
-  const radiusUnit = searchParams.get('radiusUnit') || 'km';
-  const radius = searchParams.get('radius') || '10';
+
+  const radius = 5;
+  const radiusUnit = 'km';
 
   if (!searchQuery) {
     return NextResponse.json({ error: 'searchQuery is required' }, { status: 400 });
