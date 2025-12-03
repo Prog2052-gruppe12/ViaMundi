@@ -134,10 +134,12 @@ async function curateDayActivities(activities, restaurants, activityInterests, r
             };
         }
 
+        console.log(data);
+
         // Expect API to return a *single* best activity + restaurant object each
         return {
-            curatedActivity: data.curatedActivity || null,
-            curatedRestaurant: data.curatedRestaurant || null,
+            curatedActivity: data.activityId[0] || null,
+            curatedRestaurant: data.restaurantId[0] || null,
         };
     } catch (error) {
         console.error('Error during day curation:', error);
@@ -252,12 +254,20 @@ async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, use
             console.error("Day curation failed, using fallback for", dayKey, e);
         }
 
-        //console.log(aiResult);
+        console.log(aiResult);
 
-        const chosenActivity = aiResult.activity || validActivities[0] || null;
-        const chosenRestaurant = aiResult.restaurant || validRestaurants[0] || null;
+        // Map curated IDs back to full detail objects
+        const chosenActivity =
+            validActivities.find(a => a.location_id === aiResult.curatedActivity) ||
+            validActivities[0] ||
+            null;
 
-        // Fetch images only for chosen ones
+        const chosenRestaurant =
+            validRestaurants.find(r => r.location_id === aiResult.curatedRestaurant) ||
+            validRestaurants[0] ||
+            null;
+
+        // Fetch images only for the chosen ones
         const [activityImage, restaurantImage] = await Promise.all([
             chosenActivity ? fetchImage(chosenActivity.location_id) : null,
             chosenRestaurant ? fetchImage(chosenRestaurant.location_id) : null
@@ -272,9 +282,7 @@ async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, use
             : null;
 
         filled[dayKey].attractions = activityWithImage ? [activityWithImage] : [];
-        filled[dayKey].restaurants = restaurantWithImage
-            ? [restaurantWithImage]
-            : [];
+        filled[dayKey].restaurants = restaurantWithImage ? [restaurantWithImage] : [];
     }
 
     return filled;
@@ -440,36 +448,37 @@ export default function ResultContent() {
 
         (async () => {
             setLoading(true);
+
             try {
-                const storyData = await fetchTravelStory(params) ?? null;
-                if (!storyData) throw new Error("No story returned from AI");
-                if (!storyData.data || !storyData.success || !storyData.data.story || !storyData.data.story.days || !storyData.data.story.summary) {
-                    throw new Error("Invalid story data structure");
+                // ---------------------------------------------------------
+                // CRITICAL: Fetch story data
+                // ---------------------------------------------------------
+                const storyData = await fetchTravelStory(params);
+                if (
+                    !storyData ||
+                    !storyData.data ||
+                    !storyData.success ||
+                    !storyData.data.story ||
+                    !storyData.data.story.days
+                ) {
+                    throw new Error("Invalid story data");
                 }
 
                 const storyResult = storyData.data.story.days;
-                const stortSummary = storyData.data.story.summary;
+                const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
 
-                //console.log("Story Summary: ", stortSummary);
-                //console.log("Story Result: ", storyResult);
-
+                // Build activity + restaurant ID lists
                 const locationIds = {};
                 const restaurantIds = {};
 
                 for (const [day, queries] of Object.entries(storyResult)) {
                     if (!queries) continue;
 
-                    //
-                    // --- Fetch twice for more variety ---
-                    //
                     const lIds1 = await fetchLocationIds(destinationParam, queries.activity);
                     const lIds2 = await fetchLocationIds(destinationParam, queries.activity);
                     const rIds1 = await fetchRestaurantIds(destinationParam, queries.restaurant);
                     const rIds2 = await fetchRestaurantIds(destinationParam, queries.restaurant);
 
-                    //
-                    // --- Combine and dedupe fetched results ---
-                    //
                     const fetchedLocationIds = [...new Set([
                         ...(lIds1["location_ids"] ?? []),
                         ...(lIds2["location_ids"] ?? [])
@@ -480,53 +489,33 @@ export default function ResultContent() {
                         ...(rIds2["location_ids"] ?? [])
                     ])];
 
-                    //
-                    // --- Pick two random non-duplicate activity IDs ---
-                    //
+                    // Random + non-duplicate logic
                     const usedActivityIds = new Set(Object.values(locationIds).flat());
                     const uniqueActivityIds = fetchedLocationIds.filter(id => !usedActivityIds.has(id));
-
-                    // Shuffle (Fisher-Yates)
                     for (let i = uniqueActivityIds.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [uniqueActivityIds[i], uniqueActivityIds[j]] = [uniqueActivityIds[j], uniqueActivityIds[i]];
                     }
-
                     const randomActivityIds = uniqueActivityIds.slice(0, 2);
+                    if (randomActivityIds.length > 0) locationIds[day] = randomActivityIds;
 
-                    if (randomActivityIds.length > 0) {
-                        locationIds[day] = randomActivityIds;
-                    } else {
-                        console.warn(`No unique activities found for day ${day}`);
-                    }
-
-                    //
-                    // --- Pick two random non-duplicate restaurant IDs ---
-                    //
                     const usedRestaurantIds = new Set(Object.values(restaurantIds).flat());
                     const uniqueRestaurantIds = fetchedRestaurantIds.filter(id => !usedRestaurantIds.has(id));
-
-                    // Shuffle
                     for (let i = uniqueRestaurantIds.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [uniqueRestaurantIds[i], uniqueRestaurantIds[j]] = [uniqueRestaurantIds[j], uniqueRestaurantIds[i]];
                     }
-
                     const randomRestaurantIds = uniqueRestaurantIds.slice(0, 2);
-
-                    if (randomRestaurantIds.length > 0) {
-                        restaurantIds[day] = randomRestaurantIds;
-                    } else {
-                        console.warn(`No unique restaurants found for day ${day}`);
-                    }
+                    if (randomRestaurantIds.length > 0) restaurantIds[day] = randomRestaurantIds;
                 }
 
+                console.log("Location IDs per day:", locationIds);
+                console.log("Restaurant IDs per day:", restaurantIds);
 
-                const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
-
-                //console.log(skeleton);
-
-                const fullPlan = await fillPlanWithDetails(
+                // ---------------------------------------------------------
+                // CRITICAL: Full plan generation
+                // ---------------------------------------------------------
+                const fullPlanResult = await fillPlanWithDetails(
                     skeleton,
                     locationIds,
                     restaurantIds,
@@ -534,76 +523,60 @@ export default function ResultContent() {
                     params.destination
                 );
 
-                const weatherData = await fetchWeather(destinationParam, dateFromParam, dateToParam);
-                if (!weatherData) throw new Error("No weather data returned");
+                if (mounted) setFullPlan(fullPlanResult);
 
-                const weatherSummary = {};
+                // ---------------------------------------------------------
+                // NON-CRITICAL: Weather fetch (SAFE)
+                // ---------------------------------------------------------
+                let weatherSummaryResult = {};
+                try {
+                    const weatherData = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+                    const times = weatherData?.weatherData?.daily?.time ?? [];
 
-                for (const [idx, value] of (weatherData?.weatherData?.daily?.time ?? []).entries()) {
-                    weatherSummary[value] = {
-                        tmp_min: parseInt(weatherData?.weatherData?.daily?.temperature_2m_min?.[idx]) ?? null,
-                        tmp_max: parseInt(weatherData?.weatherData?.daily?.temperature_2m_max?.[idx]) ?? null,
-                        weather_code: weatherData?.weatherData?.daily?.weather_code?.[idx] ?? null
+                    for (const [idx, date] of times.entries()) {
+                        weatherSummaryResult[date] = {
+                            tmp_min: parseInt(weatherData.weatherData.daily.temperature_2m_min?.[idx]) ?? null,
+                            tmp_max: parseInt(weatherData.weatherData.daily.temperature_2m_max?.[idx]) ?? null,
+                            weather_code: weatherData.weatherData.daily.weather_code?.[idx] ?? null
+                        };
                     }
+                } catch (err) {
+                    console.warn("Weather failed:", err);
                 }
 
-                //console.log("Fetched weather:", weatherSummary);
+                if (mounted) setWeatherSummary(weatherSummaryResult);
 
-                const summarizedPlan = await fetchSummarizedPlan(fullPlan);
-
-                //console.log("Summarized plan:", summarizedPlan);
-
-                if (mounted) {
-                    setFullPlan(fullPlan);
-                    setSummarizedPlan(summarizedPlan);
-                    setWeatherSummary(weatherSummary);
+                // ---------------------------------------------------------
+                // NON-CRITICAL: Plan summary fetch (SAFE)
+                // ---------------------------------------------------------
+                let summarizedPlanResult = null;
+                try {
+                    summarizedPlanResult = await fetchSummarizedPlan(fullPlanResult);
+                } catch (err) {
+                    console.warn("Summary generation failed:", err);
                 }
 
-                /*
-                const summary = await runSummarize(params);
+                if (mounted) setSummarizedPlan(summarizedPlanResult);
 
-                if (mounted) setSummarized(summary?.data?.interests?.queries ?? interestsParam);
-                const locationQueries = summary?.data?.interests?.queries ?? interestsParam;
-                const restaurantQueies = summary?.data?.restaurants?.queries ?? interestsParam;
-
-                console.log("Generated location queries:", locationQueries);
-                console.log("Generated restaurant queries:", restaurantQueies);
-
-                const [locationIds, restaurantIds] = await Promise.all([
-                    fetchLocationIds(destinationParam, locationQuery),
-                    fetchRestaurantIds(destinationParam, restaurantQuery)
-                ]);
-
-                const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
-
-                const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
-
-                const fullPlan = await fillPlanWithDetails(
-                    skeleton,
-                    locationIds,
-                    restaurantIds,
-                    null,
-                    interestsParam,
-                    destinationParam
-                );
-
-                const summarizedPlan = await fetchSummarizedPlan(fullPlan);
-
-                if (mounted) {
-                    setFullPlan(fullPlan);
-                    setSummarizedPlan(summarizedPlan);
-                    setWeatherSummary(weatherSummary);
-                }
-                    */
             } catch (error) {
+                // Only triggers for CRITICAL failures
                 console.error("Error generating travel plan:", error);
             } finally {
                 if (mounted) setLoading(false);
             }
+
         })();
 
         return () => { mounted = false; };
-    }, [destinationParam, dateFromParam, dateToParam, travelersParam, interestsParam, otherParam]);
+    }, [
+        destinationParam,
+        dateFromParam,
+        dateToParam,
+        travelersParam,
+        interestsParam,
+        otherParam
+    ]);
+
 
     // Save trip functionality
     const { saveTrip, isSaving, error: saveError } = useSaveTrip();
