@@ -62,7 +62,7 @@ async function fetchLocationIds(destination, interests) {
     // If the API returns array of objects with distance:
     const filtered = (data.data ?? [])
         .filter(item => item.distance == null || item.distance <= 6.0)
-        .map(item => item.location_id);
+        .map(item => item.location_ids);
 
     return { location_ids: filtered };
 }
@@ -80,7 +80,7 @@ async function fetchRestaurantIds(destination, interests) {
 
     const filtered = (data.data ?? [])
         .filter(item => item.distance == null || item.distance <= 6.0)
-        .map(item => item.location_id);
+        .map(item => item.location_ids);
 
     return { location_ids: filtered };
 }

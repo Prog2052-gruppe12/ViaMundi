@@ -71,43 +71,43 @@ export async function GET(req) {
     return NextResponse.json({
       data: [
         {
-          location_id: "11111",
+          location_ids: "11111",
           distance: 1.2
         },
         {
-          location_id: "11112",
+          location_ids: "11112",
           distance: 2.3
         },
         {
-          location_id: "11113",
+          location_ids: "11113",
           distance: 2.4
         },
         {
-          location_id: "11114",
+          location_ids: "11114",
           distance: 3.5
         },
         {
-          location_id: "11115",
+          location_ids: "11115",
           distance: 3.6
         },
         {
-          location_id: "11116",
+          location_ids: "11116",
           distance: 4.7
         },
         {
-          location_id: "11117",
+          location_ids: "11117",
           distance: 4.8
         },
         {
-          location_id: "11118",
+          location_ids: "11118",
           distance: 5.9
         },
         {
-          location_id: "11119",
+          location_ids: "11119",
           distance: 6.0
         },
         {
-          location_id: "11120",
+          location_ids: "11120",
           distance: 10.1
         },
       ]
