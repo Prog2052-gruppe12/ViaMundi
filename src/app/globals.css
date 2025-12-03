@@ -127,6 +127,53 @@
   .bg-gradient-secondary {
     @apply bg-gradient-to-br from-[var(--gradient-secondary-from)] to-[var(--gradient-secondary-to)];
   }
+
+  @keyframes clickable-sweep {
+    0% {
+      transform: translateX(-120%) skewX(-20deg);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.5;
+    }
+    100% {
+      transform: translateX(120%) skewX(-20deg);
+      opacity: 0;
+    }
+  }
+
+  .clickable {
+    position: relative;
+    overflow: hidden;
+    @apply cursor-pointer scale-100 active:!scale-[0.98] transition-all duration-100 ease-in-out;
+  }
+/*
+  .clickable::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 100%
+    );
+    transform: translateX(-120%) skewX(-20deg);
+    opacity: 0;
+    animation: none;
+  }
+
+  .clickable:hover::after {
+    animation: clickable-sweep 2s ease-out forwards;
+  }
+
+  .clickable::after {
+    animation: none;
+  }
+  */
 }
 
 @layer base {
@@ -138,13 +185,15 @@
   }
 }
 
+/*
 *,
 *::before,
 *::after {
   transition: none !important;
-  /*animation: none !important;*/
+  animation: none !important;
   scroll-behavior: auto !important;
 }
+*/
 
 /* 2. Ensure Tailwind’s motion-reduction is respected */
 @media (prefers-reduced-motion: reduce) {

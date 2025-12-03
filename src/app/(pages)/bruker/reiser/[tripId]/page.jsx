@@ -15,6 +15,7 @@ export default function SavedTripPage() {
   const tripId = params?.tripId;
 
   const [trip, setTrip] = useState(null);
+  const [fullPlan, setFullPlan] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,6 +38,7 @@ export default function SavedTripPage() {
         }
 
         setTrip(result.trip);
+        setFullPlan(result.trip.finalPlan || {});
       } catch (err) {
         setError(err.message);
       } finally {
@@ -48,6 +50,8 @@ export default function SavedTripPage() {
       fetchTrip();
     }
   }, [tripId]);
+
+  const dayKeys = Object.keys(fullPlan || {});
 
   if (isLoading) return <LoadingPage />;
 
@@ -84,7 +88,7 @@ export default function SavedTripPage() {
         />
 
         {/* PDF Export Button */}
-        <div className="flex justify-end items-center p-4 border-b bg-card">
+        <div className="hidden flex justify-end items-center p-4 border-b bg-card">
           <div className="flex items-center gap-3">
             {pdfError && (
               <span className="text-sm text-red-600">
@@ -106,7 +110,43 @@ export default function SavedTripPage() {
 
         <Section type="plan" className="p-0">
           {Object.keys(trip.finalPlan || {}).length > 0 ? (
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full px-4 py-4 gap-2 bg-card">
+              <div className="flex flex-row px-0 justify-between items-center">
+                <div className="flex flex-row items-center gap-4">
+                  <h1 className="text-xl font-bold">Reiseplan</h1>
+                  <div className="hidden md:block text-muted-foreground">
+                    {dayKeys.length} dag{dayKeys.length !== 1 ? "er" : ""} planlagt •{" "}
+                    {
+                      Object.values(fullPlan || {})
+                        .reduce((total, day) => {
+                          const a = day.attractions?.length || 0;
+                          const r = day.restaurants?.length || 0;
+                          return total + a + r;
+                        }, 0)
+                    }{" "}
+                    lokasjoner
+                  </div>
+
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {pdfError && (
+                    <span className="text-sm text-red-600">
+                      {pdfError}
+                    </span>
+                  )}
+                  <Button
+                    onClick={handleExportPdf}
+                    disabled={isExporting}
+                    className="flex items-center gap-2 rounded-lg !px-5"
+                    variant="default"
+                    size="sm"
+                  >
+                    <Download size={16} />
+                    {isExporting ? "Genererer PDF..." : "Last ned som PDF"}
+                  </Button>
+                </div>
+              </div>
               {Object.entries(trip.finalPlan).map(([dateKey, plan]) => {
                 // Handle both old and new data structures
                 const attractions = plan.attractions || (plan.activity ? [plan.activity] : []);
@@ -133,6 +173,11 @@ export default function SavedTripPage() {
             <p className="mt-6 opacity-70">Ingen planlagte aktiviteter</p>
           )}
         </Section>
+        <div className="flex items-center justify-center p-4 bg-card">
+          <div className="text-sm text-muted-foreground">
+            Reise generert av © 2025 ViaMundi med hjelp av AI
+          </div>
+        </div>
       </div>
     </div>
   );
