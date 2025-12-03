@@ -99,7 +99,11 @@ async function fetchWeather(destination, dateFrom, dateTo) {
     if (dateFrom) qs.set("dateFrom", dateFrom);
     if (dateTo) qs.set("dateTo", dateTo);
     const res = await fetch(`/api/weather-summary?${qs.toString()}`);
-    return res.json();
+    try {
+        return await res.json();
+    } catch (e) {
+        return null;
+    }
 }
 
 function createPlanSkeleton(dateFrom, dateTo) {
