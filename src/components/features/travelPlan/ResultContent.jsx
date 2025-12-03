@@ -564,12 +564,12 @@ export default function ResultContent() {
                                 weather_code: weatherData.weatherData.daily.weather_code?.[idx] ?? null
                             };
                         }
+
+                        if (mounted) setWeatherSummary(weatherSummaryResult);
                     }
                 } catch (err) {
                     console.warn("Weather failed:", err);
                 }
-
-                if (mounted) setWeatherSummary(weatherSummaryResult);
 
                 // ---------------------------------------------------------
                 // NON-CRITICAL: Plan summary fetch (SAFE)
