@@ -10,7 +10,7 @@ import { DatePicker } from "./DatePicker";
 import { DestinationSelect } from "./DestinationSelect";
 import { TravelersInput } from "./TravelersInput";
 import { formSchema } from "./schema";
-import {addDays, addYears, endOfDay, format, startOfDay} from "date-fns";
+import { addDays, addYears, endOfDay, format, startOfDay } from "date-fns";
 
 export const SearchForm = () => {
     const router = useRouter();
@@ -64,38 +64,38 @@ export const SearchForm = () => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex xl:flex-row flex-col w-full py-4 px-4 rounded-xl bg-card/20 ring-2 ring-card/30 gap-2"
             >
-                <DestinationSelect label="Hvor går reisen?" form={form}/>
+                <DestinationSelect label="Hvor går reisen?" form={form} />
                 <div className="flex flex-col md:flex-row w-full items-center md:items-end gap-2">
 
                     <div className="flex flex-col sm:flex-row gap-2 w-full">
                         <DatePicker label="Dato fra"
-                                    form={form}
-                                    today={today}
-                                    dateMax={dateMax}
-                                    dateFromWatch={dateFromValue}
+                            form={form}
+                            today={today}
+                            dateMax={dateMax}
+                            dateFromWatch={dateFromValue}
                         />
 
                         <DatePicker label="Dato til"
-                                    form={form}
-                                    today={dateFromValue}
-                                    dateMax={dateMax}
-                                    dateFromWatch={dateFromValue}
+                            form={form}
+                            today={dateFromValue}
+                            dateMax={dateMax}
+                            dateFromWatch={dateFromValue}
                         />
                     </div>
 
-                    <TravelersInput label="Antall reisende" form={form}/>
+                    <TravelersInput label="Antall reisende" form={form} />
 
                     <Button type="submit"
-                            variant="secondary"
-                            className="w-full md:w-fit mt-2"
-                            disabled={loading}
+                        variant="secondary"
+                        className="w-full md:w-fit mt-2"
+                        disabled={loading}
                     >
                         {loading ? "Laster..." : "Søk"}
                     </Button>
                 </div>
             </form>
         </Form>
-);
+    );
 };
 
 export default SearchForm;

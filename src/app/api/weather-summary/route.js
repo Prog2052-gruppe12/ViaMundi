@@ -45,16 +45,16 @@ export async function GET(request) {
     const { latitude, longitude } = await decodeCityToCord(city, country);
     const weatherData = await fetchWeather({ latitude, longitude, dateFrom, dateTo });
 
-    const aiSummary = await summarizeWeather({ 
+    /*const aiSummary = await summarizeWeather({ 
       city, 
       dateFrom, 
       dateTo, 
       weatherData 
-    });
+    });*/
 
     // Return response with rate limit headers
     return NextResponse.json(
-      { aiSummary },
+      { weatherData },
       {
         headers: {
           'X-RateLimit-Limit': '10',

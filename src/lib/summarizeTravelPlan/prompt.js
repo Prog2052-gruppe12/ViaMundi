@@ -25,6 +25,7 @@ Output schema:
 {
   "YYYY-MM-DD": {
     "dayNumber": number,
+    "daySummary": "max 5 words overall summary for the day in Norwegian",
     "attractions": [
       {
         "location_id": "string",

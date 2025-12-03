@@ -5,6 +5,7 @@ import { Calendar, Ticket, UtensilsCrossed } from "lucide-react";
 import { format } from "date-fns";
 import { da, nb } from "date-fns/locale";
 import LocationView from "@/components/features/travelPlan/LocationInfo";
+import SmallView from "@/components/features/travelPlan/SmallView";
 import { getWeatherIcon } from "@/utils/getIconFromWc";
 import {
     Accordion,
@@ -12,6 +13,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ArrowUp } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 
 /**
  * Safely parse yyyy-MM-dd (local) to Date.
@@ -28,6 +31,12 @@ function safeParseYMD(ymd) {
 
 const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, restaurants, planSummary, weatherSummary }) {
 
+    //console.log(planSummary);
+
+    if (!dateKey || !dayNumber || !attractions || !restaurants || !planSummary || !weatherSummary) {
+        return null;
+    }
+
     const attractionObj = attractions[0];
     const attractionSummaryObj = planSummary["attractions"][0];
     const restaurantObj = restaurants[0];
@@ -40,24 +49,45 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
     }, [dateObj]);
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col rounded-lg">
             <Accordion type="single" collapsible defaultValue={1}>
                 <AccordionItem value={dayNumber}>
-                    <AccordionTrigger className="p-4 flex flex-row items-center rounded-none bg-card border-b">
-                        <div className="flex flex-row items-center gap-3 w-full">
-                            <div className="flex-1 w-full flex flex-row font-semibold text-sm gap-3 items-center">
-                                <div className="px-3 py-1 flex items-center justify-center rounded-md bg-gradient-secondary text-primary-foreground">
-                                    <span className="text-sm">Dag {dayNumber}</span>
+                    <AccordionTrigger className="px-1 py-2 flex flex-row rounded-none items-center data-[state=closed]:cursor-pointer">
+                        <div className="flex flex-col md:flex-row items-center gap-3 w-full">
+                            <div className="flex-1 w-full flex flex-row font-semibold text-sm gap-4 items-center">
+                                <div className="hidden px-3 py-1 flex items-center justify-center rounded-md bg-gradient-secondary text-primary-foreground">
+                                    <span className="text-lg">Dag {dayNumber}</span>
                                 </div>
-                                <div className="flex-1 break-words whitespace-normal line-clamp-1 text-pretty">
-                                    <span className="text-sm flex-1">{attractionObj?.["name"]} og middag på {restaurantObj?.["name"]}</span>
+                                <div className="flex flex-1 flex-row justify-between items-center gap-4">
+                                    <div className="flex-1 break-words whitespace-normal line-clamp-1 text-pretty hover:underline underline-offset-2">
+                                        <span className="text-lg font-bold flex-1">Dag {dayNumber}</span>
+                                        <span className="ml-4 text-[16px] font-medium text-muted-foreground">{planSummary.daySummary}</span>
+                                    </div>
+                                    <div className="border flex flex-row items-center gap-2 font-medium text-sm px-2 py-0.5 bg-primary/5 text-muted-foreground rounded-md">
+                                        <Calendar size={14} strokeWidth={2.0} />
+                                        <span>{dateLabel}</span>
+                                    </div>
                                 </div>
 
+
+
+
+
+
+
+
                             </div>
+                            {/*
                             <div className="flex flex-row items-center gap-2 px-3 py-1 bg-primary/5 text-muted-foreground rounded-md">
                                 {getWeatherIcon(weatherSummary["weather_code"], 16)}
-                                <span>
-                                    {weatherSummary["t_max_c"]}
+                                <span className="flex flex-row items-center gap-1">
+                                    <ArrowDown size={10} />
+                                    {weatherSummary["tmp_min"]}
+                                    °C
+                                </span>
+                                <span className="flex flex-row items-center gap-1">
+                                    <ArrowUp size={10} />
+                                    {weatherSummary["tmp_max"]}
                                     °C
                                 </span>
                             </div>
@@ -65,10 +95,11 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                                 <Calendar size={14} />
                                 {dateLabel}
                             </div>
+                            */}
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="pb-0 bg-background border-b">
-                        <div className="grid gap-4 h-fit py-4 px-4 w-full">
+                    <AccordionContent className="pb-0 rounded-b-lg">
+                        <div className="grid gap-4 h-fit py-2 pl-10 w-full">
                             <div className="hidden flex-row items-center gap-4 w-full border p-2">
 
                                 <span>
@@ -76,47 +107,60 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                                 </span>
                             </div>
                             <div className="flex flex-row w-full gap-4">
-                                <div className="flex flex-col items-center gap-4">
-                                    <div className="!w-10 !h-10 min-h-10 bg-gradient-secondary flex items-center justify-center rounded-md">
-                                        <Ticket size={26} className="text-primary-foreground" />
+                                <div className="hidden md:flex flex-col items-center gap-4">
+                                    <div className="!w-9 !h-9 min-h-9 bg-gradient-secondary flex items-center justify-center rounded-full">
+                                        <Ticket size={20} strokeWidth={2} className="text-primary-foreground" />
                                     </div>
-                                    <span className="h-full w-1 rounded bg-gradient-secondary"></span>
+                                    <span className="h-full w-0.75 rounded bg-gradient-secondary"></span>
                                 </div>
                                 <div className="flex flex-col gap-2 w-full">
                                     <div className="flex flex-row gap-2">
                                         <h4 className="flex items-center justify-center bg-card text-xs font-semibold text-primary border w-fit px-2 py-1 rounded-md pointer-events-none">Aktivitet</h4>
-                                        <h2 className="text-lg font-semibold">{attractionObj?.["name"] || "Kunne ikke hente aktivitet"}</h2>
+                                        <h2 className="text-lg font-semibold break-words whitespace-normal line-clamp-1 text-pretty">{attractionObj?.["name"] || "Kunne ikke hente aktivitet"}</h2>
                                     </div>
-                                    <div>
-                                        <span className="pl-1">
-                                            {attractionSummaryObj["attraction_summary"] || "Ingen beskrivelse tilgjengelig"}
+                                    <div className="pl-1">
+                                        <span>
+                                            {attractionSummaryObj?.["attraction_summary"] || "Ingen beskrivelse tilgjengelig"}
                                         </span>
                                     </div>
+                                    {/* 
                                     <LocationView
                                         info={attractionObj || null}
                                         image={attractionObj?.image || null}
                                     />
+                                    */}
+                                    <SmallView
+                                        info={attractionObj || null}
+                                        image={attractionObj?.image || null}
+                                    />
+
                                 </div>
                             </div>
                             <div className="flex flex-row w-full gap-4">
-                                <div className="flex flex-col items-center gap-4">
-                                    <div className="!w-10 !h-10 min-h-10 bg-gradient-secondary flex items-center justify-center rounded-md">
-                                        <UtensilsCrossed size={26} className="text-primary-foreground" />
+                                <div className="hidden md:flex flex-col items-center gap-4">
+                                    <div className="!w-9 !h-9 min-h-9 bg-gradient-secondary flex items-center justify-center rounded-full">
+                                        <UtensilsCrossed size={18} strokeWidth={2} className="text-primary-foreground" />
                                     </div>
-                                    <span className="h-full w-1 rounded bg-gradient-secondary"></span>
+                                    <span className="h-full w-0.75 rounded bg-gradient-secondary"></span>
                                 </div>
                                 <div className="flex flex-col gap-2 w-full">
                                     <div className="flex flex-row gap-2">
                                         <h4 className="flex items-center justify-center bg-card text-xs font-semibold text-primary border w-fit px-2 py-1 rounded-md pointer-events-none">Restaurant</h4>
-                                        <h2 className="text-lg font-semibold">{restaurantObj?.["name"] || "Kunne ikke hente restaurant"}</h2>
+                                        <h2 className="text-lg font-semibold break-words whitespace-normal line-clamp-1 text-pretty">{restaurantObj?.["name"] || "Kunne ikke hente restaurant"}</h2>
 
                                     </div>
-                                    <div>
-                                        <span className="pl-1">
-                                            {restaurantSummaryObj["restaurant_summary"] || "Ingen beskrivelse tilgjengelig"}
+                                    <div className="pl-1">
+                                        <span>
+                                            {restaurantSummaryObj?.["restaurant_summary"] || "Ingen beskrivelse tilgjengelig"}
                                         </span>
                                     </div>
+                                    {/* 
                                     <LocationView
+                                        info={restaurantObj || null}
+                                        image={restaurantObj?.image || null}
+                                    />
+                                    */}
+                                    <SmallView
                                         info={restaurantObj || null}
                                         image={restaurantObj?.image || null}
                                     />

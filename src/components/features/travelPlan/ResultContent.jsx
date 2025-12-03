@@ -110,7 +110,44 @@ function createPlanSkeleton(dateFrom, dateTo) {
     }, {});
 }
 
-async function curateLocations(details, userInterests, destination) {
+async function curateDayActivities(activities, restaurants, activityInterests, restaurantInterests, destination) {
+    try {
+        const res = await fetch('/api/ai/curate-day', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                activities,
+                restaurants,
+                activityInterests,
+                restaurantInterests,
+                destination
+            })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+            console.error('Day curation failed:', data.error);
+            return {
+                curatedActivity: null,
+                curatedRestaurant: null,
+            };
+        }
+
+        // Expect API to return a *single* best activity + restaurant object each
+        return {
+            curatedActivity: data.curatedActivity || null,
+            curatedRestaurant: data.curatedRestaurant || null,
+        };
+    } catch (error) {
+        console.error('Error during day curation:', error);
+        return {
+            curatedActivity: null,
+            curatedRestaurant: null,
+        };
+    }
+
+    /*
     try {
         const res = await fetch('/api/ai/curate-activities', {
             method: 'POST',
@@ -138,16 +175,43 @@ async function curateLocations(details, userInterests, destination) {
         // Fallback: return all location IDs if curation fails
         return details.map(loc => loc.location_id);
     }
+        */
+}
+
+function simplifyActivity(act) {
+    try {
+        const out = {
+            location_id: act.location_id,
+            name: act.name || "Unknown",
+            subcategory:
+                act.subcategory?.map(s => s.localized_name || s.name).join(", ") ||
+                "Unknown",
+            description: act.description
+                ? act.description.substring(0, 200)
+                : "No description",
+            rating: act.rating || "N/A",
+            num_reviews: act.num_reviews || "0",
+            ranking_data: act.ranking_data?.ranking_string || "Not ranked"
+        }
+        return out;
+    } catch (e) {
+        console.error("Error simplifying activity:", e);
+        return act;
+    }
 }
 
 async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, userInterests, destination) {
+    console.log("Filling plan with details...");
     const filled = { ...planSkeleton };
 
-    for (const [day, entries] of Object.entries(planSkeleton)) {
+    for (const [dayKey, entries] of Object.entries(planSkeleton)) {
         if (!entries || !entries.dayNumber) continue;
 
-        const activities = locationIds[entries.dayNumber];
-        const restaurants = restaurantIds[entries.dayNumber];
+        // Use dayKey (same as storyResult keys)
+        const activities = locationIds[entries.dayNumber] || [];
+        const restaurants = restaurantIds[entries.dayNumber] || [];
+
+        if (activities.length === 0 && restaurants.length === 0) continue;
 
         // Fetch details in parallel
         const [activityDetails, restaurantDetails] = await Promise.all([
@@ -155,31 +219,126 @@ async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, use
             Promise.all(restaurants.map(id => fetchDetails(id)))
         ]);
 
-        const curatedActivity = await curateLocations(activityDetails, userInterests[entries.dayNumber.activity], destination);
-        const curatedRestaurant = await curateLocations(restaurantDetails, userInterests[entries.dayNumber.restaurant], destination);
+        const validActivities = activityDetails.filter(Boolean);
+        const validRestaurants = restaurantDetails.filter(Boolean);
 
-        // Fetch images only for the curated activity and restaurant
+        const simplifiedActivities = validActivities.map(simplifyActivity);
+        const simplifiedRestaurants = validRestaurants.map(simplifyActivity);
+
+        // Get per-day interests from storyResult
+        const dayStory = userInterests[entries.dayNumber] || {};
+        const activityQuery = dayStory.activity || "";
+        const restaurantQuery = dayStory.restaurant || "";
+
+        console.log(JSON.stringify({
+            simplifiedActivities,
+            simplifiedRestaurants,
+            activityQuery,
+            restaurantQuery,
+            destination
+        }));
+
+        // Single AI call for this day
+        let aiResult = { activity: null, restaurant: null, reason: "" };
+        try {
+            aiResult = await curateDayActivities(
+                simplifiedActivities,
+                simplifiedRestaurants,
+                activityQuery,
+                restaurantQuery,
+                destination
+            );
+        } catch (e) {
+            console.error("Day curation failed, using fallback for", dayKey, e);
+        }
+
+        console.log(aiResult);
+
+        const chosenActivity = aiResult.activity || validActivities[0] || null;
+        const chosenRestaurant = aiResult.restaurant || validRestaurants[0] || null;
+
+        // Fetch images only for chosen ones
         const [activityImage, restaurantImage] = await Promise.all([
-            curatedActivity ? fetchImage(curatedActivity.location_id) : null,
-            curatedRestaurant ? fetchImage(curatedRestaurant.location_id) : null
+            chosenActivity ? fetchImage(chosenActivity.location_id) : null,
+            chosenRestaurant ? fetchImage(chosenRestaurant.location_id) : null
         ]);
 
-        // Combine curated details with images
-        const activityWithImage = curatedActivity
-            ? { ...curatedActivity, image: activityImage ?? null }
+        const activityWithImage = chosenActivity
+            ? { ...chosenActivity, image: activityImage ?? null }
             : null;
 
-        const restaurantWithImage = curatedRestaurant
-            ? { ...curatedRestaurant, image: restaurantImage ?? null }
+        const restaurantWithImage = chosenRestaurant
+            ? { ...chosenRestaurant, image: restaurantImage ?? null }
             : null;
 
-        // Save the curated activity and restaurant
-        filled[day].attractions = activityWithImage ? [activityWithImage] : [];
-        filled[day].restaurants = restaurantWithImage ? [restaurantWithImage] : [];
+        filled[dayKey].attractions = activityWithImage ? [activityWithImage] : [];
+        filled[dayKey].restaurants = restaurantWithImage
+            ? [restaurantWithImage]
+            : [];
     }
-    console.log('Filled plan with details:', filled);
 
     return filled;
+
+    /*
+    async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, userInterests, destination) {
+        const filled = { ...planSkeleton };
+    
+        for (const [day, entries] of Object.entries(planSkeleton)) {
+            if (!entries || !entries.dayNumber) continue;
+    
+            const activities = locationIds[entries.dayNumber];
+            const restaurants = restaurantIds[entries.dayNumber];
+    
+            // Fetch details in parallel
+            const [activityDetails, restaurantDetails] = await Promise.all([
+                Promise.all(activities.map(id => fetchDetails(id))),
+                Promise.all(restaurants.map(id => fetchDetails(id)))
+            ]);
+    
+            let aiResult = { activity: null, restaurant: null, reason: "" };
+            try {
+                aiResult = await curateDayActivities(
+                    validActivities,
+                    validRestaurants,
+                    // Pass a combined interest string so the day model
+                    // can consider both activity + restaurant prefs
+                    `${activityQuery || ""} | ${restaurantQuery || ""}`.trim() ||
+                    null,
+                    destination
+                );
+            } catch (e) {
+                console.error("Day curation failed, using fallback for", dayKey, e);
+            }
+    
+            if (!curatedActivity && !curatedRestaurant) {
+                filled[day].attractions = activityDetails.get(0) ? [activityDetails.get(0)] : [];
+                filled[day].restaurants = restaurantDetails.get(0) ? [restaurantDetails.get(0)] : [];
+                continue;
+            }
+    
+            // Fetch images only for the curated activity and restaurant
+            const [activityImage, restaurantImage] = await Promise.all([
+                curatedActivity ? fetchImage(curatedActivity.location_id) : null,
+                curatedRestaurant ? fetchImage(curatedRestaurant.location_id) : null
+            ]);
+    
+            // Combine curated details with images
+            const activityWithImage = curatedActivity
+                ? { ...curatedActivity, image: activityImage ?? null }
+                : null;
+    
+            const restaurantWithImage = curatedRestaurant
+                ? { ...curatedRestaurant, image: restaurantImage ?? null }
+                : null;
+    
+            // Save the curated activity and restaurant
+            filled[day].attractions = activityWithImage ? [activityWithImage] : [];
+            filled[day].restaurants = restaurantWithImage ? [restaurantWithImage] : [];
+        }
+    
+        return filled;
+    
+        */
 
     /*
 
@@ -284,11 +443,15 @@ export default function ResultContent() {
             try {
                 const storyData = await fetchTravelStory(params) ?? null;
                 if (!storyData) throw new Error("No story returned from AI");
-                if (!storyData.data || !storyData.data.story || !storyData.data.story.days) {
+                if (!storyData.data || !storyData.success || !storyData.data.story || !storyData.data.story.days || !storyData.data.story.summary) {
                     throw new Error("Invalid story data structure");
                 }
 
                 const storyResult = storyData.data.story.days;
+                const stortSummary = storyData.data.story.summary;
+
+                //console.log("Story Summary: ", stortSummary);
+                //console.log("Story Result: ", storyResult);
 
                 const locationIds = {};
                 const restaurantIds = {};
@@ -328,6 +491,8 @@ export default function ResultContent() {
 
                 const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
 
+                //console.log(skeleton);
+
                 const fullPlan = await fillPlanWithDetails(
                     skeleton,
                     locationIds,
@@ -336,10 +501,24 @@ export default function ResultContent() {
                     params.destination
                 );
 
-                const weatherSummary = await fetchWeather(destinationParam, dateFromParam, dateToParam);
-                console.log("Fetched weather:", weatherSummary);
+                const weatherData = await fetchWeather(destinationParam, dateFromParam, dateToParam);
+                if (!weatherData) throw new Error("No weather data returned");
+
+                const weatherSummary = {};
+
+                for (const [idx, value] of (weatherData?.weatherData?.daily?.time ?? []).entries()) {
+                    weatherSummary[value] = {
+                        tmp_min: parseInt(weatherData?.weatherData?.daily?.temperature_2m_min?.[idx]) ?? null,
+                        tmp_max: parseInt(weatherData?.weatherData?.daily?.temperature_2m_max?.[idx]) ?? null,
+                        weather_code: weatherData?.weatherData?.daily?.weather_code?.[idx] ?? null
+                    }
+                }
+
+                //console.log("Fetched weather:", weatherSummary);
 
                 const summarizedPlan = await fetchSummarizedPlan(fullPlan);
+
+                //console.log("Summarized plan:", summarizedPlan);
 
                 if (mounted) {
                     setFullPlan(fullPlan);
@@ -435,81 +614,121 @@ export default function ResultContent() {
 
     return (
         <div className="flex flex-col items-center w-full h-fit px-4 md:px-16 lg:px-32 ">
-            <div className="flex flex-col w-full overflow-hidden rounded-2xl border max-w-[1700px]">
-                <SearchParameters
-                    destination={params.destination}
-                    dateFrom={params.dateFrom}
-                    dateTo={params.dateTo}
-                    travelers={params.travelers}
-                    interests={summarized}
-                />
+            <div className="flex flex-col w-full overflow-hidden border max-w-[1700px] gap-4 rounded-lg">
+                <div className="">
+                    <SearchParameters
+                        destination={params.destination}
+                        dateFrom={params.dateFrom}
+                        dateTo={params.dateTo}
+                        travelers={params.travelers}
+                        interests={summarized}
+                    />
 
-                {/* Save Trip Button */}
-                <div className="flex justify-between items-center p-4 border-b bg-card">
+                    {/* Save Trip Button */}
+                    <div className="hidden flex justify-between items-center px-4 py-2 bg-card/50 border-b">
 
-                    {/* Left side summary */}
-                    <div className="text-sm text-muted-foreground">
-                        {dayKeys.length} dag{dayKeys.length !== 1 ? "er" : ""} planlagt •{" "}
-                        {
-                            Object.values(fullPlan || {})
-                                .reduce((total, day) => {
-                                    const a = day.attractions?.length || 0;
-                                    const r = day.restaurants?.length || 0;
-                                    return total + a + r;
-                                }, 0)
-                        }{" "}
-                        lokasjoner
-                    </div>
+                        {/* Left side summary */}
+                        <div className="text-sm text-muted-foreground ml-1">
+                            {dayKeys.length} dag{dayKeys.length !== 1 ? "er" : ""} planlagt •{" "}
+                            {
+                                Object.values(fullPlan || {})
+                                    .reduce((total, day) => {
+                                        const a = day.attractions?.length || 0;
+                                        const r = day.restaurants?.length || 0;
+                                        return total + a + r;
+                                    }, 0)
+                            }{" "}
+                            lokasjoner
+                        </div>
 
-                    {/* Right side buttons */}
-                    <div className="flex items-center gap-3">
-                        {saveSuccess && (
-                            <span className="text-sm text-green-600 font-medium">
-                                ✓ Reise lagret!
-                            </span>
-                        )}
+                        {/* Right side buttons */}
+                        <div className="flex items-center gap-3">
+                            {saveSuccess && (
+                                <span className="text-sm text-green-600 font-medium">
+                                    ✓ Reise lagret!
+                                </span>
+                            )}
 
-                        {saveError && (
-                            <span className="text-sm text-red-600">
-                                {saveError}
-                            </span>
-                        )}
+                            {saveError && (
+                                <span className="text-sm text-red-600">
+                                    {saveError}
+                                </span>
+                            )}
 
-                        <Button
-                            onClick={handleSaveTrip}
-                            disabled={isSaving || dayKeys.length === 0}
-                            className="flex items-center gap-2 rounded-lg !px-5"
-                            variant="default"
-                            size="sm"
-                        >
-                            <Save size={16} />
-                            {isSaving ? "Lagrer..." : "Lagre reise"}
-                        </Button>
+                            <Button
+                                onClick={handleSaveTrip}
+                                disabled={isSaving || dayKeys.length === 0}
+                                className="flex items-center gap-2 rounded-lg !px-5"
+                                variant="default"
+                                size="sm"
+                            >
+                                <Save size={16} />
+                                {isSaving ? "Lagrer..." : "Lagre reise"}
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
 
-                <Section type="plan" className="p-0">
+
+                <Section type="plan" className="p-0 bg-card">
                     {Object.keys(fullPlan || {}).length > 0 ? (
-                        <div className="flex flex-col w-full">
-                            {Object.entries(fullPlan).map(([dateKey, plan]) => (
-                                <PlanDay
-                                    key={dateKey}
-                                    dateKey={dateKey}
-                                    dayNumber={plan.dayNumber}
-                                    attractions={plan.attractions}
-                                    restaurants={plan.restaurants}
-                                    planSummary={summarizedPlan?.["summarizedPlan"]?.[dateKey] || null}
-                                    weatherSummary={weatherSummary?.["aiSummary"]?.["days"]?.[plan.dayNumber - 1] || null}
-                                />
-                            ))}
+                        <div className="flex flex-col w-full px-4 py-4 gap-4 bg-card">
+                            <div className="flex flex-row px-0 justify-between items-end">
+                                <h1 className="text-xl font-bold">Reiseplan</h1>
+                                <div className="flex items-center gap-3">
+                                    {saveSuccess && (
+                                        <span className="text-sm text-green-600 font-medium">
+                                            ✓ Reise lagret!
+                                        </span>
+                                    )}
+
+                                    {saveError && (
+                                        <span className="text-sm text-red-600">
+                                            {saveError}
+                                        </span>
+                                    )}
+
+                                    <Button
+                                        onClick={handleSaveTrip}
+                                        disabled={isSaving || dayKeys.length === 0}
+                                        className="flex items-center gap-2 rounded-lg !px-5"
+                                        variant="default"
+                                        size="sm"
+                                    >
+                                        <Save size={16} />
+                                        {isSaving ? "Lagrer..." : "Lagre reise"}
+                                    </Button>
+                                </div>
+                            </div>
+                            {Object.entries(fullPlan).map(([dateKey, plan]) => {
+                                if (!plan) {
+                                    return (
+                                        <div key={dateKey} className="plan-error">
+                                            Could not generate plan for {dateKey}.
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <PlanDay
+                                        key={dateKey}
+                                        dateKey={dateKey}
+                                        dayNumber={plan.dayNumber}
+                                        attractions={plan.attractions}
+                                        restaurants={plan.restaurants}
+                                        planSummary={summarizedPlan?.summarizedPlan?.[dateKey] || null}
+                                        weatherSummary={weatherSummary?.[dateKey] || null}
+                                    />
+                                );
+                            })}
                         </div>
                     ) : (
                         <p className="mt-6 opacity-70">Building your plan…</p>
                     )}
                 </Section>
 
-                <div className="flex items-center justify-center p-6 bg-card">
+                <div className="flex items-center justify-center p-4 bg-card">
                     <div className="text-sm text-muted-foreground">
                         Reise generert av © 2025 ViaMundi med hjelp av AI
                     </div>
