@@ -40,7 +40,7 @@ export async function GET(req) {
   const { latitude: lat, longitude: lon } = await decodeCityToCord(city, country);
   const latLong = lat && lon ? `${lat},${lon}` : null;
 
-  const radius = 5;
+  const radius = '5';
   const radiusUnit = 'km';
 
   if (!searchQuery) {
@@ -69,10 +69,48 @@ export async function GET(req) {
     //console.log('Mock response for ' + url);
 
     return NextResponse.json({
-      location_ids: [
-        "11111", "11112", "11113", "11114", "11115",
-        "11116", "11117", "11118", "11119", "11120",
-      ],
+      data: [
+        {
+          location_id: "11111",
+          distance: 1.2
+        },
+        {
+          location_id: "11112",
+          distance: 2.3
+        },
+        {
+          location_id: "11113",
+          distance: 2.4
+        },
+        {
+          location_id: "11114",
+          distance: 3.5
+        },
+        {
+          location_id: "11115",
+          distance: 3.6
+        },
+        {
+          location_id: "11116",
+          distance: 4.7
+        },
+        {
+          location_id: "11117",
+          distance: 4.8
+        },
+        {
+          location_id: "11118",
+          distance: 5.9
+        },
+        {
+          location_id: "11119",
+          distance: 6.0
+        },
+        {
+          location_id: "11120",
+          distance: 10.1
+        },
+      ]
     });
   }
 
@@ -95,10 +133,15 @@ export async function GET(req) {
 
     const responseData = await response.json();
 
-    const locationIds = responseData.data.map(location => location.location_id);
+    const simplified = responseData.data.map(location => ({
+      location_ids: location.location_id,
+      distance: location.distance
+    }));
 
     return NextResponse.json(
-      { location_ids: locationIds },
+      {
+        data: simplified
+      },
       {
         headers: {
           'X-RateLimit-Limit': '10',

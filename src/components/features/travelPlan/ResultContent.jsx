@@ -57,9 +57,11 @@ async function fetchLocationIds(destination, interests) {
     const res = await fetch(`/api/attractions?${qs.toString()}`);
     const data = await res.json();
 
+    //console.log(data);
+
     // If the API returns array of objects with distance:
     const filtered = (data.data ?? [])
-        .filter(item => item.distance && item.distance <= 6)
+        .filter(item => item.distance == null || item.distance <= 6.0)
         .map(item => item.location_id);
 
     return { location_ids: filtered };
@@ -74,8 +76,10 @@ async function fetchRestaurantIds(destination, interests) {
     const res = await fetch(`/api/restaurants?${qs.toString()}`);
     const data = await res.json();
 
+    //console.log(data);
+
     const filtered = (data.data ?? [])
-        .filter(item => item.distance && item.distance <= 6)
+        .filter(item => item.distance == null || item.distance <= 6.0)
         .map(item => item.location_id);
 
     return { location_ids: filtered };
@@ -153,7 +157,7 @@ async function curateDayActivities(activities, restaurants, activityInterests, r
             };
         }
 
-        console.log(data);
+        //console.log(data);
 
         // Expect API to return a *single* best activity + restaurant object each
         return {
@@ -498,6 +502,9 @@ export default function ResultContent() {
                     const rIds1 = await fetchRestaurantIds(destinationParam, queries.restaurant);
                     const rIds2 = await fetchRestaurantIds(destinationParam, queries.restaurant);
 
+                    //console.log(`Day ${day} - Fetched location IDs:`, lIds1, lIds2);
+                    //console.log(`Day ${day} - Fetched restaurant IDs:`, rIds1, rIds2);
+
                     const fetchedLocationIds = [...new Set([
                         ...(lIds1["location_ids"] ?? []),
                         ...(lIds2["location_ids"] ?? [])
@@ -547,7 +554,9 @@ export default function ResultContent() {
                 // ---------------------------------------------------------
                 // NON-CRITICAL: Weather fetch (SAFE)
                 // ---------------------------------------------------------
+                /*
                 let weatherSummaryResult = {};
+
                 try {
                     const weatherData = await fetchWeather(destinationParam, dateFromParam, dateToParam);
 
@@ -569,7 +578,7 @@ export default function ResultContent() {
                     }
                 } catch (err) {
                     console.warn("Weather failed:", err);
-                }
+                }*/
 
                 // ---------------------------------------------------------
                 // NON-CRITICAL: Plan summary fetch (SAFE)
@@ -626,7 +635,7 @@ export default function ResultContent() {
             interestsRaw: params.interests || "",
             finalPlan: fullPlan,
             summarizedPlan: summarizedPlan?.summarizedPlan || {},
-            weatherSummary: weatherSummary?.aiSummary || {},
+            //weatherSummary: weatherSummary?.aiSummary || {},
             metadata: {
                 cityName: getCityName(params.destination) || params.destination,
                 dayCount: dayKeys.length,

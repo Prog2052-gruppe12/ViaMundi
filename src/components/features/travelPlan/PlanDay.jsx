@@ -33,7 +33,7 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
 
     //console.log(planSummary);
 
-    if (!dateKey || !dayNumber || !attractions || !restaurants || !planSummary || !weatherSummary) {
+    if (!dateKey || !dayNumber || !attractions || !restaurants || !planSummary) {
         return null;
     }
 
@@ -103,7 +103,7 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                             <div className="hidden flex-row items-center gap-4 w-full border p-2">
 
                                 <span>
-                                    {weatherSummary["summaryOfTheDay"] || "Ingen værinformasjon tilgjengelig"}
+                                    {weatherSummary?.["summaryOfTheDay"] || "Ingen værinformasjon tilgjengelig"}
                                 </span>
                             </div>
                             <div className="flex flex-row w-full gap-4">
