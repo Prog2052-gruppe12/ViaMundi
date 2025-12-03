@@ -12,7 +12,7 @@ import {
 async function callGroqAPI(systemPrompt, userPrompt, queryType) {
     try {
         const response = await groq.chat.completions.create({
-            model: "openai/gpt-oss-20b", 
+            model: "openai/gpt-oss-120b", 
             messages: [
                 { role: "system", content: systemPrompt },
                 { role: "user", content: userPrompt }
