@@ -9,43 +9,43 @@ import groq from '@/lib/groq/client';
  * @returns {Promise<Object>} Summarized travel plan with attraction_summary and restaurant_summary for each item
  */
 function stripTravelPlanForAI(travelPlan) {
-    const stripped = {};
-    
-    for (const [dateKey, dayData] of Object.entries(travelPlan)) {
-        stripped[dateKey] = {
-            dayNumber: dayData.dayNumber,
-            attractions: (dayData.attractions || []).map(attr => ({
-                location_id: attr.location_id,
-                name: attr.name,
-                description: attr.description || "",
-                rating: attr.rating || "",
-                subcategory: (attr.subcategory || []).slice(0, 2).map(s => ({
-                    localized_name: s.localized_name
-                }))
-            })),
-            restaurants: (dayData.restaurants || []).map(rest => ({
-                location_id: rest.location_id,
-                name: rest.name,
-                description: rest.description || "",
-                rating: rest.rating || "",
-                subcategory: (rest.subcategory || []).slice(0, 2).map(s => ({
-                    localized_name: s.localized_name
-                }))
-            }))
-        };
-    }
-    
-    return stripped;
+  const stripped = {};
+
+  for (const [dateKey, dayData] of Object.entries(travelPlan)) {
+    stripped[dateKey] = {
+      dayNumber: dayData.dayNumber,
+      attractions: (dayData.attractions || []).map(attr => ({
+        location_id: attr.location_id,
+        name: attr.name,
+        description: attr.description || "",
+        rating: attr.rating || "",
+        subcategory: (attr.subcategory || []).slice(0, 2).map(s => ({
+          localized_name: s.localized_name
+        }))
+      })),
+      restaurants: (dayData.restaurants || []).map(rest => ({
+        location_id: rest.location_id,
+        name: rest.name,
+        description: rest.description || "",
+        rating: rest.rating || "",
+        subcategory: (rest.subcategory || []).slice(0, 2).map(s => ({
+          localized_name: s.localized_name
+        }))
+      }))
+    };
+  }
+
+  return stripped;
 }
 
 
 
 export async function summarizeTravelPlan(travelPlan) {
   try {
-    const prompt = createTravelPlanPrompt({travelPlan: stripTravelPlanForAI(travelPlan)});
-    
+    const prompt = createTravelPlanPrompt({ travelPlan: stripTravelPlanForAI(travelPlan) });
+
     const response = await groq.chat.completions.create({
-      model: 'openai/gpt-oss-20b',
+      model: 'openai/gpt-oss-120b',
       messages: [
         { role: 'user', content: prompt }
       ],
@@ -55,13 +55,13 @@ export async function summarizeTravelPlan(travelPlan) {
     });
 
     const content = response.choices[0]?.message?.content;
-    
+
     if (!content) {
       throw new Error('No content in Groq response for travel plan summarization');
     }
-    
+
     const parsed = JSON.parse(content);
-    
+
     if (parsed.error === true) {
       throw new Error(parsed.errors?.[0]?.message || 'AI detected invalid input');
     }
