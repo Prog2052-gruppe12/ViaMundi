@@ -57,7 +57,7 @@ async function fetchLocationIds(destination, interests) {
     const res = await fetch(`/api/attractions?${qs.toString()}`);
     const data = await res.json();
 
-    //console.log(data);
+    console.log(data);
 
     // If the API returns array of objects with distance:
     const filtered = (data.data ?? [])
@@ -76,7 +76,7 @@ async function fetchRestaurantIds(destination, interests) {
     const res = await fetch(`/api/restaurants?${qs.toString()}`);
     const data = await res.json();
 
-    //console.log(data);
+    console.log(data);
 
     const filtered = (data.data ?? [])
         .filter(item => item.distance == null || item.distance <= 6.0)
