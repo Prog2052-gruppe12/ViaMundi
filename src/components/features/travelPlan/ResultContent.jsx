@@ -201,7 +201,7 @@ function simplifyActivity(act) {
 }
 
 async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, userInterests, destination) {
-    console.log("Filling plan with details...");
+    //console.log("Filling plan with details...");
     const filled = { ...planSkeleton };
 
     for (const [dayKey, entries] of Object.entries(planSkeleton)) {
@@ -230,13 +230,13 @@ async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, use
         const activityQuery = dayStory.activity || "";
         const restaurantQuery = dayStory.restaurant || "";
 
-        console.log(JSON.stringify({
+        /*console.log(JSON.stringify({
             simplifiedActivities,
             simplifiedRestaurants,
             activityQuery,
             restaurantQuery,
             destination
-        }));
+        }));*/
 
         // Single AI call for this day
         let aiResult = { activity: null, restaurant: null, reason: "" };
@@ -252,7 +252,7 @@ async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, use
             console.error("Day curation failed, using fallback for", dayKey, e);
         }
 
-        console.log(aiResult);
+        //console.log(aiResult);
 
         const chosenActivity = aiResult.activity || validActivities[0] || null;
         const chosenRestaurant = aiResult.restaurant || validRestaurants[0] || null;
@@ -459,35 +459,68 @@ export default function ResultContent() {
                 for (const [day, queries] of Object.entries(storyResult)) {
                     if (!queries) continue;
 
-                    const lIds = await fetchLocationIds(destinationParam, queries.activity);
-                    const rIds = await fetchRestaurantIds(destinationParam, queries.restaurant);
+                    //
+                    // --- Fetch twice for more variety ---
+                    //
+                    const lIds1 = await fetchLocationIds(destinationParam, queries.activity);
+                    const lIds2 = await fetchLocationIds(destinationParam, queries.activity);
+                    const rIds1 = await fetchRestaurantIds(destinationParam, queries.restaurant);
+                    const rIds2 = await fetchRestaurantIds(destinationParam, queries.restaurant);
 
-                    // Extract location IDs and restaurant IDs
-                    const fetchedLocationIds = lIds["location_ids"];
-                    const fetchedRestaurantIds = rIds["location_ids"];
+                    //
+                    // --- Combine and dedupe fetched results ---
+                    //
+                    const fetchedLocationIds = [...new Set([
+                        ...(lIds1["location_ids"] ?? []),
+                        ...(lIds2["location_ids"] ?? [])
+                    ])];
 
-                    // Find the first two non-duplicate activity IDs
-                    const nonDuplicateActivityIds = fetchedLocationIds.filter(
-                        id => !Object.values(locationIds).flat().includes(id)
-                    ).slice(0, 2);
+                    const fetchedRestaurantIds = [...new Set([
+                        ...(rIds1["location_ids"] ?? []),
+                        ...(rIds2["location_ids"] ?? [])
+                    ])];
 
-                    if (nonDuplicateActivityIds.length > 0) {
-                        locationIds[day] = nonDuplicateActivityIds;
+                    //
+                    // --- Pick two random non-duplicate activity IDs ---
+                    //
+                    const usedActivityIds = new Set(Object.values(locationIds).flat());
+                    const uniqueActivityIds = fetchedLocationIds.filter(id => !usedActivityIds.has(id));
+
+                    // Shuffle (Fisher-Yates)
+                    for (let i = uniqueActivityIds.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [uniqueActivityIds[i], uniqueActivityIds[j]] = [uniqueActivityIds[j], uniqueActivityIds[i]];
+                    }
+
+                    const randomActivityIds = uniqueActivityIds.slice(0, 2);
+
+                    if (randomActivityIds.length > 0) {
+                        locationIds[day] = randomActivityIds;
                     } else {
                         console.warn(`No unique activities found for day ${day}`);
                     }
 
-                    // Find the first two non-duplicate restaurant IDs
-                    const nonDuplicateRestaurantIds = fetchedRestaurantIds.filter(
-                        id => !Object.values(restaurantIds).flat().includes(id)
-                    ).slice(0, 2);
+                    //
+                    // --- Pick two random non-duplicate restaurant IDs ---
+                    //
+                    const usedRestaurantIds = new Set(Object.values(restaurantIds).flat());
+                    const uniqueRestaurantIds = fetchedRestaurantIds.filter(id => !usedRestaurantIds.has(id));
 
-                    if (nonDuplicateRestaurantIds.length > 0) {
-                        restaurantIds[day] = nonDuplicateRestaurantIds;
+                    // Shuffle
+                    for (let i = uniqueRestaurantIds.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [uniqueRestaurantIds[i], uniqueRestaurantIds[j]] = [uniqueRestaurantIds[j], uniqueRestaurantIds[i]];
+                    }
+
+                    const randomRestaurantIds = uniqueRestaurantIds.slice(0, 2);
+
+                    if (randomRestaurantIds.length > 0) {
+                        restaurantIds[day] = randomRestaurantIds;
                     } else {
                         console.warn(`No unique restaurants found for day ${day}`);
                     }
                 }
+
 
                 const skeleton = createPlanSkeleton(dateFromParam, dateToParam);
 
