@@ -25,17 +25,17 @@ Output schema:
 {
   "YYYY-MM-DD": {
     "dayNumber": number,
-    "daySummary": "max 5 words overall summary for the day in Norwegian",
+    "daySummary": "short sentence to overall summarize the day in Norwegian",
     "attractions": [
       {
         "location_id": "string",
-        "attraction_summary": "string (max 150 chars in Norwegian)"
+        "attraction_summary": "natural description of the activity - string (max 250 chars in Norwegian)"
       }
     ],
     "restaurants": [
       {
         "location_id": "string",
-        "restaurant_summary": "string (max 150 chars in Norwegian)"
+        "restaurant_summary": "natural description of the restaurant - string (max 250 chars in Norwegian)"
       }
     ]
   },

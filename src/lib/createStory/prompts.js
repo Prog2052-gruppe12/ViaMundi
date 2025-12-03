@@ -92,7 +92,7 @@ VALID OUTPUT FORMAT
   "summary": "Concise summary for the user of the generated plan.",
   "days": {
     "1": {
-      "theme": "Short day theme",
+      "theme": "Short sentence to summarize the day's theme",
       "activity": "Activity query (≤90 chars, English, keywords only)",
       "restaurant": "Restaurant query (≤90 chars, English, keywords only)"
     },
