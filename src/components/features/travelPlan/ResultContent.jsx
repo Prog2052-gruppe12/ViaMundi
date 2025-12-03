@@ -51,21 +51,36 @@ async function fetchTravelStory(params) {
 
 async function fetchLocationIds(destination, interests) {
     const qs = new URLSearchParams();
-
     if (destination) qs.set("destination", destination);
     if (interests) qs.set("interests", interests);
+
     const res = await fetch(`/api/attractions?${qs.toString()}`);
-    return res.json();
+    const data = await res.json();
+
+    // If the API returns array of objects with distance:
+    const filtered = (data.data ?? [])
+        .filter(item => item.distance && item.distance <= 6)
+        .map(item => item.location_id);
+
+    return { location_ids: filtered };
 }
+
 
 async function fetchRestaurantIds(destination, interests) {
     const qs = new URLSearchParams();
-
     if (destination) qs.set("destination", destination);
     if (interests) qs.set("searchQuery", interests);
+
     const res = await fetch(`/api/restaurants?${qs.toString()}`);
-    return res.json();
+    const data = await res.json();
+
+    const filtered = (data.data ?? [])
+        .filter(item => item.distance && item.distance <= 6)
+        .map(item => item.location_id);
+
+    return { location_ids: filtered };
 }
+
 
 async function fetchDetails(id) {
     const res = await fetch(`/api/location/details?locationId=${id}`);
