@@ -546,14 +546,20 @@ export default function ResultContent() {
                 let weatherSummaryResult = {};
                 try {
                     const weatherData = await fetchWeather(destinationParam, dateFromParam, dateToParam);
-                    const times = weatherData?.weatherData?.daily?.time ?? [];
 
-                    for (const [idx, date] of times.entries()) {
-                        weatherSummaryResult[date] = {
-                            tmp_min: parseInt(weatherData.weatherData.daily.temperature_2m_min?.[idx]) ?? null,
-                            tmp_max: parseInt(weatherData.weatherData.daily.temperature_2m_max?.[idx]) ?? null,
-                            weather_code: weatherData.weatherData.daily.weather_code?.[idx] ?? null
-                        };
+                    // If API returned an error shape (e.g. 429 handler), just skip
+                    if (!weatherData || !weatherData.weatherData || !weatherData.weatherData.daily) {
+                        console.warn("Weather data missing expected shape, skipping weather.");
+                    } else {
+                        const times = weatherData.weatherData.daily.time ?? [];
+
+                        for (const [idx, date] of times.entries()) {
+                            weatherSummaryResult[date] = {
+                                tmp_min: parseInt(weatherData.weatherData.daily.temperature_2m_min?.[idx]) ?? null,
+                                tmp_max: parseInt(weatherData.weatherData.daily.temperature_2m_max?.[idx]) ?? null,
+                                weather_code: weatherData.weatherData.daily.weather_code?.[idx] ?? null
+                            };
+                        }
                     }
                 } catch (err) {
                     console.warn("Weather failed:", err);
