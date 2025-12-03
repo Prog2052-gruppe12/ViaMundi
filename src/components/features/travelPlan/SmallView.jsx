@@ -45,7 +45,7 @@ export default function SmallView({ info, image }) {
                 </div>
                 <div className="w-full flex flex-row gap-4">
                     <div className="w-22 h-18 overflow-hidden rounded-lg">
-                        {!image || !image?.data?.length > 0 ? (
+                        {!image || image?.data?.length < 1 ? (
                             <div className="w-full h-full bg-primary/10 animate-pulse" />
                         ) : (
                             console.log(image),
