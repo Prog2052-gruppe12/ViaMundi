@@ -109,11 +109,10 @@ GENERATION RULES
 2) Assign each day a short theme reflecting the interests (no destination names).
 3) Create 1 activity query + 1 restaurant query per day:
    - English only
+   - Imagine that you are generating search queries for TripAdvisor
    - Keyword-only (no sentences)
    - ≤90 chars
    - No destination names
-   - Can use modifiers: “hidden gems”, “local favorites”, “budget-friendly”, 
-     “with a view”, “walking tours”, “nature spots”, “cultural experiences”, etc.
    - “Other” must be included literally in meaning.
 
 ======================================================
