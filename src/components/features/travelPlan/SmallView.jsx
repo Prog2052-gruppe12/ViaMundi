@@ -45,9 +45,10 @@ export default function SmallView({ info, image }) {
                 </div>
                 <div className="w-full flex flex-row gap-4">
                     <div className="w-22 h-18 overflow-hidden rounded-lg">
-                        {!image ? (
+                        {!image || !image?.data?.length > 0 ? (
                             <div className="w-full h-full bg-primary/10 animate-pulse" />
                         ) : (
+                            console.log(image),
                             <img src={image} alt="location image" className="w-full h-full object-cover object-center" />
                         )}
 

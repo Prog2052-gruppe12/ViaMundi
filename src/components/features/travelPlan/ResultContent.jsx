@@ -254,7 +254,7 @@ async function fillPlanWithDetails(planSkeleton, locationIds, restaurantIds, use
             console.error("Day curation failed, using fallback for", dayKey, e);
         }
 
-        console.log(aiResult);
+        //console.log(aiResult);
 
         // Map curated IDs back to full detail objects
         const chosenActivity =
@@ -509,8 +509,8 @@ export default function ResultContent() {
                     if (randomRestaurantIds.length > 0) restaurantIds[day] = randomRestaurantIds;
                 }
 
-                console.log("Location IDs per day:", locationIds);
-                console.log("Restaurant IDs per day:", restaurantIds);
+                //console.log("Location IDs per day:", locationIds);
+                //console.log("Restaurant IDs per day:", restaurantIds);
 
                 // ---------------------------------------------------------
                 // CRITICAL: Full plan generation
