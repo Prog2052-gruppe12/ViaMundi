@@ -52,19 +52,19 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
         <div className="flex flex-col rounded-lg">
             <Accordion type="single" collapsible defaultValue={1}>
                 <AccordionItem value={dayNumber}>
-                    <AccordionTrigger className="px-1 py-2 flex flex-row rounded-none items-center data-[state=closed]:cursor-pointer">
+                    <AccordionTrigger className="px-1 py-2 flex flex-row items-center data-[state=closed]:cursor-pointer hover:bg-primary/2 rounded-lg">
                         <div className="flex flex-col md:flex-row items-center gap-3 w-full">
                             <div className="flex-1 w-full flex flex-row font-semibold text-sm gap-4 items-center">
                                 <div className="hidden px-3 py-1 flex items-center justify-center rounded-md bg-gradient-secondary text-primary-foreground">
                                     <span className="text-lg">Dag {dayNumber}</span>
                                 </div>
                                 <div className="flex flex-1 flex-row justify-between items-center gap-4">
-                                    <div className="flex-1 break-words whitespace-normal line-clamp-1 text-pretty hover:underline underline-offset-2">
+                                    <div className="flex-1 break-words whitespace-normal line-clamp-1 text-pretty">
                                         <span className="text-lg font-bold flex-1">Dag {dayNumber}</span>
                                         <span className="ml-4 text-[16px] font-medium text-muted-foreground">{planSummary.daySummary}</span>
                                     </div>
-                                    <div className="border flex flex-row items-center gap-2 font-medium text-sm px-2 py-0.5 bg-primary/5 text-muted-foreground rounded-md">
-                                        <Calendar size={14} strokeWidth={2.0} />
+                                    <div className="border flex flex-row items-center gap-2 font-semibold text-sm px-3 py-1 text-muted-foreground rounded-lg">
+                                        <Calendar size={14} strokeWidth={2.5} />
                                         <span>{dateLabel}</span>
                                     </div>
                                 </div>
@@ -99,17 +99,17 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="pb-0 rounded-b-lg">
-                        <div className="grid gap-4 h-fit py-2 pl-10 w-full">
+                        <div className="grid gap-4 h-fit py-2 px-0 w-full">
                             <div className="hidden flex-row items-center gap-4 w-full border p-2">
 
                                 <span>
                                     {weatherSummary?.["summaryOfTheDay"] || "Ingen værinformasjon tilgjengelig"}
                                 </span>
                             </div>
-                            <div className="flex flex-row w-full gap-4">
+                            <div className="flex flex-row w-full gap-3">
                                 <div className="hidden md:flex flex-col items-center gap-4">
-                                    <div className="!w-9 !h-9 min-h-9 bg-gradient-secondary flex items-center justify-center rounded-full">
-                                        <Ticket size={20} strokeWidth={2} className="text-primary-foreground" />
+                                    <div className="!w-7 !h-7 min-h-7 bg-gradient-secondary flex items-center justify-center rounded-md">
+                                        <Ticket size={16} strokeWidth={2} className="text-primary-foreground" />
                                     </div>
                                     <span className="h-full w-0.75 rounded bg-gradient-secondary"></span>
                                 </div>
@@ -136,10 +136,10 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
 
                                 </div>
                             </div>
-                            <div className="flex flex-row w-full gap-4">
+                            <div className="flex flex-row w-full gap-3">
                                 <div className="hidden md:flex flex-col items-center gap-4">
-                                    <div className="!w-9 !h-9 min-h-9 bg-gradient-secondary flex items-center justify-center rounded-full">
-                                        <UtensilsCrossed size={18} strokeWidth={2} className="text-primary-foreground" />
+                                    <div className="!w-7 !h-7 min-h-7 bg-gradient-secondary flex items-center justify-center rounded-md">
+                                        <UtensilsCrossed size={14} strokeWidth={2} className="text-primary-foreground" />
                                     </div>
                                     <span className="h-full w-0.75 rounded bg-gradient-secondary"></span>
                                 </div>

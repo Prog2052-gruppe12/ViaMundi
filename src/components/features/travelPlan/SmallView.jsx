@@ -29,22 +29,10 @@ export default function SmallView({ info, image }) {
     }
 
     return (
-        <Card className="shadow-none p-4 gap-2 bg-card overflow-hidden flex-row">
+        <Card className="shadow-md/5 p-4 gap-3 bg-card overflow-hidden flex-col md:flex-row">
             <div className="flex flex-col gap-2 w-full">
-                <div className="flex-row justify-between items-start w-full">
-                    <div className="flex flex-row gap-2 flex-wrap line-clamp-2">
-                        <Badge>{elements.ratingInfo}</Badge>
-                        {Array.isArray(elements?.groups) && elements.groups.length > 0 &&
-                            elements.groups.slice(0, 2).map((group, i) => (
-                                <Badge key={i} variant="secondary">
-                                    {group?.localized_name || "Ukjent gruppe"}
-                                </Badge>
-                            ))
-                        }
-                    </div>
-                </div>
                 <div className="w-full flex flex-row gap-4">
-                    <div className="w-22 h-18 overflow-hidden rounded-lg">
+                    <div className="w-32 lg:w-44 aspect-video overflow-hidden rounded-lg">
                         {image && typeof image === "string" ? (
                             <img
                                 src={image}
@@ -56,23 +44,36 @@ export default function SmallView({ info, image }) {
                         )}
 
                     </div>
-                    <div className="flex-1 flex flex-col gap-x-4 gap-y-0">
+                    <div className="flex-1 flex flex-col gap-x-4 gap-y-1">
+                        <div className="flex-row justify-between items-start w-full">
+                            <div className="flex flex-row gap-1 flex-wrap max-h-[52px] overflow-hidden">
+                                <Badge>{elements.ratingInfo}</Badge>
+                                {Array.isArray(elements?.groups) && elements.groups.length > 0 &&
+                                    elements.groups.slice(0, 2).map((group, i) => (
+                                        <Badge key={i} variant="secondary">
+                                            {group?.localized_name || "Ukjent gruppe"}
+                                        </Badge>
+                                    ))
+                                }
+                            </div>
+                        </div>
                         <CardHeader className="px-0 gap-0">
-                            <CardTitle className="text-lg font-medium break-words whitespace-normal line-clamp-1 text-pretty w-fit">
+                            <CardTitle className="text-lg font-semibold break-words whitespace-normal line-clamp-1 text-pretty w-fit">
                                 {elements.name}
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="flex flex-col col h-full justify-between px-0 overflow-hidden">
+                        <CardContent className="flex flex-col col h-full justify-between px-0 overflow-hidden gap-1">
                             <div className="flex flex-row">
                                 <span className="text-primary font-semibold hidden sm:block">{elements.rating}</span>
                                 <img src={elements.ratingImage} alt="rating" />
                                 ({elements.ratingAmount})
                             </div>
+
                             <div>
                                 {elements.address ? (
                                     //console.log(elements.address),
                                     <a
-                                        className="text-muted-foreground underline underline-offset-2 break-words whitespace-normal line-clamp-1 text-pretty"
+                                        className="text-muted-foreground hover:text-primary underline underline-offset-2 break-words whitespace-normal line-clamp-1 text-pretty w-fit"
                                         href={elements.address["address_string"] ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(elements.address["address_string"])}` : "#"}
                                         target="_blank"
                                     >
@@ -86,16 +87,16 @@ export default function SmallView({ info, image }) {
                     </div>
                 </div>
             </div>
-            <div className="flex items-start w-fit">
+            <div className="flex items-start w-full md:w-fit">
                 <a
                     href={elements.url || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-fit"
+                    className="w-full md:w-fit"
                 >
                     <Button
-                        variant="outline"
-                        className="w-fit h-fit !px-4 !py-1.5 text-sm border-primary text-primary"
+                        variant="secondary"
+                        className="w-full md:w-fit h-fit !px-4 !py-2 text-sm rounded-lg"
                     >
                         Les mer <ArrowUpRight />
                     </Button>
