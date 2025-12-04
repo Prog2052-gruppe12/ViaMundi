@@ -102,12 +102,9 @@ npm start            # Starter produksjonsserver
 
 # Kvalitetssikring
 npm run lint         # Kjører ESLint
-npm run format       # Formaterer kode med Prettier
-npm run format:check # Sjekker kodeformatering
 
 # Testing
 npm test             # Kjører tester
-npm run test:watch   # Kjører tester i watch-modus
 npm run test:coverage # Genererer testdekning-rapport
 ```
 
@@ -149,7 +146,6 @@ ViaMundi bruker Firebase Authentication med session cookies:
 - Email/Password innlogging
 - Google OAuth
 - HttpOnly session cookies (3 dagers utløpstid)
-- 
 ## Team
 
 - Fredrik Andreas Wiik
