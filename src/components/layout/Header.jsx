@@ -15,7 +15,7 @@ export const Header = () => {
             <div className="max-w-[1700px] w-full h-full flex items-center justify-between">
                 {/* Left: Logo */}
                 <div className="flex items-center gap-4">
-                    <SidebarTrigger className="xl:hidden w-10 h-10 rounded-md border border-transparent" />
+                    <SidebarTrigger className="lg:hidden w-10 h-10 rounded-md border border-transparent" />
                     {/*
                     <div className="hidden xl:block">
                         <Logo/>
@@ -24,13 +24,17 @@ export const Header = () => {
                     <Link href="/" className="text-2xl h-10 pt-0.75 font-bold text-accent rounded-md relative px-1">
                         <span className="">viamundi.no</span>
                     </Link>
+                    <div className="hidden lg:block">
+                        <Nav />
+                    </div>
                 </div>
 
                 {/* Center: Nav */}
+                {/*
                 <div className="absolute left-1/2 -translate-x-1/2 hidden xl:block">
                     <Nav />
                 </div>
-
+                */}
 
 
                 {/* Right: Auth buttons */}

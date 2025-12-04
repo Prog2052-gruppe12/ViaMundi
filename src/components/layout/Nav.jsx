@@ -10,7 +10,7 @@ import {
 
 export const Nav = () => {
     return (
-        <NavigationMenu className="flex items-center list-none gap-1">
+        <NavigationMenu className="flex items-center list-none gap-2">
             <NavigationMenuItem>
                 <NavigationMenuLink href={"/"} asChild>
                     <Link href="/">Hjem</Link>
@@ -21,17 +21,17 @@ export const Nav = () => {
                     <Link href="/bruker/reiser">Mine reiser</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className="hidden">
                 <NavigationMenuLink href="/finn-reise" asChild>
                     <Link href="/finn-reise">Finn reise</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className="hidden">
                 <NavigationMenuLink href="/sporsmal" asChild>
                     <Link href="/sporsmal">Spørsmål</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className="hidden">
                 <NavigationMenuLink href="/teknologi" asChild>
                     <Link href="/teknologi">Teknologi</Link>
                 </NavigationMenuLink>

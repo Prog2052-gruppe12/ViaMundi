@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority"
 import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/utils/cn"
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 
 function NavigationMenu({
   className,
@@ -108,9 +108,9 @@ function NavigationMenuViewport({
 }
 
 function NavigationMenuLink({
-    href,
-    className,
-    ...props
+  href,
+  className,
+  ...props
 }) {
   const pathname = usePathname();
   const isActive = href === pathname;
@@ -119,7 +119,7 @@ function NavigationMenuLink({
       data-slot="navigation-menu-link"
       data-active={isActive}
       className={cn(
-        "text-muted-foreground text-center h-fit data-[active=true]:text-primary-foreground data-[active=true]:bg-accent/90 hover:bg-accent/10 focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col justify-center gap-1 rounded-md py-1.5 px-3 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+        "text-muted-foreground text-center h-fit data-[active=true]:text-primary-foreground data-[active=true]:bg-accent/90 hover:bg-accent/10 focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col justify-center gap-1 rounded-md py-1 px-3 text-sm font-semibold outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props} />

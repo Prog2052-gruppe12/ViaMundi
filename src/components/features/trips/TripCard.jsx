@@ -44,15 +44,15 @@ export default function TripCard({ trip, onDelete }) {
 
   const dateFrom = new Date(trip.dateFrom);
   const dateTo = new Date(trip.dateTo);
-  const cityName = trip.metadata?.cityName || trip.destination;
+  const cityName = trip?.destination;
   const dayCount = trip.metadata?.dayCount || 0;
   const thumbnailUrl = trip.metadata?.thumbnailUrl;
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden hover:shadow-lg hover:scale-101 transition-all clickable duration-100 p-0 gap-0 border-none">
       <Link href={`/bruker/reiser/${trip.id}`}>
         {/* Thumbnail Image */}
-        <div className="relative h-48 bg-muted overflow-hidden">
+        <div className="hidden relative h-48 bg-muted overflow-hidden">
           {thumbnailUrl ? (
             <img
               src={thumbnailUrl}
@@ -70,36 +70,35 @@ export default function TripCard({ trip, onDelete }) {
           </div>
         </div>
 
-        <CardContent className="pt-4">
+        <CardContent className="py-4 px-4">
+          {/* Saved date */}
+          <p className="text-xs text-muted-foreground mb-1">
+            Lagret {format(new Date(trip.createdAt), "d. MMM yyyy", { locale: nb })}
+          </p>
           {/* Destination */}
           <h3 className="font-bold text-xl mb-2 line-clamp-1">{cityName}</h3>
 
           {/* Dates */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-            <Calendar size={16} />
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-1">
+            <Calendar size={14} strokeWidth={2.5} />
             <span>
               {format(dateFrom, "d. MMM", { locale: nb })} - {format(dateTo, "d. MMM yyyy", { locale: nb })}
             </span>
           </div>
 
           {/* Travelers */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Users size={16} />
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <Users size={14} strokeWidth={2.5} />
             <span>{trip.travelers} reisende</span>
           </div>
-
-          {/* Saved date */}
-          <p className="text-xs text-muted-foreground mt-3">
-            Lagret {format(new Date(trip.createdAt), "d. MMM yyyy", { locale: nb })}
-          </p>
         </CardContent>
       </Link>
 
-      <CardFooter className="pt-0">
+      <CardFooter className="py-2 px-2">
         <Button
-          variant="destructive"
+          variant="default"
           size="sm"
-          className="w-full"
+          className="w-full rounded-md"
           onClick={handleDelete}
           disabled={isDeleting}
         >
