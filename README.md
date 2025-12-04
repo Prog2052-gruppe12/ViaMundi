@@ -149,25 +149,7 @@ ViaMundi bruker Firebase Authentication med session cookies:
 - Email/Password innlogging
 - Google OAuth
 - HttpOnly session cookies (3 dagers utløpstid)
-
-## Testing
-
-Prosjektet bruker Jest for testing. Testdekning er fokusert på utility-funksjoner, dato-funksjoner og valideringsskjemaer.
-
-Se PROJEKTOVERSIKT.md for detaljert testdekning-analyse.
-
-## Deployment
-
-ViaMundi er deployet på Vercel som en serverless-applikasjon med automatisk skalering, Edge Network og Git-integrasjon.
-
-Miljøvariabler må konfigureres i Vercel Dashboard under Settings → Environment Variables.
-
-## Dokumentasjon
-
-For mer detaljert informasjon, se:
-- PROJEKTOVERSIKT.md - Komplett prosjektoversikt med teknologier, arkitektur og testdekning
-- MAPPESTRUKTUR.md - Detaljert mappestruktur, dataflyt og integrasjoner
-
+- 
 ## Team
 
 - Fredrik Andreas Wiik
@@ -175,7 +157,3 @@ For mer detaljert informasjon, se:
 - Nahom Berhane
 
 Semesterprosjekt 2025 - Gruppe 12
-
-## Lisens
-
-Dette er et semesterprosjekt og er ikke tilgjengelig for offentlig bruk.
