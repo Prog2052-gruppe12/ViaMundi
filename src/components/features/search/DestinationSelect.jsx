@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Drawer, DrawerTrigger, DrawerContent } from "@/components/ui/drawer";
-import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { allOptions } from "./constants";
 
@@ -145,7 +145,7 @@ export const DestinationSelect = ({ label, form }) => {
                 render={({ field }) => {
                     if (!isMobile) {
                         return (
-                            <FormItem className="flex flex-col justify-start w-full gap-y-1">
+                            <FormItem className="relative flex flex-col justify-start w-full gap-y-1">
                                 <FormLabel className="font-bold text-sm text-card">{label}</FormLabel>
                                 <Popover open={open} onOpenChange={setOpen}>
                                     <PopoverTrigger asChild className="w-full">
@@ -170,12 +170,13 @@ export const DestinationSelect = ({ label, form }) => {
                                         </Command>
                                     </PopoverContent>
                                 </Popover>
+                                <FormMessage />
                             </FormItem>
                         )
                     }
 
                     return (
-                        <FormItem className="gap-y-1">
+                        <FormItem className="gap-y-1 relative">
                             <FormLabel className="font-bold text-sm text-card">Hvor går reisen?</FormLabel>
                             <Drawer open={open} onOpenChange={setOpen} direction="bottom">
                                 <DrawerTrigger asChild>
@@ -199,6 +200,7 @@ export const DestinationSelect = ({ label, form }) => {
                                     </div>
                                 </DrawerContent>
                             </Drawer>
+                            <FormMessage />
                         </FormItem>
                     )
                 }}

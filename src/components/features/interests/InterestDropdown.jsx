@@ -8,7 +8,7 @@ import {
     DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { ChevronDown, ChevronUp, ClipboardList, CircleX, Trash } from "lucide-react";
 import { INTEREST_OPTIONS } from "./constants";
 import { cn } from "@/utils/cn";
@@ -28,7 +28,7 @@ export const InterestDropdown = ({ form, selected, onClear }) => {
                 control={form.control}
                 name="interests"
                 render={() => (
-                    <FormItem className="w-full gap-1">
+                    <FormItem className="w-full gap-1 relative">
                         <FormLabel className="text-card font-bold text-sm">Interesser</FormLabel>
 
                         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -41,10 +41,10 @@ export const InterestDropdown = ({ form, selected, onClear }) => {
                                     )}
                                 >
                                     <div className="flex items-center justify-baseline gap-3">
-                                        <ClipboardList strokeWidth={2.5}/>
+                                        <ClipboardList strokeWidth={2.5} />
                                         {displayText}
                                     </div>
-                                    {open ? <ChevronUp/> : <ChevronDown/>}
+                                    {open ? <ChevronUp /> : <ChevronDown />}
                                 </Button>
                             </DropdownMenuTrigger>
 
@@ -74,7 +74,7 @@ export const InterestDropdown = ({ form, selected, onClear }) => {
                                             setOpen(false);
                                         }}
                                     >
-                                        <CircleX/> Lukk
+                                        <CircleX /> Lukk
                                     </Button>
                                     {selectedLabels.length > 0 && (
                                         <Button
@@ -84,12 +84,13 @@ export const InterestDropdown = ({ form, selected, onClear }) => {
                                             size="sm"
                                             onClick={onClear}
                                         >
-                                            <Trash/> Tøm
+                                            <Trash /> Tøm
                                         </Button>
                                     )}
                                 </div>
                             </DropdownMenuContent>
                         </DropdownMenu>
+                        <FormMessage />
                     </FormItem>
                 )}
             />

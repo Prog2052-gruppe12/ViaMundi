@@ -654,7 +654,7 @@ export default function ResultContent() {
 
     return (
         <div className="flex flex-col items-center w-full h-fit px-4 md:px-16 lg:px-32 ">
-            <div className="flex flex-col w-full overflow-hidden border max-w-[1700px] gap-4 rounded-lg">
+            <div className="flex flex-col w-full overflow-hidden border max-w-[1700px] rounded-lg">
                 <div className="">
                     <SearchParameters
                         destination={params.destination}

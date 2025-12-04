@@ -8,10 +8,10 @@ export const tripTypes = [
 ];
 
 export const allOptions = [
-    {
+    /*{
         group: "Reisetype",
         items: tripTypes,
-    },
+    },*/
     {
         group: "Sted",
         items: Object.entries(citiesData).flatMap(([land, byer]) =>

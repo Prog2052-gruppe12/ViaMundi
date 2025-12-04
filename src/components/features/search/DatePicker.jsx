@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { cn } from "@/utils/cn";
 import { format, addYears } from "date-fns";
 import { nb } from "date-fns/locale";
@@ -85,14 +85,14 @@ export const DatePicker = ({ label, form, today, dateMax, dateFromWatch }) => {
                 control={currentForm.control}
                 name={label === "Dato fra" ? "dateFrom" : "dateTo"}
                 render={({ field }) => (
-                    <FormItem className="flex flex-col justify-start w-full gap-y-1">
+                    <FormItem className="flex flex-col justify-start w-full gap-y-1 relative">
                         <FormLabel className="font-bold text-sm text-card">{label}</FormLabel>
                         <Popover open={open} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                                 <FormControl>{TriggerButton({ field, isDateTo })}</FormControl>
                             </PopoverTrigger>
                             <PopoverContent
-                                align = {isDateTo ? "end" : "start"}
+                                align={isDateTo ? "end" : "start"}
                                 className="flex flex-col p-0 border-none bg-popover w-fit"
                             >
                                 <Calendar
@@ -116,6 +116,7 @@ export const DatePicker = ({ label, form, today, dateMax, dateFromWatch }) => {
                                 <ClearAndClose field={field} />
                             </PopoverContent>
                         </Popover>
+                        <FormMessage />
                     </FormItem>
                 )}
             />

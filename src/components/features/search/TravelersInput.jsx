@@ -1,5 +1,5 @@
 import React from "react";
-import {FormItem, FormLabel, FormControl, FormField} from "@/components/ui/form";
+import { FormItem, FormLabel, FormControl, FormField, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { User } from "lucide-react";
 import { cn } from "@/utils/cn";
@@ -32,8 +32,9 @@ export const TravelersInput = ({ label, form }) => {
                             {...field}
                         />
                     </FormControl>
+                    <FormMessage />
                 </FormItem>
-                )
+            )
             }
         />
     )

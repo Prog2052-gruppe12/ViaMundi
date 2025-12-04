@@ -20,6 +20,9 @@ export const SearchForm = () => {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
+        reValidateMode: "onChange",
+        shouldFocusError: true,
         defaultValues: {
             destination: "",
             dateFrom: undefined,
@@ -78,7 +81,7 @@ export const SearchForm = () => {
                         <DatePicker label="Dato til"
                             form={form}
                             today={dateFromValue}
-                            dateMax={dateMax}
+                            dateMax={dateFromValue ? addDays(dateFromValue, 5) : dateMax}
                             dateFromWatch={dateFromValue}
                         />
                     </div>

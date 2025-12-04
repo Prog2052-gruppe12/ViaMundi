@@ -22,6 +22,8 @@ export default function InterestContent() {
 
     const form = useForm({
         resolver: zodResolver(formSchema),
+        mode: "all",
+        reValidateMode: "onBlur",
         defaultValues: {
             interests: Object.fromEntries(INTEREST_OPTIONS.map((opt) => [opt.id, false])),
             other: "",
