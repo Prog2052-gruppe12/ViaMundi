@@ -554,7 +554,6 @@ export default function ResultContent() {
                 // ---------------------------------------------------------
                 // NON-CRITICAL: Weather fetch (SAFE)
                 // ---------------------------------------------------------
-                /*
                 let weatherSummaryResult = {};
 
                 try {
@@ -578,7 +577,7 @@ export default function ResultContent() {
                     }
                 } catch (err) {
                     console.warn("Weather failed:", err);
-                }*/
+                }
 
                 // ---------------------------------------------------------
                 // NON-CRITICAL: Plan summary fetch (SAFE)

@@ -31,7 +31,7 @@ function safeParseYMD(ymd) {
 
 const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, restaurants, planSummary, weatherSummary }) {
 
-    //console.log(planSummary);
+    //console.log(weatherSummary);
 
     if (!dateKey || !dayNumber || !attractions || !restaurants || !planSummary) {
         return null;
@@ -53,7 +53,7 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
             <Accordion type="single" collapsible defaultValue={1}>
                 <AccordionItem value={dayNumber}>
                     <AccordionTrigger className="px-1 py-2 flex flex-row items-center data-[state=closed]:cursor-pointer hover:bg-primary/2 rounded-lg">
-                        <div className="flex flex-col md:flex-row items-center gap-3 w-full">
+                        <div className="flex flex-row items-center gap-3 w-full">
                             <div className="flex-1 w-full flex flex-row font-semibold text-sm gap-4 items-center">
                                 <div className="hidden px-3 py-1 flex items-center justify-center rounded-md bg-gradient-secondary text-primary-foreground">
                                     <span className="text-lg">Dag {dayNumber}</span>
@@ -77,25 +77,19 @@ const PlanDay = React.memo(function PlanDay({ dateKey, dayNumber, attractions, r
 
 
                             </div>
-                            {/*
-                            <div className="flex flex-row items-center gap-2 px-3 py-1 bg-primary/5 text-muted-foreground rounded-md">
-                                {getWeatherIcon(weatherSummary["weather_code"], 16)}
-                                <span className="flex flex-row items-center gap-1">
-                                    <ArrowDown size={10} />
-                                    {weatherSummary["tmp_min"]}
-                                    °C
-                                </span>
-                                <span className="flex flex-row items-center gap-1">
-                                    <ArrowUp size={10} />
-                                    {weatherSummary["tmp_max"]}
-                                    °C
-                                </span>
-                            </div>
-                            <div className="flex flex-row items-center gap-2 font-medium text-sm px-3 py-1 bg-primary/5 text-muted-foreground rounded-md">
-                                <Calendar size={14} />
-                                {dateLabel}
-                            </div>
-                            */}
+                            {weatherSummary && (
+                                <div className="flex flex-row items-center gap-2 px-3 py-1 text-muted-foreground font-semibold rounded-lg border">
+                                    {getWeatherIcon(weatherSummary?.["weather_code"], 16)}
+                                    {weatherSummary?.["tmp_min"] && weatherSummary?.["tmp_max"] && (
+                                        <span className="flex flex-row items-center gap-1">
+                                            ~ {" "}
+                                            {((weatherSummary["tmp_min"] + weatherSummary["tmp_max"]) / 2).toFixed(1)}
+                                            °C
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="pb-0 rounded-b-lg">
